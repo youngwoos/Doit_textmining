@@ -1,0 +1,257 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r include=F}
+knitr::opts_chunk$set(warning = F, message = F)
+library(here)
+```
+
+# Quiz Part 4
+
+#### `"news_comment_BTS.csv"`에는 2020년 9월 21일 방탄소년단이 '빌보드 핫 100 차트' 1위에 오른 소식을 다룬 기사에 달린 댓글이 들어있습니다. `"news_comment_BTS.csv"`를 이용해 문제를 해결해 보세요.
+
+[Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 전처리하세요.](#Q1)
+
+[Q2. 댓글을 띄어쓰기 기준으로 토큰화하고 감정 사전을 이용해 댓글의 감정 점수를 구하세요.](#Q2)
+
+[Q3. 감정 범주별 댓글 빈도를 나타낸 막대 그래프를 만드세요.](#Q3)
+
+[Q4. 댓글을 띄어쓰기 기준으로 토큰화한 다음 감정 범주별 단어 빈도를 구하세요.](#Q4)
+
+[Q5. 로그 오즈비를 이용해 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 10개씩 추출하세요.](#Q5)
+
+[Q6. 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 나타낸 막대 그래프를 만드세요.](#Q6)
+
+[Q7. 'Q3'에서 만든 데이터를 이용해 '긍정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 감정 점수가 높은 순으로 출력하세요.](#Q7)
+
+[Q8. 'Q3'에서 만든 데이터를 이용해 '부정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 감정 점수가 낮은 순으로 출력하세요.](#Q8)
+
+---
+
+#### Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 전처리하세요.<a name="Q1"></a>
+
+##### 기사 댓글 불러오기
+
+```{r eval=F}
+library(readr)
+library(dplyr)
+raw_news_comment <- read_csv("news_comment_BTS.csv")
+glimpse(raw_news_comment)
+```
+
+```{r echo=F}
+library(readr)
+library(dplyr)
+raw_news_comment <- read_csv(here("Data/news_comment_BTS.csv"))
+glimpse(raw_news_comment)
+```
+
+##### 전처리
+
+```{r}
+library(stringr)
+library(textclean)
+news_comment <- raw_news_comment %>%
+  mutate(id = row_number(),
+         reply = str_squish(replace_html(reply)))
+
+news_comment %>%
+  select(id, reply)
+```
+
+
+
+---
+
+#### Q2. 댓글을 띄어쓰기 기준으로 토큰화하고 감정 사전을 이용해 댓글의 감정 점수를 구하세요.<a name="Q2"></a>
+
+##### 토큰화
+
+```{r}
+library(tidytext)
+library(KoNLP)
+word_comment <- news_comment %>%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",  # 띄어쓰기 기준
+                drop = F)         # 원문 유지
+
+word_comment %>%
+  select(word)
+```
+
+##### 감정 사전 불러오기
+
+```{r eval=F}
+dic <- read_csv("knu_sentiment_lexicon.csv")
+```
+
+```{r echo=F}
+# 감정 사전 불러오기
+dic <- read_csv(here("Data/knu_sentiment_lexicon.csv"))
+```
+
+
+##### 단어에 감정 점수 부여
+```{r}
+word_comment <- word_comment %>%
+  left_join(dic, by = "word") %>%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity))
+
+word_comment %>%
+  select(word, polarity) %>%
+  arrange(-polarity)
+```
+
+##### 댓글별로 단어의 감정 점수 합산
+```{r}
+score_comment <- word_comment %>%
+  group_by(id, reply) %>%
+  summarise(score = sum(polarity)) %>%
+  ungroup()
+
+score_comment %>%
+  select(score, reply) %>%
+  arrange(-score)
+```
+
+
+
+---
+
+#### Q3. 감정 범주별 댓글 빈도를 나타낸 막대 그래프를 만드세요.<a name="Q3"></a>
+
+##### 감정 범주 변수 생성
+```{r}
+score_comment <- score_comment %>%
+  mutate(sentiment = ifelse(score >=  1, "pos",
+                     ifelse(score <= -1, "neg", "neu")))
+
+score_comment %>%
+  select(sentiment, reply)
+```
+
+##### 감정 범주 빈도 구하기
+```{r}
+frequency_score <- score_comment %>%
+  count(sentiment)
+
+frequency_score
+```
+
+##### 막대 그래프 만들기
+```{r}
+library(ggplot2)
+ggplot(frequency_score, aes(x = sentiment, y = n, fill = sentiment)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.3)
+```
+
+
+
+---
+
+#### Q4. 댓글을 띄어쓰기 기준으로 토큰화한 다음 감정 범주별 단어 빈도를 구하세요.<a name="Q4"></a>
+
+
+##### 토큰화
+
+```{r}
+comment <- score_comment %>%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",
+                drop = F)
+```
+
+##### 감정 범주별 단어 빈도 구하기
+
+```{r}
+frequency_word <- comment %>%
+  count(sentiment, word, sort = T)
+
+frequency_word
+```
+
+
+
+---
+
+#### Q5. 로그 오즈비를 이용해 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 10개씩 추출하세요.<a name="Q5"></a>
+
+##### long form을 wide form으로 변환
+
+```{r}
+library(tidyr)
+comment_wide <- frequency_word %>%
+  filter(sentiment != "neu") %>%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = list(n = 0))
+
+comment_wide
+```
+
+##### 로그 오즈비 구하기
+
+```{r}
+comment_wide <- comment_wide %>%
+  mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) /
+                              ((neg + 1) / (sum(neg + 1)))))
+
+comment_wide
+```
+
+##### 긍정, 부정 댓글에 상대적으로 자주 사용된 단어 추출
+
+```{r}
+top10 <- comment_wide %>%
+  group_by(sentiment = ifelse(log_odds_ratio > 0, "pos", "neg")) %>%
+  slice_max(abs(log_odds_ratio), n = 10)
+
+top10
+```
+
+
+---
+
+#### Q6. 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 나타낸 막대 그래프를 만드세요.<a name="Q6"></a>
+```{r}
+ggplot(top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL)
+```
+
+
+---
+
+#### Q7. 'Q3'에서 만든 데이터를 이용해 '긍정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 감정 점수가 높은 순으로 출력하세요.<a name="Q7"></a>
+
+```{r}
+score_comment %>%
+  filter(str_detect(reply, "자랑스럽다")) %>%
+  arrange(-score) %>%
+  select(reply)
+```
+
+
+---
+
+#### Q8. 'Q3'에서 만든 데이터를 이용해 '부정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 감정 점수가 낮은 순으로 출력하세요.<a name="Q8"></a>
+
+```{r}
+score_comment %>%
+  filter(str_detect(reply, "국내")) %>%
+  arrange(score) %>%
+  select(reply)
+```
+
+

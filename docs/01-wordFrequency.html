@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Do it! 쉽게 배우는 R 텍스트 마이닝 - 01 단어 빈도 분석</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김영우" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+
+
+
+class: title0
+
+Do it! 쉽게 배우는 R 텍스트 마이닝
+
+
+---
+
+&lt;br&gt;
+
+.pull-left[
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/cover.png" width="70%" height="70%" /&gt;
+]
+
+.pull-right[
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;svg viewBox="0 0 496 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"&gt;&lt;/path&gt;&lt;/svg&gt; [github.com/youngwoos/Doit_textmining](https://github.com/youngwoos/Doit_textmining)
+
+&lt;svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"&gt;&lt;/path&gt;&lt;/svg&gt; [facebook.com/groups/datacommunity](https://facebook.com/groups/datacommunity)
+
+- [네이버책](https://book.naver.com/bookdb/book_detail.nhn?bid=17891971)
+  - [yes24](http://bit.ly/3oUuJOB)
+  - [알라딘](http://bit.ly/3oXOSDn)
+  - [교보문고](https://bit.ly/2LtNOcB)
+]
+
+---
+
+class: title0
+
+01
+&lt;br&gt;
+단어 빈도 분석:
+&lt;br&gt;
+무엇을 강조했을까?
+
+---
+
+class: title0-2
+
+We'll make
+
+&lt;br-back-20&gt;
+
+&lt;img src="Image/01/01_3_7.png" width="60%" height="60%" /&gt;
+
+---
+
+class: title0-2
+
+and
+
+&lt;br-back-50&gt;
+
+&lt;img src="Image/01/01_3_6.png" width="70%" height="70%" /&gt;
+
+---
+
+&lt;!-- &lt;br&gt; --&gt;
+
+&lt;!-- ## .font-jua[목차] --&gt;
+
+&lt;!-- .large[.font-jua[[01-1 텍스트 전처리](#01-1)]] --&gt;
+
+&lt;!-- .large[.font-jua[[01-2 토큰화하기](#01-2)]] --&gt;
+
+&lt;!-- .large[.font-jua[[01-3 단어 빈도 분석하기](#01-3)]] --&gt;
+
+&lt;br&gt;
+
+.large2[.font-jua[목차]]
+
+.large[.font-jua[01-1 텍스트 전처리]]([link](#01-1))
+
+.large[.font-jua[01-2 토큰화하기]]([link](#01-2))
+
+.large[.font-jua[01-3 단어 빈도 분석하기]]([link](#01-3))
+
+
+
+---
+
+
+name: 01-1
+class: title1
+
+01-1 텍스트 전처리
+
+---
+
+#### 텍스트 전처리
+- 텍스트에서 분석하는 데 불필요한 요소 제거
+- 다루기 쉬운 형태로 만드는 과정
+
+--
+
+##### 연설문 불러오기
+
+
+```r
+raw_moon &lt;- readLines("speech_moon.txt", encoding = "UTF-8")
+head(raw_moon)
+```
+
+
+
+```
+## [1] "정권교체 하겠습니다!"                                                                                                                                                            
+## [2] "  정치교체 하겠습니다!"                                                                                                                                                          
+## [3] "  시대교체 하겠습니다!"                                                                                                                                                          
+## [4] "  "                                                                                                                                                                              
+## [5] "  ‘불비불명(不飛不鳴)’이라는 고사가 있습니다. 남쪽 언덕 나뭇가지에 앉아, 3년 동안 날지도 울지도 않는 새. 그러나 그 새는 한번 날면 하늘 끝까지 날고, 한번 울면 천지를 뒤흔듭니다."
+## [6] ""
+```
+
+- 문재인 대통령의 대선 출마 선언문 출처: [bit.ly/easytext_11](https://bit.ly/easytext_11)
+
+---
+
+#### 불필요한 문자 제거하기 - `str_replace_all()`
+
+- 분석 대상이 아닌 문자 제거
+  - ex) 특수문자, 한자, 공백
+
+--
+
+##### 샘플 텍스트로 작동 원리 알아보기
+
+
+```r
+txt &lt;- "치킨은!! 맛있다. xyz 정말 맛있다!@#"
+txt
+```
+
+```
+## [1] "치킨은!! 맛있다. xyz 정말 맛있다!@#"
+```
+
+--
+
+
+```r
+install.packages("stringr")
+library(stringr)
+
+str_replace_all(string = txt, pattern = "[^가-힣]", replacement = " ")
+```
+
+
+```
+## [1] "치킨은   맛있다      정말 맛있다   "
+```
+
+--
+
+- `string` : 처리할 텍스트
+- `pattern` : 규칙
+- `replacement` : 바꿀 문자
+
+
+---
+.box[
+
+.info[&lt;svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt; 정규 표현식이란?]
+
+- 특정한 규칙을 가진 문자열을 표현하는 언어
+- 특정 조건의 문자를 찾거나 수정할 때 활용
+  - ex) `[^가-힣]` : 한글이 아닌 모든 문자
+      - `가-힣` : "가" 부터 "힣"까지의 모든 한글 문자
+      - `^` : 반대
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; 정규 표현식 패턴들(오픈튜토리얼스): [bit.ly/easytext_12](https://bit.ly/easytext_12)
+]
+
+---
+
+#### `raw_moon`의 불필요한 문자 제거하기
+
+
+```r
+moon &lt;- raw_moon %&gt;%
+ str_replace_all("[^가-힣]", " ")
+
+head(moon)
+```
+
+```
+## [1] "정권교체 하겠습니다 "                                                                                                                                                        
+## [2] "  정치교체 하겠습니다 "                                                                                                                                                      
+## [3] "  시대교체 하겠습니다 "                                                                                                                                                      
+## [4] "  "                                                                                                                                                                          
+## [5] "   불비불명       이라는 고사가 있습니다  남쪽 언덕 나뭇가지에 앉아   년 동안 날지도 울지도 않는 새  그러나 그 새는 한번 날면 하늘 끝까지 날고  한번 울면 천지를 뒤흔듭니다 "
+## [6] ""
+```
+
+---
+
+
+#### 연속된 공백 제거하기 - `str_squish()`
+
+##### 샘플 텍스트로 작동 원리 알아보기
+
+
+
+```r
+txt &lt;- "치킨은  맛있다   정말 맛있다  "
+txt
+```
+
+```
+## [1] "치킨은  맛있다   정말 맛있다  "
+```
+
+--
+
+
+```r
+str_squish(txt)
+```
+
+```
+## [1] "치킨은 맛있다 정말 맛있다"
+```
+
+---
+
+##### `moon`에 있는 연속된 공백 제거하기
+
+
+```r
+moon &lt;- moon %&gt;%
+ str_squish()
+
+head(moon)
+```
+
+```
+## [1] "정권교체 하겠습니다"                                                                                                                                          
+## [2] "정치교체 하겠습니다"                                                                                                                                          
+## [3] "시대교체 하겠습니다"                                                                                                                                          
+## [4] ""                                                                                                                                                             
+## [5] "불비불명 이라는 고사가 있습니다 남쪽 언덕 나뭇가지에 앉아 년 동안 날지도 울지도 않는 새 그러나 그 새는 한번 날면 하늘 끝까지 날고 한번 울면 천지를 뒤흔듭니다"
+## [6] ""
+```
+
+
+---
+
+#### 데이터를 tibble 구조로 바꾸기
+
+##### 문자열 벡터를 tibble 구조로 바꾸기 - `as_tibble()`
+
+
+```r
+library(dplyr)
+moon &lt;- as_tibble(moon)
+moon
+```
+
+```
+## # A tibble: 117 x 1
+##    value                                                              
+##    &lt;chr&gt;                                                              
+##  1 "정권교체 하겠습니다"                                              
+##  2 "정치교체 하겠습니다"                                              
+##  3 "시대교체 하겠습니다"                                              
+##  4 ""                                                                 
+##  5 "불비불명 이라는 고사가 있습니다 남쪽 언덕 나뭇가지에 앉아 년 동안 날지도 울지도 않는 새 그러나 그 새는 한번 날면…
+##  6 ""                                                                 
+##  7 "그 동안 정치와 거리를 둬 왔습니다 그러나 암울한 시대가 저를 정치로 불러냈습니다 더 이상 남쪽 나뭇가지에 머무를 수…
+##  8 ""                                                                 
+##  9 ""                                                                 
+## 10 "우리나라 대통령 이 되겠습니다"                                    
+## # … with 107 more rows
+```
+
+---
+
+##### tibble 구조
+- 한 행에 한 단락이 들어있음
+- 긴 문장은 Console 창에서 보기 편할 만큼 일부만 출력
+- 행과 열의 수를 알 수 있음
+- 변수의 자료형을 알 수 있음
+
+---
+
+#### 전처리 작업 한 번에 하기
+
+
+```r
+moon &lt;- raw_moon %&gt;%
+ str_replace_all("[^가-힣]", " ") %&gt;%  # 한글만 남기기
+ str_squish() %&gt;%                      # 연속된 공백 제거
+ as_tibble()                           # tibble로 변환
+```
+
+
+---
+
+name: 01-2
+class: title1
+
+01-2 토큰화하기
+
+---
+
+#### 토큰화(tokenization)
+- 토큰(token): 텍스트의 기본 단위(ex: 단락, 문장, 단어, 형태소)
+- 토큰화: 텍스트를 토큰으로 나누는 작업
+
+--
+
+#### `tidytext` 패키지
+  - 텍스트를 정돈된 데이터(Tidy Data) 형태를 유지하며 분석
+  - `dplyr`, `ggplot2` 패키지와 함께 활용
+  - 토큰화하기: `unnest_tokens()`
+
+---
+
+##### 샘플 텍스트로 작동 원리 알아보기
+
+
+```r
+text &lt;- tibble(value = "대한민국은 민주공화국이다. 대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다.")
+
+text
+```
+
+```
+## # A tibble: 1 x 1
+##   value                                                               
+##   &lt;chr&gt;                                                               
+## 1 대한민국은 민주공화국이다. 대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다.…
+```
+
+---
+
+
+```r
+install.packages("tidytext")
+library(tidytext)
+
+# 문장 기준 토큰화
+text %&gt;%
+  unnest_tokens(input = value,        # 토큰화할 텍스트
+                output = word,        # 토큰을 담을 변수명
+                token = "sentences")  # 문장 기준
+```
+
+
+```
+## # A tibble: 2 x 1
+##   word                                                             
+##   &lt;chr&gt;                                                            
+## 1 대한민국은 민주공화국이다.                                       
+## 2 대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다.
+```
+
+- `token`
+  - `"sentences"` : 문장
+  - `"words"` : 띄어쓰기
+  - `"characters"` : 글자
+
+---
+
+
+```r
+# 띄어쓰기 기준 토큰화
+text %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+*               token = "words")      # 띄어쓰기 기준
+```
+
+```
+## # A tibble: 10 x 1
+##    word          
+##    &lt;chr&gt;         
+##  1 대한민국은    
+##  2 민주공화국이다
+##  3 대한민국의    
+##  4 주권은        
+##  5 국민에게      
+##  6 있고          
+##  7 모든          
+##  8 권력은        
+##  9 국민으로부터  
+## 10 나온다
+```
+
+---
+
+.scroll-box-24[
+
+```r
+# 문자 기준 토큰화
+text %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+*               token = "characters")  # 문자 기준
+```
+
+```
+## # A tibble: 40 x 1
+##    word 
+##    &lt;chr&gt;
+##  1 대   
+##  2 한   
+##  3 민   
+##  4 국   
+##  5 은   
+##  6 민   
+##  7 주   
+##  8 공   
+##  9 화   
+## 10 국   
+## 11 이   
+## 12 다   
+## 13 대   
+## 14 한   
+## 15 민   
+## 16 국   
+## 17 의   
+## 18 주   
+## 19 권   
+## 20 은   
+## 21 국   
+## 22 민   
+## 23 에   
+## 24 게   
+## 25 있   
+## 26 고   
+## 27 모   
+## 28 든   
+## 29 권   
+## 30 력   
+## 31 은   
+## 32 국   
+## 33 민   
+## 34 으   
+## 35 로   
+## 36 부   
+## 37 터   
+## 38 나   
+## 39 온   
+## 40 다
+```
+]
+
+&lt;svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; `unnest_tokens()`에는 tibble 또는 데이터 프레임 구조 입력
+
+---
+
+
+##### 연설문 토큰화하기
+
+```r
+word_space &lt;- moon %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+                token = "words")
+
+word_space
+```
+
+```
+## # A tibble: 2,025 x 1
+##    word      
+##    &lt;chr&gt;     
+##  1 정권교체  
+##  2 하겠습니다
+##  3 정치교체  
+##  4 하겠습니다
+##  5 시대교체  
+##  6 하겠습니다
+##  7 불비불명  
+##  8 이라는    
+##  9 고사가    
+## 10 있습니다  
+## # … with 2,015 more rows
+```
+
+---
+
+name: 01-3
+class: title1
+
+
+01-3 단어 빈도 분석하기
+
+---
+
+#### 단어 빈도 분석
+
+- 텍스트에 단어가 몇 번 사용됐는지 알아보는 분석 방법
+- 글쓴이가 무엇을 강조했는지 알 수 있음
+
+---
+
+#### 단어 빈도 구하기 - `count()`
+
+
+```r
+word_space &lt;- word_space %&gt;%
+ count(word, sort = T)
+
+word_space
+```
+
+```
+## # A tibble: 1,440 x 2
+##    word             n
+##    &lt;chr&gt;        &lt;int&gt;
+##  1 합니다          27
+##  2 수              16
+##  3 있습니다        13
+##  4 저는            13
+##  5 등              12
+##  6 있는            12
+##  7 함께            12
+##  8 만들겠습니다    11
+##  9 일자리          10
+## 10 국민의           9
+## # … with 1,430 more rows
+```
+
+---
+
+#### 한 글자로 된 단어 제거하기 - `fitler(str_count())`
+
+##### `str_count()` 문자열의 글자 수 구하기
+
+
+```r
+str_count("배")
+```
+
+```
+## [1] 1
+```
+
+```r
+str_count("사과")
+```
+
+```
+## [1] 2
+```
+
+---
+##### 두 글자 이상만 남기기
+
+```r
+word_space &lt;- word_space %&gt;%
+ filter(str_count(word) &gt; 1)
+
+word_space
+```
+
+```
+## # A tibble: 1,384 x 2
+##    word             n
+##    &lt;chr&gt;        &lt;int&gt;
+##  1 합니다          27
+##  2 있습니다        13
+##  3 저는            13
+##  4 있는            12
+##  5 함께            12
+##  6 만들겠습니다    11
+##  7 일자리          10
+##  8 국민의           9
+##  9 우리             9
+## 10 우리나라         9
+## # … with 1,374 more rows
+```
+
+---
+
+##### 한 번에 작업하기
+
+- 빈도 내림차순 정렬 후 두 글자 이상 단어 남기기
+
+
+```r
+word_space &lt;- word_space %&gt;%
+ count(word, sort = T) %&gt;%
+ filter(str_count(word) &gt; 1)
+```
+
+---
+
+
+##### 자주 사용된 단어 추출하기
+
+.scroll-output[
+
+```r
+top20 &lt;- word_space %&gt;%
+ head(20)
+
+top20
+```
+
+```
+## # A tibble: 20 x 2
+##    word             n
+##    &lt;chr&gt;        &lt;int&gt;
+##  1 합니다          27
+##  2 있습니다        13
+##  3 저는            13
+##  4 있는            12
+##  5 함께            12
+##  6 만들겠습니다    11
+##  7 일자리          10
+##  8 국민의           9
+##  9 우리             9
+## 10 우리나라         9
+## 11 새로운           8
+## 12 위해             8
+## 13 그리고           7
+## 14 나라             7
+## 15 나라가           7
+## 16 지금             7
+## 17 낡은             6
+## 18 대통령이         6
+## 19 되겠습니다       6
+## 20 없는             6
+```
+]
+
+
+---
+
+
+#### 막대 그래프 만들기 - `geom_col()`
+
+
+```r
+library(ggplot2)
+
+ggplot(top20, aes(x = reorder(word, n), y = n)) +  # 단어 빈도순 정렬
+ geom_col() +
+ coord_flip()                                      # 회전
+```
+
+&lt;img src="01-wordFrequency_files/figure-html/unnamed-chunk-27-1.png" width="60%" height="80%" /&gt;
+
+
+
+---
+
+.box[
+
+.info[&lt;svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt; macOS에서 그래프에 한글 표현하기]
+
+- `ggplot2` 패키지의 기본 테마 폰트를 한글 지원 폰트로 변경
+
+
+```r
+theme_set(theme_gray(base_family = "AppleGothic"))
+```
+]
+
+---
+
+#### 그래프 다듬기
+
+
+```r
+ggplot(top20, aes(x = reorder(word, n), y = n)) +
+ geom_col() +
+ coord_flip() +
+ geom_text(aes(label = n), hjust = -0.3) +            # 막대 밖 빈도 표시
+
+ labs(title = "문재인 대통령 출마 연설문 단어 빈도",  # 그래프 제목
+      x = NULL, y = NULL) +                           # 축 이름 삭제
+
+ theme(title = element_text(size = 12))               # 제목 크기
+```
+
+---
+
+&lt;img src="01-wordFrequency_files/figure-html/unnamed-chunk-30-1.png" width="80%" /&gt;
+
+
+
+---
+
+
+#### 워드 클라우드 만들기
+
+- 워드 클라우드(Word cloud)
+    - 단어 빈도를 구름 모양으로 표현한 그래프
+    - 빈도에 따라 글자 크기와 색을 다르게 표현
+    - 어떤 단어가 얼마나 많이 사용됐는지 한눈에 파악
+
+---
+
+
+##### 워드 클라우드 만들기 - `geom_text_wordcloud()`
+
+
+```r
+install.packages("ggwordcloud")
+library(ggwordcloud)
+
+ggplot(word_space, aes(label = word, size = n)) +
+ geom_text_wordcloud(seed = 1234) +
+ scale_radius(limits = c(3, NA),     # 최소, 최대 단어 빈도
+              range = c(3, 30))      # 최소, 최대 글자 크기
+```
+
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_3.png" width="40%" height="40%" /&gt;
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; Plots 창 크기에 따라 그래프 모양 달라짐
+
+---
+
+##### 그래프 다듬기
+
+
+```r
+ggplot(word_space,
+       aes(label = word,
+           size = n,
+           col = n)) +                     # 빈도에 따라 색깔 표현
+ geom_text_wordcloud(seed = 1234) +
+ scale_radius(limits = c(3, NA),
+              range = c(3, 30)) +
+ scale_color_gradient(low = "#66aaf2",     # 최소 빈도 색깔
+                      high = "#004EA1") +  # 최고 빈도 색깔
+ theme_minimal()                           # 배경 없는 테마 적용
+```
+
+
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_4.png" width="40%" height="40%" /&gt;
+
+---
+
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_4.png" width="80%" height="80%" style="display: block; margin: auto;" /&gt;
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; 워드 클라우드 디자인 바꾸기: [lepennec.github.io/ggwordcloud](https://lepennec.github.io/ggwordcloud/)
+
+---
+
+class: title1
+
+그래프 폰트 바꾸기
+
+---
+
+### 그래프 폰트 바꾸기
+
+
+##### 1. 구글 폰트 불러오기 - `font_add_google()`
+
+
+```r
+install.packages("showtext")
+library(showtext)
+
+font_add_google(name = "Nanum Gothic", family = "nanumgothic")
+showtext_auto()
+```
+
+
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; [fonts.google.com](fonts.google.com)
+
+---
+
+##### 2. 그래프에 폰트 지정하기
+
+
+```r
+ggplot(word_space,
+       aes(label = word,
+           size = n,
+           col = n)) +
+  geom_text_wordcloud(seed = 1234,
+                      family = "nanumgothic") +  # 폰트 적용
+  scale_radius(limits = c(3, NA),
+               range = c(3, 30)) +
+  scale_color_gradient(low = "#66aaf2",
+                       high = "#004EA1") +
+  theme_minimal()
+```
+
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_5.png" width="40%" height="40%" /&gt;
+
+---
+
+##### '검은고딕' 폰트 적용
+
+
+```r
+font_add_google(name = "Black Han Sans", family = "blackhansans")
+showtext_auto()
+
+ggplot(word_space,
+       aes(label = word,
+           size = n,
+           col = n)) +
+  geom_text_wordcloud(seed = 1234,
+                      family = "blackhansans") +  # 폰트 적용
+  scale_radius(limits = c(3, NA),
+               range = c(3, 30)) +
+  scale_color_gradient(low = "#66aaf2",
+                       high = "#004EA1") +
+  theme_minimal()
+```
+
+---
+
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_6.png" width="80%" height="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+##### 3. `ggplot2` 패키지로 만든 그래프의 폰트 바꾸기
+
+
+```r
+font_add_google(name = "Gamja Flower", family = "gamjaflower")
+showtext_auto()
+
+ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col() +
+  coord_flip() +
+  geom_text(aes(label = n), hjust = -0.3) +
+
+  labs(title = "문재인 대통령 출마 연설문 단어 빈도",
+       x = NULL, y = NULL) +
+
+  theme(title = element_text(size = 12),text = element_text(family = "gamjaflower"))  # 폰트 적용
+```
+
+---
+
+
+
+
+&lt;img src="01-wordFrequency_files/figure-html/unnamed-chunk-44-1.png" width="80%" /&gt;
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; RStudio를 실행할 때마다 `showtext` 패키지로 폰트를 설정해야 합니다.
+
+---
+
+.box[
+
+.info[&lt;svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt; `ggplot2` 기본 테마 폰트 변경하기]
+
+- 매번 `theme()`을 이용해 폰트를 지정하는게 번거롭다면 `ggplot2` 패키지 기본 테마 폰트 설정
+
+
+```r
+theme_set(theme_gray(base_family = "nanumgothic"))
+```
+
+- 테마 바꾸는 함수 사용하면 폰트가 기본값으로 되돌아감
+  - ex) `theme_minimal()`
+- 이때는 `theme()`을 이용해 직접 폰트 지정
+
+]
+
+---
+
+class: title1
+
+정리하기
+
+---
+
+### 정리하기
+
+
+```r
+# 전처리
+moon &lt;- raw_moon %&gt;%
+  str_replace_all("[^가-힣]", " ") %&gt;%
+  str_squish() %&gt;% 
+  as_tibble() 
+
+# 토큰화
+word_space &lt;- moon %&gt;% 
+  unnest_tokens(input = value, 
+                output = word, 
+                token = "words") 
+
+# 단어 빈도 구하기
+word_space &lt;- word_space %&gt;% 
+  count(word, sort = T) %&gt;% 
+  filter(str_count(word) &gt; 1) 
+
+# 자주 사용된 단어 추출
+top20 &lt;- word_space %&gt;% 
+  head(20)
+```
+
+---
+
+class: title1
+
+분석 도전
+
+---
+
+### 분석 도전
+
+`speech_park.txt`에는 박근혜 전 대통령의 대선 출마 선언문이 들어있습니다.
+
+Q1. `speech_park.txt`를 불러와 분석에 적합하게 전처리한 다음 띄어쓰기 기준으로 토큰화하세요.
+
+Q2. 가장 자주 사용된 단어 20개를 추출하세요.
+
+Q3. 가장 자주 사용된 단어 20개의 빈도를 나타낸 막대 그래프를 만드세요. &lt;br&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;•그래프의 폰트는 나눔고딕으로 설정하세요.
+
+
+---
+
+Q1. `speech_park.txt`를 불러와 분석에 적합하게 전처리한 다음 띄어쓰기 기준으로 토큰화하세요.
+
+
+```r
+raw_park &lt;- readLines("speech_park.txt", encoding = "UTF-8")
+```
+
+
+
+
+```r
+# 전처리
+library(dplyr)
+library(stringr)
+park &lt;- raw_park %&gt;%
+  str_replace_all("[^가-힣]", " ") %&gt;%  # 한글만 남기기
+  str_squish() %&gt;%                      # 연속된 공백 제거
+  as_tibble()                           # tibble로 변환
+
+park
+```
+
+---
+
+Q1. `speech_park.txt`를 불러와 분석에 적합하게 전처리한 다음 띄어쓰기 기준으로 토큰화하세요.
+
+
+```
+## # A tibble: 96 x 1
+##    value                                                              
+##    &lt;chr&gt;                                                              
+##  1 "존경하는 국민 여러분 저는 오늘 국민 한 분 한 분의 꿈이 이루어지는 행복한 대한민국을 만들기 위해 저의 모든 것을 …
+##  2 ""                                                                 
+##  3 "국민 여러분 저의 삶은 대한민국과 함께 해온 시간이었습니다 우리나라가 가난을 이기고 꿈을 이뤄가는 위대한 과정을 어린…
+##  4 ""                                                                 
+##  5 "어머니가 흉탄에 돌아가신 후 견딜 수 없는 고통과 어려움 속에서도 그 힘든 시간을 이겨낼 수 있었던 것은 어머니의 빈…
+##  6 ""                                                                 
+##  7 "그때부터 제 삶은 완전히 다른 길을 가야했습니다 개인의 삶 대신 국민과 함께 하는 공적인 삶이 시작되었습니다 각계각층…
+##  8 ""                                                                 
+##  9 "아버지를 잃는 또 다른 고통과 아픔을 겪고 저는 평범한 삶을 살고자 했습니다 하지만 국민들의 땀과 눈물로 이룩해 온 …
+## 10 ""                                                                 
+## # … with 86 more rows
+```
+
+---
+
+Q1. `speech_park.txt`를 불러와 분석에 적합하게 전처리한 다음 띄어쓰기 기준으로 토큰화하세요.
+
+
+```r
+# 토큰화
+library(tidytext)
+word_space &lt;- park %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+                token = "words")  # 띄어쓰기 기준
+
+word_space
+```
+
+```
+## # A tibble: 1,414 x 1
+##    word    
+##    &lt;chr&gt;   
+##  1 존경하는
+##  2 국민    
+##  3 여러분  
+##  4 저는    
+##  5 오늘    
+##  6 국민    
+##  7 한      
+##  8 분      
+##  9 한      
+## 10 분의    
+## # … with 1,404 more rows
+```
+
+
+---
+
+Q2. 가장 자주 사용된 단어 20개를 추출하세요.
+
+```r
+top20 &lt;- word_space %&gt;%
+  count(word, sort = T) %&gt;%
+  filter(str_count(word) &gt; 1) %&gt;%
+  head(20)
+
+top20
+```
+
+.scroll-box-16[
+
+```
+## # A tibble: 20 x 2
+##    word             n
+##    &lt;chr&gt;        &lt;int&gt;
+##  1 국민            29
+##  2 저는            14
+##  3 있습니다        12
+##  4 함께            12
+##  5 꿈을            10
+##  6 것입니다         8
+##  7 새로운           8
+##  8 있는             8
+##  9 국민행복의       7
+## 10 길을             7
+## 11 것이             6
+## 12 국민들의         6
+## 13 만들겠습니다     6
+## 14 박근혜           6
+## 15 아니라           6
+## 16 여러분의         6
+## 17 우리             6
+## 18 있도록           6
+## 19 통해             6
+## 20 대한             5
+```
+]
+
+
+---
+
+Q3. 가장 자주 사용된 단어 20개의 빈도를 나타낸 막대 그래프를 만드세요. &lt;br&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;•그래프의 폰트는 나눔고딕으로 설정하세요.
+
+
+
+```r
+# 폰트 설정
+library(showtext)
+font_add_google(name = "Nanum Gothic", family = "nanumgothic")
+showtext_auto()
+```
+
+
+
+```r
+# 막대 그래프 만들기
+library(ggplot2)
+ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col() +
+  coord_flip () +
+  geom_text(aes(label = n), hjust = -0.3) +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
+
+---
+
+Q3. 가장 자주 사용된 단어 20개의 빈도를 나타낸 막대 그래프를 만드세요. &lt;br&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;•그래프의 폰트는 나눔고딕으로 설정하세요.
+
+
+&lt;img src="01-wordFrequency_files/figure-html/unnamed-chunk-56-1.png" width="80%" /&gt;
+
+---
+
+class: title0
+
+끝
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:10",
+"navigation": {
+"scroll": true
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

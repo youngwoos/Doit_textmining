@@ -1,0 +1,95 @@
+---
+output:
+  md_document:
+    variant: markdown_github
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r include=F}
+knitr::opts_chunk$set(warning = F, message = F)
+library(here)
+```
+
+# Quiz Part 1
+
+#### `speech_park.txt`에는 박근혜 전 대통령의 대선 출마 선언문이 들어있습니다. `speech_park.txt`를 이용해 문제를 해결해 보세요.
+
+[Q1. `speech_park.txt`를 불러와 분석에 적합하게 전처리한 다음 띄어쓰기 기준으로 토큰화하세요.](#Q1)
+
+[Q2. 가장 자주 사용된 단어 20개를 추출하세요.](#Q2)
+
+[Q3. 가장 자주 사용된 단어 20개의 빈도를 나타낸 막대 그래프를 만드세요. 그래프의 폰트는 나눔고딕으로 설정하세요.](#Q3)
+
+---
+        
+#### Q1. `speech_park.txt`를 불러와 분석에 적합하게 전처리한 다음 띄어쓰기 기준으로 토큰화하세요.<a name="Q1"></a>
+
+##### 전처리
+
+```{r eval=F}
+raw_park <- readLines("speech_park.txt", encoding = "UTF-8")
+```
+
+```{r echo=F}
+raw_park <- readLines(here("Data/speech_park.txt"), encoding = "UTF-8")
+```
+
+
+```{r}
+library(dplyr)
+library(stringr)
+park <- raw_park %>%
+  str_replace_all("[^가-힣]", " ") %>%  # 한글만 남기기
+  str_squish() %>%                      # 연속된 공백 제거
+  as_tibble()                           # tibble로 변환
+
+park
+```
+
+##### 토큰화
+```{r}
+library(tidytext)
+word_space <- park %>%
+  unnest_tokens(input = value,
+                output = word,
+                token = "words")        # 띄어쓰기 기준
+
+word_space
+```
+
+
+---
+
+#### Q2. 가장 자주 사용된 단어 20개를 추출하세요.<a name="Q2"></a>
+```{r}
+top20 <- word_space %>%
+  count(word, sort = T) %>%
+  filter(str_count(word) > 1) %>%
+  head(20)
+
+top20
+```
+
+
+---
+
+#### Q3. 가장 자주 사용된 단어 20개의 빈도를 나타낸 막대 그래프를 만드세요. 그래프의 폰트는 나눔고딕으로 설정하세요.<a name="Q3"></a>
+
+##### 폰트 설정
+```{r}
+library(showtext)
+font_add_google(name = "Nanum Gothic", family = "nanumgothic")
+showtext_auto()
+```
+
+##### 막대 그래프 만들기
+```{r}
+library(ggplot2)
+ggplot(top20, aes(x = reorder(word, n), y = n)) +
+  geom_col() +
+  coord_flip () +
+  geom_text(aes(label = n), hjust = -0.3) +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
