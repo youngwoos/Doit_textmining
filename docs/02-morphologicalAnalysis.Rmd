@@ -422,7 +422,7 @@ ggplot(top20, aes(x = reorder(word, n), y = n)) +
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;띄어쓰기 기준 추출
 
 ```{r, echo=FALSE}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_1.png")
+include_graphics("Image/01/01_3_1.png")
 ```
 ]
 
@@ -430,7 +430,7 @@ include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/ma
 
 ##### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;명사 추출
 ```{r, echo=FALSE}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/02/01_2_1.png")
+include_graphics("Image/02/01_2_1.png")
 ```
 ]
 
@@ -457,7 +457,7 @@ ggplot(word_noun, aes(label = word, size = n, col = n)) +
 <br-back-50>
 
 ```{r echo=F}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/02/01_2_2.png")
+include_graphics("Image/02/01_2_2.png")
 ```
 
 ---
@@ -471,7 +471,7 @@ include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/ma
 <br-back-10>
 
 ```{r, echo=FALSE, out.width="90%", out.height="90%"}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_6.png")
+include_graphics("Image/01/01_3_6.png")
 ```
 ]
 
@@ -482,7 +482,7 @@ include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/ma
 <br-back-20>
 
 ```{r, echo=FALSE}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/02/01_2_2.png")
+include_graphics("Image/02/01_2_2.png")
 ```
 ]
 

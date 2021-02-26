@@ -27,7 +27,7 @@ options(htmltools.dir.version = FALSE,
 knitr::opts_chunk$set(cache = T, warning = F, message = F, 
                       dpi = 300, fig.height = 4, out.width = "100%")
 
-#xaringanExtra::use_tile_view()
+xaringanExtra::use_tile_view()
 
 library(knitr)
 library(icon)
@@ -552,7 +552,7 @@ ggplot(word_space, aes(label = word, size = n)) +
 
 ```{r, echo=FALSE, out.width="40%", out.height="40%"}
 library(ggwordcloud)
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_3.png")
+include_graphics("Image/01/01_3_3.png")
 ```
 
 `r fontawesome("lightbulb")` Plots 창 크기에 따라 그래프 모양 달라짐
@@ -576,13 +576,13 @@ ggplot(word_space,
 
 
 ```{r, echo=FALSE, out.width="40%", out.height="40%"}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_4.png")
+include_graphics("Image/01/01_3_4.png")
 ```
 
 ---
 
 ```{r, echo=F, out.width="80%", out.height="80%", fig.align="center"}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_4.png")
+include_graphics("Image/01/01_3_4.png")
 ```
 
 `r fontawesome("lightbulb")` 워드 클라우드 디자인 바꾸기: [lepennec.github.io/ggwordcloud](https://lepennec.github.io/ggwordcloud/)
@@ -637,7 +637,7 @@ ggplot(word_space,
 ```
 
 ```{r, echo=F, out.width="40%", out.height="40%"}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_5.png")
+include_graphics("Image/01/01_3_5.png")
 ```
 
 ---
@@ -664,7 +664,7 @@ ggplot(word_space,
 ---
 
 ```{r, echo=F, out.width="80%", out.height="80%", fig.align='center'}
-include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/Image/01/01_3_6.png")
+include_graphics("Image/01/01_3_6.png")
 ```
 
 
