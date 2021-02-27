@@ -10,7 +10,7 @@ output:
     nature:
       highlightStyle: github
       highlightLines: true
-      countIncrementalSlides: false
+      countIncrementalSlides: true
       ratio: '16:10'
       navigation:
         scroll: true
@@ -164,6 +164,7 @@ include_graphics("Image/etc/04_1_dic.png")
 - 사전을 이용해 문장의 단어에 감정 점수를 부여한 다음 합산
 
 --
+
 #### 감정 사전 살펴보기
 
 - KNU 한국어 감성사전
@@ -323,149 +324,383 @@ df
 
 ---
 
-<!-- #### 3. 문장별로 감정 점수 합산하기 -->
+##### 3. 문장별로 감정 점수 합산하기
 
-<!-- 이제 `sencence`별로 감정 점수를 합산하겠습니다. 출력 결과를 보면 첫 번째 문장은 세 단어가 `+2`이므로 합산해 `6`이 되었습니다. 두 번째 문장은 한 단어는 `+1`, 두 단어는 `-2`이므로 합산해 `-3`이 되었습니다. -->
+```{r}
+score_df <- df %>%
+  group_by(sentence) %>%
+  summarise(score  = sum(polarity))
+
+score_df
+```
+
+---
+
+name: 04-2
+class: title1
+
+04-2 댓글 감정 분석하기
+
+---
+
+##### 영화 '기생충' 아카데미상 수상 관련 기사 댓글
+
+#### 기본적인 전처리
+
+- 고유 번호 변수 만들기: 댓글 내용 같아도 구별할 수 있도록
+- html 특수 문자 제거하기: 웹에서 만들어진 텍스트는 html 특수 문자 포함되어 내용 알아보기 불편
+  - `textclean::replace_html()` : html 태그를 공백으로 바꾸기
+  - `stringr::str_squish()`: 중복 공백 제거
+- 특수 문자와 두 글자 미만 단어 포함하기: 
+  - 감정 사전의 특수 문자, 모음, 자음으로 된 두 글자 미만의 이모티콘 활용
+
+
+---
+
+```{r eval=F}
+# 데이터 불러오기
+raw_news_comment <- read_csv("news_comment_parasite.csv")
+
+# 기본적인 전처리
+install.packages("textclean")
+library(textclean)
+
+news_comment <- raw_news_comment %>%
+  mutate(id = row_number(),
+         reply = str_squish(replace_html(reply)))
+
+# 데이터 구조 확인
+glimpse(news_comment)
+```
+
+
+```{r echo=F, R.options=list(tibble.width = 50)}
+# 데이터 불러오기
+raw_news_comment <- read_csv("../Data/news_comment_parasite.csv")
+
+# 기본적인 전처리
+# install.packages("textclean")
+library(textclean)
+
+news_comment <- raw_news_comment %>%
+  mutate(id = row_number(),
+         reply = str_squish(replace_html(reply)))
+
+# 데이터 구조 확인
+glimpse(news_comment)
+```
+
+
+---
+
+#### 단어 기준으로 토큰화하고 감정 점수 부여하기
+
+```{r, token-comment, eval=FALSE}
+# 토큰화
+word_comment <- news_comment %>%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",
+                drop = F)
+
+word_comment %>%
+  select(word, reply)
+```
+
+---
+
+```{r ref.label="token-comment", R.options=list(tibble.width=50), echo=F}
+```
+---
+
+```{r}
+# 감정 점수 부여
+word_comment <- word_comment %>%
+  left_join(dic, by = "word") %>%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity))
+
+word_comment %>%
+  select(word, polarity)
+```
+
+---
+
+#### 자주 사용된 감정 단어 살펴보기
+
+
+##### 1. 감정 분류하기
+
+```{r}
+word_comment <- word_comment %>%
+  mutate(sentiment = ifelse(polarity ==  2, "pos",
+                     ifelse(polarity == -2, "neg", "neu")))
+
+word_comment %>%
+  count(sentiment)
+```
+
+---
+
+#### 2. 막대 그래프 만들기
+
+```{r top10_sentiment, eval=F}
+top10_sentiment <- word_comment %>%
+  filter(sentiment != "neu") %>%
+  count(sentiment, word) %>%
+  group_by(sentiment) %>%
+  slice_max(n, n = 10)
+
+top10_sentiment
+```
+
+---
+
+```{r ref.label="top10_sentiment", echo=F}
+```
+
+---
+
+```{r p-top10_sentiment, fig.show='hide'}
+# 막대 그래프 만들기
+library(ggplot2)
+ggplot(top10_sentiment, aes(x = reorder(word, n),
+                            y = n,
+                            fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  geom_text(aes(label = n), hjust = -0.3) +
+  facet_wrap(~ sentiment, scales = "free") +
+  scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
+
+`r fontawesome("lightbulb")` `scale_y_continuous()`: 막대-그래프 간격 넓히기. 막대 끝의 빈도 값이 그래프 경계 밖으로 벗어나지 <br> &nbsp;&nbsp;&nbsp;&nbsp;않도록 설정.
+
+---
+
+```{r "p-top10_sentiment", echo=F}
+```
+
+
+---
+
+#### 댓글별 감정 점수 구하고 댓글 살펴보기
+
+
+
+##### 1. 댓글별 감정 점수 구하기
+
+- `id`, `reply`별로 분리한 다음 `polarity` 합산
+- `id`로 먼저 나누는 이유: 
+    - 내용이 같은 댓글이 여럿 있더라도 서로 다른 댓글로 취급
+    - `id`별로 먼저 나누지 않으면 내용 같은 댓글 점수 모두 하나로 합산
+
+```{r score_comment, eval=F}
+score_comment <- word_comment %>%
+  group_by(id, reply) %>%
+  summarise(score = sum(polarity)) %>%
+  ungroup()
+
+score_comment %>%
+  select(score, reply)
+```
+
+---
+
+```{r score_comment, echo=F, R.options=list(tibble.width = 50)}
+```
+
+---
+
+##### 2. 감정 점수 높은 댓글 살펴보기
+
+```{r R.options=list(tibble.width = 50)}
+# 긍정 댓글
+score_comment %>%
+  select(score, reply) %>%
+  arrange(-score)
+```
+
+---
+
+##### 2. 감정 점수 높은 댓글 살펴보기
+
+```{r R.options=list(tibble.width = 50)}
+# 부정 댓글
+score_comment %>%
+  select(score, reply) %>%
+  arrange(score)
+```
+
+---
+
+#### 감정 경향 살펴보기
+
+
+
+##### 1. 감정 점수 빈도 구하기
+
+
+.pull-left[
+```{r eval=F}
+score_comment %>%
+  count(score)
+```
+]
+
+.pull-right[
+```{r echo=F}
+score_comment %>%
+  count(score)
+```
+]
+
+---
+
+##### 2. 감정 분류하고 막대 그래프 만들기
+
+```{r}
+# 감정 분류하기
+score_comment <- score_comment %>%
+  mutate(sentiment = ifelse(score >=  1, "pos",
+                     ifelse(score <= -1, "neg", "neu")))
+```
+
+```{r}
+# 감정 빈도와 비율 구하기
+frequency_score <- score_comment %>%
+  count(sentiment) %>%
+  mutate(ratio = n/sum(n)*100)
+
+frequency_score
+```
+
+---
+```{r, p-frequency_score, fig.show='hide'}
+# 막대 그래프 만들기
+ggplot(frequency_score, aes(x = sentiment, y = n, fill = sentiment)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.3) +
+  scale_x_discrete(limits = c("pos", "neu", "neg"))
+```
+
+`r fontawesome("lightbulb")` `scale_x_discrete()`: x축 순서 정하기
+
+```{r, ref.label="p-frequency_score", echo=F, out.width="70%"}
+# 막대 그래프 만들기
+ggplot(frequency_score, aes(x = sentiment, y = n, fill = sentiment)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.3) +
+  scale_x_discrete(limits = c("pos", "neu", "neg"))
+```
+
+
+---
+
+##### 3. 비율 누적 막대 그래프 만들기
+
+<br10>
+
+- 샘플 데이터로 비율 누적 막대 그래프 만들기
+  - 데이터에 x축, y축, 누적 막대를 표현할 변수 필요
+
+```{r, out.width="50%"}
+df <- tibble(contry = c("Korea", "Korea", "Japen", "Japen"),  # 축
+             sex = c("M", "F", "M", "F"),                     # 누적 막대
+             ratio = c(60, 40, 30, 70))                       # 값
+df
+```
+
+
+---
+
+```{r, out.width="70%"}
+ggplot(df, aes(x = contry, y = ratio, fill = sex)) + geom_col()
+```
+
+---
+
+- `geom_text()`: 막대에 비율 표기
+- `position_stack(vjust = 0.5)`: 비율을 막대의 가운데에 표시
+
+```{r, out.width="70%"}
+ggplot(df, aes(x = contry, y = ratio, fill = sex)) +
+  geom_col() +
+  geom_text(aes(label = paste0(ratio, "%")),          # % 표시
+            position = position_stack(vjust = 0.5))   # 가운데 표시
+```
+
+---
+
+**댓글의 감정 비율로 누적 막대 그래프 만들기**
+- x축을 구성할 더미 변수(dummy variable) 추가
+
+```{r}
+# 더미 변수 생성
+frequency_score$dummy <- 0
+frequency_score
+```
+
+---
+
+```{r fig.width=4, fig.height=4}
+ggplot(frequency_score, aes(x = dummy, y = ratio, fill = sentiment)) +
+  geom_col() +
+  geom_text(aes(label = paste0(round(ratio, 1), "%")),
+              position = position_stack(vjust = 0.5)) +
+  theme(axis.title.x = element_blank(),  # x축 이름 삭제
+        axis.text.x  = element_blank(),  # x축 값 삭제
+        axis.ticks.x = element_blank())  # x축 눈금 삭제
+```
+
+---
+
+<!-- ## 4.3 감정 분류별 주요 단어 살펴보기 -->
+
+<!-- 텍스트가 구체적으로 어떤 내용을 담고 있는지 파악하려면 감정 점수가 부여되지 않은 단어까지 포함해 분석해야 합니다. 긍정 댓글과 부정 댓글에 어떤 단어가 많이 사용되었는지 분석해 보겠습니다. -->
+
+<!-- ### 4.3.1 자주 사용된 단어 살펴보기 -->
+
+<!-- 먼저, 문장별 감정 점수가 부여된 `score_comment`를 단어 기준으로 토큰화하고, 의미를 해석할 수 있게 두 글자 이상인 한글 단어만 남기겠습니다. -->
+
+<!-- #### 1. 토큰화하고 두 글자 이상 한글 단어만 남기기 -->
+
+<!-- 앞에서 감정 점수를 구할 때는 감정 사전의 특수문자, 모음, 자음으로 된 이모티콘도 활용해야 하므로 특수문자를 제거하고 두 글자 이상의 한글 단어만 남기는 작업을 하지 않았습니다. 여기서는 감정 단어가 아니라 의미를 해석할 수 있는 단어를 분석하므로 두 글자 이상인 한글 단어만 남기는 작업을 해야 합니다. -->
 
 <!-- ```{r} -->
-<!-- score_df <- df %>%  -->
-<!--   group_by(sentence) %>%  -->
-<!--   summarise(score  = sum(polarity)) -->
-
-<!-- score_df -->
-<!-- ``` -->
-
-<!-- ## 4.2 기사 댓글 감정 분석하기 -->
-
-<!-- 이제 실제 텍스트를 이용해 감정 분석을 해보겠습니다. `"news_comment_parasite.csv"`에는 2020년 2월 10일 영화 '기생충'의 아카데미상 수상 소식을 다룬 기사에 달린 댓글이 들어 있습니다. 댓글을 분석해 긍정적인 댓글과 부정적인 댓글 중 무엇이 더 많은지, 어떤 내용의 댓글이 달렸는지 알아보겠습니다. -->
-
-
-<!-- ### 4.2.1 기본적인 전처리 -->
-
-<!-- 우선 기사 댓글 데이터를 불러와 기본적인 전처리를 하겠습니다.  -->
-
-<!-- **고유 번호 변수 만들기** : 댓글의 내용이 같아도 구별할 수 있도록 `mutate()`와 `row_number()`를 이용해 고유 번호 `id`를 추가하겠습니다.  -->
-
-<!-- **html 특수 문자 제거하기** : 웹에서 만들어진 텍스트는 `&nbsp;`과 같은 html 특수 문자가 포함되어 있어서 출력하면 내용을 알아보기 불편합니다. `textclean` 패키지의 `replace_html()`을 이용해 html 태그를 공백으로 바꾼 다음 `stringr` 패키지의 `str_squish()`를 이용해 중복 공백을 제거하겠습니다. -->
-
-<!-- **두 글자 미만 단어 포함하기** : 다음 코드를 보면 앞 장과 달리 특수문자를 제거하고 두 글자 이상의 단어만 남기는 작업을 하지 않았습니다. 감정 사전에 특수문자, 모음, 자음으로 된 이모티콘도 포함되어 있는데, 이런 단어들도 텍스트의 감정을 분석하는데 활용해야 하기 때문입니다. -->
-
-
-<!-- ```{r eval=F} -->
-<!-- # 데이터 불러오기 -->
-<!-- raw_news_comment <- read_csv("news_comment_parasite.csv") -->
-<!-- ``` -->
-
-<!-- ```{r echo=F} -->
-<!-- # 데이터 불러오기 -->
-<!-- raw_news_comment <- read_csv("../Data/news_comment_parasite.csv") -->
-
-<!-- ``` -->
-
-
-<!-- ```{r eval=F} -->
-<!-- # 기본적인 전처리 -->
-<!-- install.packages("textclean") -->
-<!-- library(textclean) -->
-
-<!-- news_comment <- raw_news_comment %>% -->
-<!--   mutate(id = row_number(), -->
-<!--          reply = str_squish(replace_html(reply))) -->
-
-<!-- # 데이터 구조 확인 -->
-<!-- glimpse(news_comment) -->
-<!-- ``` -->
-
-<!-- ```{r echo=F} -->
-<!-- # 기본적인 전처리 -->
-<!-- # install.packages("textclean") -->
-<!-- library(textclean) -->
-
-<!-- news_comment <- raw_news_comment %>% -->
-<!--   mutate(id = row_number(), -->
-<!--          reply = str_squish(replace_html(reply))) -->
-
-<!-- glimpse(news_comment, width = 60) -->
-<!-- ``` -->
-
-<!-- > [참고] `glimpse()`는 데이터 구조를 요약해 보여주는 `dplyr` 패키지의 함수입니다. 요약 결과를 줄을 맞춰 출력하기 때문에 `str()`보다 데이터 구조를 파악하기 좋습니다. -->
-
-
-<!-- ### 4.2.2 단어 기준으로 토큰화하고 감정 점수 부여하기 -->
-
-<!-- `news_comment`를 단어 기준으로 토큰화하고 각 단어에 감정 점수를 부여하겠습니다. -->
-
-<!-- ```{r} -->
-<!-- # 토큰화 -->
-<!-- word_comment <- news_comment %>% -->
-<!--   unnest_tokens(input = reply, -->
+<!-- comment <- score_comment %>% -->
+<!--   unnest_tokens(input = reply,          # 단어 기준 토큰화 -->
 <!--                 output = word, -->
 <!--                 token = "words", -->
-<!--                 drop = F) -->
-
-<!-- word_comment %>% -->
-<!--   select(word, reply) -->
-
-<!-- # 감정 점수 부여 -->
-<!-- word_comment <- word_comment %>% -->
-<!--   left_join(dic, by = "word") %>% -->
-<!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) -->
-
-<!-- word_comment %>% -->
-<!--   select(word, polarity) -->
+<!--                 drop = F) %>% -->
+<!--   filter(str_detect(word, "[가-힣]") &  # 한글 추출 -->
+<!--          str_count(word) >= 2)          # 두 글자 이상 추출 -->
 <!-- ``` -->
 
-<!-- ### 4.2.3 자주 사용된 감정 단어 살펴보기 -->
+<!-- > [참고] 이 코드는 `word`에 `"문장a"` 처럼 한글이 아닌 문자가 함께 있어도 추출합니다. 한글이 아닌 문자가 포함된 행을 제외하려면 `filter(!str_detect(word, "[^가-힣]"))`를 입력하면 됩니다. 여기서는 그런 문자가 없어서 어떤 방식이든 결과가 같습니다. -->
 
-<!-- 댓글별로 감정 점수를 합산하기 전에, 우선 어떤 감정 단어가 많이 사용되었는지 알아보겠습니다. -->
+<!-- #### 2. 감정 분류별 빈도 구하기 -->
 
-<!-- #### 1. 감정 분류하기 -->
-
-<!-- 감정이 분명하게 드러난 단어를 중심으로 살펴보기 위해 `polarity`가 `2`면 긍정(pos), `-2`면 부정(neg), 그 외에는 중립(neu)을 부여한 변수 `sentiment`를 만들겠습니다. `sentiment`로 빈도를 구하면 어떤 감정의 단어가 많은지 알 수 있습니다. -->
+<!-- `comment`의 `sentiment`별 `word`의 빈도를 구해서 긍정 댓글과 부정 댓글에 어떤 단어가 많이 사용됐는지 살펴보겠습니다. -->
 
 <!-- ```{r} -->
-<!-- word_comment <- word_comment %>% -->
-<!--   mutate(sentiment = ifelse(polarity ==  2, "pos", -->
-<!--                      ifelse(polarity == -2, "neg", "neu"))) -->
-
-<!-- word_comment %>% -->
-<!--   count(sentiment) -->
+<!-- # 감정 및 단어별 빈도 구하기 -->
+<!-- frequency_word <- comment %>% -->
+<!--   filter(str_count(word) >= 2) %>% -->
+<!--   count(sentiment, word, sort = T) -->
 <!-- ``` -->
 
-<!-- #### 2. 막대 그래프 만들기 -->
-
-<!-- 중립 단어는 제외하고, 긍정 단어와 부정 단어 중 가장 많이 사용 된 단어를 10개씩 추출해 막대 그래프를 만들겠습니다. -->
 
 <!-- ```{r} -->
-<!-- top10_sentiment <- word_comment %>% -->
-<!--   filter(sentiment != "neu") %>% -->
-<!--   count(sentiment, word) %>% -->
-<!--   group_by(sentiment) %>% -->
-<!--   slice_max(n, n = 10) -->
+<!-- # 긍정 댓글 고빈도 단어 -->
+<!-- frequency_word %>% -->
+<!--   filter(sentiment == "pos") -->
 
-<!-- top10_sentiment -->
+<!-- # 부정 댓글 고빈도 단어 -->
+<!-- frequency_word %>% -->
+<!--   filter(sentiment == "neg") -->
 <!-- ``` -->
 
-<!-- ```{r} -->
-<!-- # 막대 그래프 만들기 -->
-<!-- library(ggplot2) -->
-<!-- ggplot(top10_sentiment, aes(x = reorder(word, n),  -->
-<!--                             y = n,  -->
-<!--                             fill = sentiment)) + -->
-<!--   geom_col() + -->
-<!--   coord_flip() + -->
-<!--   geom_text(aes(label = n), hjust = -0.3) + -->
-<!--   facet_wrap(~ sentiment, scales = "free") + -->
-<!--   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +   -->
-<!--   labs(x = NULL) + -->
-<!--   theme(text = element_text(family = "nanumgothic")) -->
-<!-- ``` -->
-
-<!-- > [참고] `scale_y_continuous()`에 적용한 `expansion()`은 막대와 그래프 경계의 간격을 넓히는 기능을 합니다. 막대 밖에 표현한 빈도 값이 그래프 경계 밖으로 벗어나지 않도록 하려고 사용했습니다. -->
-
-<!-- 그래프를 보면 긍정 단어는 `"대단하다"`, `"자랑스럽다"`, `"축하"` 등의 빈도가 높습니다. 아카데미상을 수상한 제작진을 칭찬하는 댓글에 사용된 단어라고 예상할 수 있습니다. 부정 단어는 `"소름"`, `"아니다"`, `"우울한"` 등의 빈도가 높습니다. 영화 내용과 관련된 부정적인 감정을 표현한 댓글들에 사용된 단어라고 예상할 수 있습니다. -->
-
-<!-- 앞에서 살펴본 단어들은 댓글에 사용된 단어 중 감정 사전과 매칭된 일부 입니다. 본격적으로 분석을 하기 전에 어떤 감정 단어가 많이 사용되었는지 알아보려고 감정이 분명하게 들어난 단어만 추출해본 것입니다. 텍스트의 전반적인 내용을 파악하려면 감정 점수가 부여되지 않은 중립 단어까지 포함해서 분석해야 합니다. 이 방법은 뒤에서 다루겠습니다. -->
-
-<!-- > [참고] `"소름"`, `"미친"` 등은 부정적인 단어가 아니라 긍정적인 감정을 극적으로 표현하는 단어일 수 있기 때문에 감정 사전을 수정해서 점수를 부여해야 합니다. 이에 대해서는 **4.4**에서 자세히 다룹니다. -->
+<!-- 추출한 단어를 보면 긍정 댓글과 부정 댓글이 다루고 있는 내용에 어떤 차이가 있는지 이해할 수 있습니다. 하지만 `"봉준호"`, `"기생충"`, `"영화"`와 같은 동일한 단어도 많이 추출되었습니다. 이는 단순히 양쪽에서 빈도가 높은 단어를 추출했기 때문입니다. 긍정 댓글과 부정 댓글의 차이를 이해하려면 상대적으로 많이 사용된 단어를 추출해 비교해야 합니다. -->
 
