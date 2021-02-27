@@ -15,7 +15,7 @@ output:
       navigation:
         scroll: true
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: c=onsole
 ---
 
 ```{r setup, include=FALSE}
@@ -292,27 +292,36 @@ df
 ```
 
 ---
-```{r ref.label="df", echo=F}
+
+```{r, ref.label = "df" , echo=FALSE}
 ```
+
+
 ---
 
 
 #### 단어에 감정 점수 부여하기
 
+- `dplyr::left_join()`: `word` 기준 감정 사전 결합
+- 감정 사전에 없는 단어 `polarity` `NA` → `0` 부여
+
+```{r join, eval=F}
+
+df <- df %>%
+  left_join(dic, by = "word") %>%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity))
+
+df
+```
+
 
 ---
 
-<!-- 토큰화한 단어에 감정 점수를 부여하겠습니다. `dplyr` 패키지의 `left_join()`을 이용해  `word` 기준으로 감정 사전을 결합하면 각 단어에 감정 점수를 부여할 수 있습니다. 단어가 감정 사전에 없으면 `polarity`의 값이 `NA`가 되는데, 이때는 `0`을 부여하겠습니다. -->
+```{r ref.label="join", echo=F}
 
-<!-- 출력 결과를 보면 첫 번째 문장의 `"예쁘고"`, `"좋아서"`, `"만족스럽다"`에 긍정 점수가 부여됐습니다. 두 번째 문장은 `"괜찮다"`에 긍정 점수가 부여됐고, `"나쁘고"`, `"비싸다"`에는 부정 점수가 부여됐습니다. -->
+```
 
-<!-- ```{r} -->
-<!-- df <- df %>%  -->
-<!--   left_join(dic, by = "word") %>%  -->
-<!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) -->
-
-<!-- df %>% print(n = Inf) -->
-<!-- ``` -->
+---
 
 <!-- #### 3. 문장별로 감정 점수 합산하기 -->
 
