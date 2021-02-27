@@ -893,32 +893,35 @@ frequency_score
 ## 3 pos         807  19.5     0
 ```
 
-
-```r
-ggplot(frequency_score, aes(x = dummy, y = ratio, fill = sentiment)) +
-  geom_col() +
-  geom_text(aes(label = paste0(round(ratio, 1), "%")),
-              position = position_stack(vjust = 0.5)) +
-  theme(axis.title.x = element_blank(),  # x축 이름 삭제
-        axis.text.x  = element_blank(),  # x축 값 삭제
-        axis.ticks.x = element_blank())  # x축 눈금 삭제
-```
-
-&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="100%" /&gt;
-
 ---
 
-&lt;!-- ## 4.3 감정 분류별 주요 단어 살펴보기 --&gt;
+&lt;!-- ```{r p-frequency_score-ratio, out.width="40%", fig.width=4, fig.height=4} --&gt;
+&lt;!-- ggplot(frequency_score, aes(x = dummy, y = ratio, fill = sentiment)) + --&gt;
+&lt;!--   geom_col() + --&gt;
+&lt;!--   geom_text(aes(label = paste0(round(ratio, 1), "%")), --&gt;
+&lt;!--               position = position_stack(vjust = 0.5)) + --&gt;
+&lt;!--   theme(axis.title.x = element_blank(),  # x축 이름 삭제 --&gt;
+&lt;!--         axis.text.x  = element_blank(),  # x축 값 삭제 --&gt;
+&lt;!--         axis.ticks.x = element_blank())  # x축 눈금 삭제 --&gt;
+&lt;!-- ``` --&gt;
 
-&lt;!-- 텍스트가 구체적으로 어떤 내용을 담고 있는지 파악하려면 감정 점수가 부여되지 않은 단어까지 포함해 분석해야 합니다. 긍정 댓글과 부정 댓글에 어떤 단어가 많이 사용되었는지 분석해 보겠습니다. --&gt;
+&lt;!-- --- --&gt;
+&lt;!-- ```{r ref.label="p-frequency_score-ratio", echo=F, out.width="60%", fig.width=4, fig.height=4} --&gt;
+&lt;!-- ``` --&gt;
 
-&lt;!-- ### 4.3.1 자주 사용된 단어 살펴보기 --&gt;
+&lt;!-- --- --&gt;
 
-&lt;!-- 먼저, 문장별 감정 점수가 부여된 `score_comment`를 단어 기준으로 토큰화하고, 의미를 해석할 수 있게 두 글자 이상인 한글 단어만 남기겠습니다. --&gt;
+&lt;!-- name: 04-3 --&gt;
+&lt;!-- class: title1 --&gt;
 
-&lt;!-- #### 1. 토큰화하고 두 글자 이상 한글 단어만 남기기 --&gt;
+&lt;!-- 04-3 감정 범주별 주요 단어 살펴보기 --&gt;
 
-&lt;!-- 앞에서 감정 점수를 구할 때는 감정 사전의 특수문자, 모음, 자음으로 된 이모티콘도 활용해야 하므로 특수문자를 제거하고 두 글자 이상의 한글 단어만 남기는 작업을 하지 않았습니다. 여기서는 감정 단어가 아니라 의미를 해석할 수 있는 단어를 분석하므로 두 글자 이상인 한글 단어만 남기는 작업을 해야 합니다. --&gt;
+&lt;!-- --- --&gt;
+
+
+&lt;!-- #### 감정 범주별 단어 빈도 구하기 --&gt;
+
+&lt;!-- ##### 1. 토큰화하고 두 글자 이상 한글 단어만 남기기 --&gt;
 
 &lt;!-- ```{r} --&gt;
 &lt;!-- comment &lt;- score_comment %&gt;% --&gt;
@@ -930,11 +933,9 @@ ggplot(frequency_score, aes(x = dummy, y = ratio, fill = sentiment)) +
 &lt;!--          str_count(word) &gt;= 2)          # 두 글자 이상 추출 --&gt;
 &lt;!-- ``` --&gt;
 
-&lt;!-- &gt; [참고] 이 코드는 `word`에 `"문장a"` 처럼 한글이 아닌 문자가 함께 있어도 추출합니다. 한글이 아닌 문자가 포함된 행을 제외하려면 `filter(!str_detect(word, "[^가-힣]"))`를 입력하면 됩니다. 여기서는 그런 문자가 없어서 어떤 방식이든 결과가 같습니다. --&gt;
+&lt;!-- --- --&gt;
 
-&lt;!-- #### 2. 감정 분류별 빈도 구하기 --&gt;
-
-&lt;!-- `comment`의 `sentiment`별 `word`의 빈도를 구해서 긍정 댓글과 부정 댓글에 어떤 단어가 많이 사용됐는지 살펴보겠습니다. --&gt;
+&lt;!-- ##### 2. 감정 범주별 빈도 구하기 --&gt;
 
 &lt;!-- ```{r} --&gt;
 &lt;!-- # 감정 및 단어별 빈도 구하기 --&gt;
@@ -943,19 +944,167 @@ ggplot(frequency_score, aes(x = dummy, y = ratio, fill = sentiment)) +
 &lt;!--   count(sentiment, word, sort = T) --&gt;
 &lt;!-- ``` --&gt;
 
+&lt;!-- &lt;br-back-10&gt; --&gt;
 
+&lt;!-- .pull-left[ --&gt;
+
+&lt;!-- &lt;br-back-30&gt; --&gt;
 &lt;!-- ```{r} --&gt;
 &lt;!-- # 긍정 댓글 고빈도 단어 --&gt;
 &lt;!-- frequency_word %&gt;% --&gt;
 &lt;!--   filter(sentiment == "pos") --&gt;
+&lt;!-- ``` --&gt;
+&lt;!-- ] --&gt;
 
+&lt;!-- .pull-right[ --&gt;
+
+&lt;!-- &lt;br-back-30&gt; --&gt;
+&lt;!-- ```{r} --&gt;
 &lt;!-- # 부정 댓글 고빈도 단어 --&gt;
 &lt;!-- frequency_word %&gt;% --&gt;
 &lt;!--   filter(sentiment == "neg") --&gt;
 &lt;!-- ``` --&gt;
 
-&lt;!-- 추출한 단어를 보면 긍정 댓글과 부정 댓글이 다루고 있는 내용에 어떤 차이가 있는지 이해할 수 있습니다. 하지만 `"봉준호"`, `"기생충"`, `"영화"`와 같은 동일한 단어도 많이 추출되었습니다. 이는 단순히 양쪽에서 빈도가 높은 단어를 추출했기 때문입니다. 긍정 댓글과 부정 댓글의 차이를 이해하려면 상대적으로 많이 사용된 단어를 추출해 비교해야 합니다. --&gt;
+&lt;!-- ] --&gt;
 
+
+---
+
+&lt;!-- ### 4.3.2 상대적으로 자주 사용된 단어 비교하기 --&gt;
+
+&lt;!-- 로그 오즈비를 구해 긍정 댓글과 부정 댓글에서 상대적으로 많이 사용된 단어가 무엇인지 살펴보겠습니다. --&gt;
+
+
+&lt;!-- #### 1. 로그 오즈비 구하기 --&gt;
+
+&lt;!-- 먼저 `frequency_word` 를 Wide form으로 변환한 뒤 로그 오즈비를 계산하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- library(tidyr) --&gt;
+&lt;!-- comment_wide &lt;- frequency_word %&gt;% --&gt;
+&lt;!--   filter(sentiment != "neu") %&gt;%  # 중립 제외 --&gt;
+&lt;!--   pivot_wider(names_from = sentiment, --&gt;
+&lt;!--               values_from = n, --&gt;
+&lt;!--               values_fill = list(n = 0)) --&gt;
+
+&lt;!-- comment_wide --&gt;
+
+&lt;!-- # 로그 오즈비 구하기 --&gt;
+&lt;!-- comment_wide &lt;- comment_wide %&gt;% --&gt;
+&lt;!--   mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) / --&gt;
+&lt;!--                               ((neg + 1) / (sum(neg + 1))))) --&gt;
+
+&lt;!-- comment_wide --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 2. 로그 오즈비가 가장 큰 단어 10개씩 추출하기 --&gt;
+
+&lt;!-- &lt;!-- 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출하겠습니다. 그럼 다음, 로그 오즈비가 0보다 크면 `"pos"`, 그렇지 않으면 `"neg"`로 분류하고, 결과를 보기 편하게 로그 오즈비 기준으로 내림차순 정렬하겠습니다. 출력 결과를 살펴보면 긍정 댓글과 부정 댓글에 상대적으로 어떤 단어가 더 많이 사용됐는지 알 수 있습니다. --&gt; --&gt;
+
+&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
+&lt;!-- &lt;!-- top10 &lt;- comment_wide %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio) &lt;= 10 | rank(-log_odds_ratio) &lt;= 10) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   mutate(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) --&gt; --&gt;
+
+&lt;!-- &lt;!-- top10 %&gt;% print(n = Inf) --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+
+&lt;!-- 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출하겠습니다. 먼저 `log_odds_ratio`가 `0`보다 크면 `"pos"`, 그렇지 않으면 `"neg"`로 분류한 다음, `log_odds_ratio`의 절대값이 가장 높은 단어를 10개씩 추출하겠습니다. 출력 결과를 보면 긍정 댓글과 부정 댓글에 상대적으로 어떤 단어가 더 많이 사용됐는지 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- top10 &lt;- comment_wide %&gt;% --&gt;
+&lt;!--   group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 10) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- top10 %&gt;% print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- top10 %&gt;% print(n = 10) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- #### 로그 오즈비가 동점인 단어는 제외하고 추출하기 --&gt;
+
+&lt;!-- `top10` 출력 결과의 `A tibble: 30 x 5`를 보면 `top10`이 30행으로 구성됨을 알 수 있습니다. 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출했는데 20행이 아니라 30행인 이유는  --&gt;
+&lt;!-- 부정 댓글에서 `log_odds_ratio`가 동점인 단어가 모두 추출됐기 때문입니다. `slice_max()`에 `with_ties = F`를 입력해 동점을 제외하고 로그 오즈비가 가장 큰 단어를 10개씩 추출하겠습니다. 출력 결과의 `A tibble: 20 x 5`를 보면 20개의 단어가 추출됐음을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- top10 &lt;- comment_wide %&gt;% --&gt;
+&lt;!--   group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 10, with_ties = F) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- top10 %&gt;% print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- top10 %&gt;% print(n = 10) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 3. 막대 그래프 만들기 --&gt;
+
+&lt;!-- 로그 오즈비를 이용해 막대 그래프를 만들겠습니다. 출력된 그래프를 보면 긍정 댓글과 부정 댓글에 상대적으로 어떤 단어가 많이 사용되었는지 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 막대 그래프 만들기 --&gt;
+&lt;!-- ggplot(top10, aes(x = reorder(word, log_odds_ratio), --&gt;
+&lt;!--                       y = log_odds_ratio, --&gt;
+&lt;!--                       fill = sentiment)) + --&gt;
+&lt;!--   geom_col() + --&gt;
+&lt;!--   coord_flip() + --&gt;
+&lt;!--   labs(x = NULL) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic")) --&gt;
+&lt;!-- ``` --&gt;
+
+
+
+&lt;!-- &lt;!-- #### 로그 오즈비가 동점인 단어는 제외하고 추출하기 - `rank(ties.method = "first")` --&gt; --&gt;
+
+&lt;!-- &lt;!-- `top10` 출력 결과의 `A tibble: 19 x 5`를 보면 `top10`이 19행으로 구성됨을 알 수 있습니다. 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출했는데 20행이 아니라 19행인 이유는 부정 댓글의 단어가 9개만 추출됐기 때문입니다. `sentiment`가 `"neg"인 행을 추출하면 10 행이 아니라 8행임을 알 수 있습니다. --&gt; --&gt;
+
+&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
+&lt;!-- &lt;!-- top10 %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(sentiment == "neg") --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+&lt;!-- &lt;!-- 이는 `rank()`의 동점 처리 방식 때문에 생긴 현상입니다. 순위를 나타낸 변수를 여러가지 방식으로 만든 다음 차이를 살펴보겠습니다. --&gt; --&gt;
+
+&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
+&lt;!-- &lt;!-- comment_wide %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(log_odds_ratio) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   mutate(num_row = row_number(),                       # 행 순서 --&gt; --&gt;
+&lt;!-- &lt;!--          num_rank = rank(log_odds_ratio),              # 동점시 평균 --&gt; --&gt;
+&lt;!-- &lt;!--          num_rank2 = rank(log_odds_ratio,              # 동점시 행 순서 --&gt; --&gt;
+&lt;!-- &lt;!--                           ties.method = "first")) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   select(-pos, -neg) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   head(10) --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+&lt;!-- &lt;!-- `rank()`는 값이 동일한 행이 여럿이면 행 순서 값을 평균해서 순위를 구합니다. 앞 코드의 출력 결과에서 `num_rank`를 보면 `"못한"`과 `"미친"`의 값이 `3.5`입니다. 이는 `"못한"`과 `"미친"`의 `log_odds_ratio`가 동점이므로 행 순서 값`3`과 `4`를 평균한 것입니다. 마찬가지로 `"가난한"`, `"모르는"`, `"아쉽다"`의 `num_rank`도 행 순서 값 `6`, `7`, `8`을 평균한 `8` 입니다. 따라서 `rank()`로 순위를 구하면 9행 까지는 `8`이하이고 10행부터는 `15` 이상이므로 `filter()`로 순위 값 `10` 이하를 추출하면 9번째 행 까지만 남게 되는 것입니다. --&gt; --&gt;
+
+&lt;!-- &lt;!-- 이 문제를 피하려면 동점일 때 행 순서 값을 부여하도록 `rank()`에 `ties.method = "first"`를 입력하면 됩니다. `num_rank2`를 보면 `log_odds_ratio`가 같을 때 행 순서대로 순위가 부여된 것을 알 수 있습니다. --&gt; --&gt;
+
+
+&lt;!-- &lt;!-- #### 동점을 제외하고 로그 오즈비가 가장 큰 단어 10개씩 추출하기 --&gt; --&gt;
+
+&lt;!-- &lt;!-- 긍정 댓글과 부정 댓글에서 동점을 제외하고 로그 오즈비가 가장 큰 단어 10개씩 추출하겠습니다. 출력 결과의 `A tibble: 20 x 5`를 보면 기대한 대로 20개의 단어가 추출됐음을 알 수 있습니다. --&gt; --&gt;
+
+&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
+&lt;!-- &lt;!-- top10 &lt;- comment_wide %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 10 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 10) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   mutate(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) --&gt; --&gt;
+
+&lt;!-- &lt;!-- top10 --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>
