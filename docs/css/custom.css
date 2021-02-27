@@ -402,7 +402,7 @@ pre {
 /*간격 조금만 띄우기*/
 br10 {
    display: block;
-   margin: 10px 0;
+   margin-block-start: 1.5em;
 }
 
 /*간격 줄이기*/

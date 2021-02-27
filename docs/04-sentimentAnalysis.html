@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Do it! 쉽게 배우는 R 텍스트 마이닝 - 04 감정 분석: 어떤 마음으로 글을 썼을까?</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김영우" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="css/custom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+
+class: title0
+
+Do it! 쉽게 배우는 R 텍스트 마이닝
+
+---
+
+&lt;br&gt;
+
+.pull-left[
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/cover.png" width="70%" height="70%" /&gt;
+]
+
+.pull-right[
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;svg viewBox="0 0 496 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"&gt;&lt;/path&gt;&lt;/svg&gt; [github.com/youngwoos/Doit_textmining](https://github.com/youngwoos/Doit_textmining)
+
+&lt;svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"&gt;&lt;/path&gt;&lt;/svg&gt; [facebook.com/groups/datacommunity](https://facebook.com/groups/datacommunity)
+
+- [네이버책](https://book.naver.com/bookdb/book_detail.nhn?bid=17891971)
+  - [yes24](http://bit.ly/3oUuJOB)
+  - [알라딘](http://bit.ly/3oXOSDn)
+  - [교보문고](https://bit.ly/2LtNOcB)
+]
+
+---
+
+class: title0
+
+04 감정 분석: &lt;br&gt; 어떤 마음으로 글을 썼을까?
+
+---
+
+class: title0-2
+
+We'll make
+
+&lt;br-back-20&gt;
+
+&lt;img src="Image/04/04_2_2.png" width="70%" height="70%" /&gt;
+
+---
+
+class: title0-2
+
+and
+
+&lt;br-back-40&gt;
+
+&lt;img src="Image/04/04_4_1.png" width="70%" height="70%" /&gt;
+
+---
+
+&lt;br&gt;
+
+.large2[.font-jua[목차]]
+
+.large[.font-jua[04-1 감정 사전 활용하기]]([link](#04-1))
+
+.large[.font-jua[04-2 댓글 감정 분석하기]]([link](#04-2))
+
+.large[.font-jua[04-3 감정 범주별 주요 단어 살펴보기]]([link](#04-3))
+
+.large[.font-jua[04-4 감정 사전 수정하기]]([link](#04-4))
+
+
+---
+
+
+name: 04-1
+class: title1
+
+04-1 감정 사전 활용하기
+
+---
+
+##### 감정 분석(sentiment analysis)
+- 텍스트에 어떤 감정이 담겨있는지 분석하는 방법
+  - 글쓴이가 어떤 감정을 담아 글을 썼는가?
+  - 사람들이 어떤 주제를 긍정적/부정적으로 느끼는가?
+
+
+```r
+include_graphics("Image/etc/04_1_dic.png")
+```
+
+---
+
+##### 감정 사전
+- '감정 단어'와 '감정의 강도를 표현한 숫자'로 구성된 사전
+- 사전을 이용해 문장의 단어에 감정 점수를 부여한 다음 합산
+
+--
+#### 감정 사전 살펴보기
+
+- KNU 한국어 감성사전
+  - 군산대학교 소프트웨어융합공학과에서 개발
+  - `word`: 감정 단어 
+  - `polarity`: 감정의 강도
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; KNU 한국어 감성사전 출처: github.com/park1200656/KnuSentiLex
+
+
+
+```r
+# 감정 사전 불러오기
+library(dplyr)
+library(readr)
+dic &lt;- read_csv("knu_sentiment_lexicon.csv")
+```
+
+
+
+---
+
+.pull-left[
+
+```r
+# 긍정 단어
+dic %&gt;%
+  filter(polarity == 2) %&gt;%
+  arrange(word)
+```
+
+```
+## # A tibble: 2,602 x 2
+##    word              polarity
+##    &lt;chr&gt;                &lt;dbl&gt;
+##  1 가능성이 늘어나다        2
+##  2 가능성이 있다고          2
+##  3 가능하다                 2
+##  4 가볍고 상쾌하다          2
+##  5 가볍고 상쾌한            2
+##  6 가볍고 시원하게          2
+##  7 가볍고 편안하게          2
+##  8 가볍고 환하게            2
+##  9 가운데에서 뛰어남        2
+## 10 가장 거룩한              2
+## # … with 2,592 more rows
+```
+]
+
+.pull-right[
+
+
+```r
+# 부정 단어
+dic %&gt;%
+  filter(polarity == -2) %&gt;%
+  arrange(word)
+```
+
+```
+## # A tibble: 4,799 x 2
+##    word            polarity
+##    &lt;chr&gt;              &lt;dbl&gt;
+##  1 가난                  -2
+##  2 가난뱅이              -2
+##  3 가난살이              -2
+##  4 가난살이하다          -2
+##  5 가난설음              -2
+##  6 가난에                -2
+##  7 가난에 쪼들려서       -2
+##  8 가난하게              -2
+##  9 가난하고              -2
+## 10 가난하고 어렵다       -2
+## # … with 4,789 more rows
+```
+]
+
+
+---
+
+##### 감정 단어의 종류 살펴보기
+
+&lt;br10&gt;
+
+- `word`
+  - 한 단어로 된 단일어,  둘 이상 단어 결합된 복합어
+  - 이모티콘: `^^`, `ㅠㅠ` 
+
+
+- `polarity`
+  -  5가지 정수(+2, +1, 0, -1, -2)
+  - `+`: 긍정 단어, `-`: 부정 단어, `0`: 중성 단어
+
+--
+
+.pull-left[
+
+```r
+dic %&gt;%
+  filter(word %in% c("좋은", "나쁜"))
+```
+
+```
+## # A tibble: 2 x 2
+##   word  polarity
+##   &lt;chr&gt;    &lt;dbl&gt;
+## 1 좋은         2
+## 2 나쁜        -2
+```
+]
+
+.pull-right[
+
+```r
+dic %&gt;%
+  filter(word %in% c("기쁜", "슬픈"))
+```
+
+```
+## # A tibble: 2 x 2
+##   word  polarity
+##   &lt;chr&gt;    &lt;dbl&gt;
+## 1 슬픈        -2
+## 2 기쁜         2
+```
+]
+
+---
+
+
+```r
+# 이모티콘
+library(stringr)
+dic %&gt;%
+  filter(!str_detect(word, "[가-힣]")) %&gt;%
+  arrange(word)
+```
+
+```
+## # A tibble: 77 x 2
+##    word  polarity
+##    &lt;chr&gt;    &lt;dbl&gt;
+##  1 -_-^        -1
+##  2 ;            1
+##  3 ;-)          1
+##  4 ;)           1
+##  5 ;ㅅ;        -1
+##  6 :-(          1
+##  7 :-)          1
+##  8 :-D         -1
+##  9 :-P         -1
+## 10 :'-(         1
+## # … with 67 more rows
+```
+
+---
+- 총 14,854개 단어
+
+
+```r
+dic %&gt;%
+  mutate(sentiment = ifelse(polarity &gt;=  1, "pos",
+                     ifelse(polarity &lt;= -1, "neg", "neu"))) %&gt;%
+  count(sentiment)
+```
+
+```
+## # A tibble: 3 x 2
+##   sentiment     n
+## * &lt;chr&gt;     &lt;int&gt;
+## 1 neg        9829
+## 2 neu         154
+## 3 pos        4871
+```
+
+---
+
+
+#### 문장의 감정 점수 구하기
+
+##### 1. 단어 기준으로 토큰화하기
+
+```r
+df &lt;- tibble(sentence = c("디자인 예쁘고 마감도 좋아서 만족스럽다.",
+                          "디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다."))
+df
+```
+
+```
+## # A tibble: 2 x 1
+##   sentence                                            
+##   &lt;chr&gt;                                               
+## 1 디자인 예쁘고 마감도 좋아서 만족스럽다.             
+## 2 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다.
+```
+
+---
+- 텍스트를 단어 기준으로 토큰화: 감정 사전과 동일하게
+- `unnest_tokens(drop = F)`
+  - 원문 제거하지 않기
+  - 단어가 어느 문장에서 추출됐는지 알수 있도록
+
+
+```r
+library(tidytext)
+df &lt;- df %&gt;%
+  unnest_tokens(input = sentence,
+                output = word,
+                token = "words",
+                drop = F)
+
+df
+```
+
+---
+
+```
+## # A tibble: 12 x 2
+##    sentence                                             word      
+##    &lt;chr&gt;                                                &lt;chr&gt;     
+##  1 디자인 예쁘고 마감도 좋아서 만족스럽다.              디자인    
+##  2 디자인 예쁘고 마감도 좋아서 만족스럽다.              예쁘고    
+##  3 디자인 예쁘고 마감도 좋아서 만족스럽다.              마감도    
+##  4 디자인 예쁘고 마감도 좋아서 만족스럽다.              좋아서    
+##  5 디자인 예쁘고 마감도 좋아서 만족스럽다.              만족스럽다
+##  6 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다. 디자인은  
+##  7 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다. 괜찮다    
+##  8 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다. 그런데    
+##  9 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다. 마감이    
+## 10 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다. 나쁘고    
+## 11 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다. 가격도    
+## 12 디자인은 괜찮다. 그런데 마감이 나쁘고 가격도 비싸다. 비싸다
+```
+---
+
+
+#### 단어에 감정 점수 부여하기
+
+
+---
+
+&lt;!-- 토큰화한 단어에 감정 점수를 부여하겠습니다. `dplyr` 패키지의 `left_join()`을 이용해  `word` 기준으로 감정 사전을 결합하면 각 단어에 감정 점수를 부여할 수 있습니다. 단어가 감정 사전에 없으면 `polarity`의 값이 `NA`가 되는데, 이때는 `0`을 부여하겠습니다. --&gt;
+
+&lt;!-- 출력 결과를 보면 첫 번째 문장의 `"예쁘고"`, `"좋아서"`, `"만족스럽다"`에 긍정 점수가 부여됐습니다. 두 번째 문장은 `"괜찮다"`에 긍정 점수가 부여됐고, `"나쁘고"`, `"비싸다"`에는 부정 점수가 부여됐습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- df &lt;- df %&gt;%  --&gt;
+&lt;!--   left_join(dic, by = "word") %&gt;%  --&gt;
+&lt;!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) --&gt;
+
+&lt;!-- df %&gt;% print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- #### 3. 문장별로 감정 점수 합산하기 --&gt;
+
+&lt;!-- 이제 `sencence`별로 감정 점수를 합산하겠습니다. 출력 결과를 보면 첫 번째 문장은 세 단어가 `+2`이므로 합산해 `6`이 되었습니다. 두 번째 문장은 한 단어는 `+1`, 두 단어는 `-2`이므로 합산해 `-3`이 되었습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- score_df &lt;- df %&gt;%  --&gt;
+&lt;!--   group_by(sentence) %&gt;%  --&gt;
+&lt;!--   summarise(score  = sum(polarity)) --&gt;
+
+&lt;!-- score_df --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ## 4.2 기사 댓글 감정 분석하기 --&gt;
+
+&lt;!-- 이제 실제 텍스트를 이용해 감정 분석을 해보겠습니다. `"news_comment_parasite.csv"`에는 2020년 2월 10일 영화 '기생충'의 아카데미상 수상 소식을 다룬 기사에 달린 댓글이 들어 있습니다. 댓글을 분석해 긍정적인 댓글과 부정적인 댓글 중 무엇이 더 많은지, 어떤 내용의 댓글이 달렸는지 알아보겠습니다. --&gt;
+
+
+&lt;!-- ### 4.2.1 기본적인 전처리 --&gt;
+
+&lt;!-- 우선 기사 댓글 데이터를 불러와 기본적인 전처리를 하겠습니다.  --&gt;
+
+&lt;!-- **고유 번호 변수 만들기** : 댓글의 내용이 같아도 구별할 수 있도록 `mutate()`와 `row_number()`를 이용해 고유 번호 `id`를 추가하겠습니다.  --&gt;
+
+&lt;!-- **html 특수 문자 제거하기** : 웹에서 만들어진 텍스트는 `&amp;nbsp;`과 같은 html 특수 문자가 포함되어 있어서 출력하면 내용을 알아보기 불편합니다. `textclean` 패키지의 `replace_html()`을 이용해 html 태그를 공백으로 바꾼 다음 `stringr` 패키지의 `str_squish()`를 이용해 중복 공백을 제거하겠습니다. --&gt;
+
+&lt;!-- **두 글자 미만 단어 포함하기** : 다음 코드를 보면 앞 장과 달리 특수문자를 제거하고 두 글자 이상의 단어만 남기는 작업을 하지 않았습니다. 감정 사전에 특수문자, 모음, 자음으로 된 이모티콘도 포함되어 있는데, 이런 단어들도 텍스트의 감정을 분석하는데 활용해야 하기 때문입니다. --&gt;
+
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- # 데이터 불러오기 --&gt;
+&lt;!-- raw_news_comment &lt;- read_csv("news_comment_parasite.csv") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- # 데이터 불러오기 --&gt;
+&lt;!-- raw_news_comment &lt;- read_csv("../Data/news_comment_parasite.csv") --&gt;
+
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- # 기본적인 전처리 --&gt;
+&lt;!-- install.packages("textclean") --&gt;
+&lt;!-- library(textclean) --&gt;
+
+&lt;!-- news_comment &lt;- raw_news_comment %&gt;% --&gt;
+&lt;!--   mutate(id = row_number(), --&gt;
+&lt;!--          reply = str_squish(replace_html(reply))) --&gt;
+
+&lt;!-- # 데이터 구조 확인 --&gt;
+&lt;!-- glimpse(news_comment) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- # 기본적인 전처리 --&gt;
+&lt;!-- # install.packages("textclean") --&gt;
+&lt;!-- library(textclean) --&gt;
+
+&lt;!-- news_comment &lt;- raw_news_comment %&gt;% --&gt;
+&lt;!--   mutate(id = row_number(), --&gt;
+&lt;!--          reply = str_squish(replace_html(reply))) --&gt;
+
+&lt;!-- glimpse(news_comment, width = 60) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [참고] `glimpse()`는 데이터 구조를 요약해 보여주는 `dplyr` 패키지의 함수입니다. 요약 결과를 줄을 맞춰 출력하기 때문에 `str()`보다 데이터 구조를 파악하기 좋습니다. --&gt;
+
+
+&lt;!-- ### 4.2.2 단어 기준으로 토큰화하고 감정 점수 부여하기 --&gt;
+
+&lt;!-- `news_comment`를 단어 기준으로 토큰화하고 각 단어에 감정 점수를 부여하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 토큰화 --&gt;
+&lt;!-- word_comment &lt;- news_comment %&gt;% --&gt;
+&lt;!--   unnest_tokens(input = reply, --&gt;
+&lt;!--                 output = word, --&gt;
+&lt;!--                 token = "words", --&gt;
+&lt;!--                 drop = F) --&gt;
+
+&lt;!-- word_comment %&gt;% --&gt;
+&lt;!--   select(word, reply) --&gt;
+
+&lt;!-- # 감정 점수 부여 --&gt;
+&lt;!-- word_comment &lt;- word_comment %&gt;% --&gt;
+&lt;!--   left_join(dic, by = "word") %&gt;% --&gt;
+&lt;!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) --&gt;
+
+&lt;!-- word_comment %&gt;% --&gt;
+&lt;!--   select(word, polarity) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ### 4.2.3 자주 사용된 감정 단어 살펴보기 --&gt;
+
+&lt;!-- 댓글별로 감정 점수를 합산하기 전에, 우선 어떤 감정 단어가 많이 사용되었는지 알아보겠습니다. --&gt;
+
+&lt;!-- #### 1. 감정 분류하기 --&gt;
+
+&lt;!-- 감정이 분명하게 드러난 단어를 중심으로 살펴보기 위해 `polarity`가 `2`면 긍정(pos), `-2`면 부정(neg), 그 외에는 중립(neu)을 부여한 변수 `sentiment`를 만들겠습니다. `sentiment`로 빈도를 구하면 어떤 감정의 단어가 많은지 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- word_comment &lt;- word_comment %&gt;% --&gt;
+&lt;!--   mutate(sentiment = ifelse(polarity ==  2, "pos", --&gt;
+&lt;!--                      ifelse(polarity == -2, "neg", "neu"))) --&gt;
+
+&lt;!-- word_comment %&gt;% --&gt;
+&lt;!--   count(sentiment) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- #### 2. 막대 그래프 만들기 --&gt;
+
+&lt;!-- 중립 단어는 제외하고, 긍정 단어와 부정 단어 중 가장 많이 사용 된 단어를 10개씩 추출해 막대 그래프를 만들겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- top10_sentiment &lt;- word_comment %&gt;% --&gt;
+&lt;!--   filter(sentiment != "neu") %&gt;% --&gt;
+&lt;!--   count(sentiment, word) %&gt;% --&gt;
+&lt;!--   group_by(sentiment) %&gt;% --&gt;
+&lt;!--   slice_max(n, n = 10) --&gt;
+
+&lt;!-- top10_sentiment --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 막대 그래프 만들기 --&gt;
+&lt;!-- library(ggplot2) --&gt;
+&lt;!-- ggplot(top10_sentiment, aes(x = reorder(word, n),  --&gt;
+&lt;!--                             y = n,  --&gt;
+&lt;!--                             fill = sentiment)) + --&gt;
+&lt;!--   geom_col() + --&gt;
+&lt;!--   coord_flip() + --&gt;
+&lt;!--   geom_text(aes(label = n), hjust = -0.3) + --&gt;
+&lt;!--   facet_wrap(~ sentiment, scales = "free") + --&gt;
+&lt;!--   scale_y_continuous(expand = expansion(mult = c(0.05, 0.15))) +   --&gt;
+&lt;!--   labs(x = NULL) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic")) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [참고] `scale_y_continuous()`에 적용한 `expansion()`은 막대와 그래프 경계의 간격을 넓히는 기능을 합니다. 막대 밖에 표현한 빈도 값이 그래프 경계 밖으로 벗어나지 않도록 하려고 사용했습니다. --&gt;
+
+&lt;!-- 그래프를 보면 긍정 단어는 `"대단하다"`, `"자랑스럽다"`, `"축하"` 등의 빈도가 높습니다. 아카데미상을 수상한 제작진을 칭찬하는 댓글에 사용된 단어라고 예상할 수 있습니다. 부정 단어는 `"소름"`, `"아니다"`, `"우울한"` 등의 빈도가 높습니다. 영화 내용과 관련된 부정적인 감정을 표현한 댓글들에 사용된 단어라고 예상할 수 있습니다. --&gt;
+
+&lt;!-- 앞에서 살펴본 단어들은 댓글에 사용된 단어 중 감정 사전과 매칭된 일부 입니다. 본격적으로 분석을 하기 전에 어떤 감정 단어가 많이 사용되었는지 알아보려고 감정이 분명하게 들어난 단어만 추출해본 것입니다. 텍스트의 전반적인 내용을 파악하려면 감정 점수가 부여되지 않은 중립 단어까지 포함해서 분석해야 합니다. 이 방법은 뒤에서 다루겠습니다. --&gt;
+
+&lt;!-- &gt; [참고] `"소름"`, `"미친"` 등은 부정적인 단어가 아니라 긍정적인 감정을 극적으로 표현하는 단어일 수 있기 때문에 감정 사전을 수정해서 점수를 부여해야 합니다. 이에 대해서는 **4.4**에서 자세히 다룹니다. --&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "16:10",
+"navigation": {
+"scroll": true
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
