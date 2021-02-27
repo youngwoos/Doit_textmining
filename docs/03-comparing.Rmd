@@ -36,7 +36,7 @@ options(htmltools.dir.version = FALSE,
 knitr::opts_chunk$set(cache = T, warning = F, message = F, 
                       dpi = 300, fig.height = 4, out.width = "100%")
 
-# xaringanExtra::use_tile_view()
+xaringanExtra::use_tile_view()
 
 library(knitr)
 library(icon)
