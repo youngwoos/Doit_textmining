@@ -521,7 +521,8 @@ ggplot(top10, aes(x = reorder(word, n),
                   fill = president)) +
   geom_col() +
   coord_flip() +
-  facet_wrap(~ president)
+  facet_wrap(~ president) +
+  theme(text = element_text("nanumgothic"))
 ```
 
 
@@ -534,7 +535,7 @@ ggplot(top10, aes(x = reorder(word, n),
   - ex) `"행복"`, `"나라"`
 
 
-```{r echo=F, out.width="90%"}
+```{r echo=F, out.width="90%", eval=FALSE}
 library(ggplot2)
 ggplot(top10, aes(x = reorder(word, n),
                   y = n,
@@ -542,6 +543,17 @@ ggplot(top10, aes(x = reorder(word, n),
   geom_col() +
   coord_flip() +
   facet_wrap(~ president)
+```
+
+```{r echo=F, out.width="90%", echo=FALSE}
+library(ggplot2)
+ggplot(top10, aes(x = reorder(word, n),
+                  y = n,
+                  fill = president)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~ president) +
+  theme(text = element_text("nanumgothic"))
 ```
 
 

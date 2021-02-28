@@ -685,7 +685,9 @@ ggplot(top10, aes(x = reorder(word, n),
   - ex) `"행복"`, `"나라"`
 
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-33-1.png" width="90%" /&gt;
+
+
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-34-1.png" width="90%" /&gt;
 
 
 ---
@@ -713,7 +715,7 @@ ggplot(top10, aes(x = reorder(word, n),
 
 ---
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-35-1.png" width="100%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-36-1.png" width="100%" /&gt;
 
 
 ---
@@ -723,7 +725,7 @@ ggplot(top10, aes(x = reorder(word, n),
 
 - 박근혜 전 대통령 `"국민"` 빈도 너무 높아 다른 단어들 차이 드러나지 않음
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-36-1.png" width="80%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-37-1.png" width="80%" /&gt;
 
 ---
 
@@ -755,7 +757,7 @@ ggplot(top10, aes(x = reorder(word, n),
 
 ---
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-39-1.png" width="100%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-40-1.png" width="100%" /&gt;
 
 
 ---
@@ -766,7 +768,7 @@ ggplot(top10, aes(x = reorder(word, n),
 - x축을 지정할 때 `reorder()`를 사용했는데도 막대가 빈도 기준으로 완벽하게 정렬되지 않음
 - 전체 빈도 기준으로 각 범주의 x축 순서를 정했기 때문
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-40-1.png" width="80%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-41-1.png" width="80%" /&gt;
 
 ---
 
@@ -794,7 +796,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
 
 ---
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-42-1.png" width="100%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-43-1.png" width="100%" /&gt;
 
 ---
 
@@ -817,7 +819,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
 
 ---
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-44-1.png" width="100%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-45-1.png" width="100%" /&gt;
 
 ---
 name: 03-2
@@ -1485,7 +1487,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
   scale_x_reordered()
 ```
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-70-1.png" width="60%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-71-1.png" width="60%" /&gt;
 
 
 ---
@@ -1494,7 +1496,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
 - `"park"`의 `"행복"` 빈도 기준으로 두 그래프의 x축 크기를 똑같이 고정했기 때문
 
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-71-1.png" width="80%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-72-1.png" width="80%" /&gt;
 
 ---
 
@@ -1515,7 +1517,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
   theme(text = element_text(family = "nanumgothic"))  # 폰트
 ```
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-72-1.png" width="40%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-73-1.png" width="40%" /&gt;
 
 ---
 &lt;svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt;  **x축 크기가 그래프마다 다르므로 해석 조심**
@@ -1524,7 +1526,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
 - 두 텍스트 단어 빈도 비교 X
 - 각 텍스트에서 상대적으로 중요한 단어가 무엇인지 중심으로 해석
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-73-1.png" width="80%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-74-1.png" width="80%" /&gt;
 
 ---
 
@@ -2114,12 +2116,12 @@ ggplot(top10, aes(x = reorder(word, log_odds_ratio),
   theme(text = element_text(family = "nanumgothic"))
 ```
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-94-1.png" width="45%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-95-1.png" width="45%" /&gt;
 
 ---
 
 &lt;br&gt;
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-95-1.png" width="80%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-96-1.png" width="80%" /&gt;
 
 ---
 
@@ -2571,7 +2573,7 @@ ggplot(top10, aes(x = reorder_within(word, tf_idf, president),
 
 ---
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-113-1.png" width="75%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-114-1.png" width="75%" /&gt;
 
 ---
 
@@ -2897,10 +2899,10 @@ ggplot(top10, aes(x = reorder(word, log_odds_ratio),
   labs(x = NULL)
 ```
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-126-1.png" width="50%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-127-1.png" width="50%" /&gt;
 
 ---
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-127-1.png" width="90%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-128-1.png" width="90%" /&gt;
 
 ---
 
@@ -3094,12 +3096,12 @@ ggplot(top10, aes(x = reorder_within(word, tf_idf, president),
   labs(x = NULL)
 ```
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-135-1.png" width="35%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-136-1.png" width="35%" /&gt;
 
 ---
 
 
-&lt;img src="03-comparing_files/figure-html/unnamed-chunk-136-1.png" width="75%" /&gt;
+&lt;img src="03-comparing_files/figure-html/unnamed-chunk-137-1.png" width="75%" /&gt;
 
 ---
 
