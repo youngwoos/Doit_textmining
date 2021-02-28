@@ -626,7 +626,7 @@ ggplot(top10_sentiment, aes(x = reorder(word, n),
 
 ---
 
-&lt;img src="04-sentimentAnalysis_files/figure-html/p-top10_sentiment-1.png" width="100%" /&gt;
+![](04-sentimentAnalysis_files/figure-html/p-top10_sentiment-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -1159,14 +1159,15 @@ ggplot(top10, aes(x = reorder(word, log_odds_ratio),
   theme(text = element_text(family = "nanumgothic"))
 ```
 
-&lt;img src="04-sentimentAnalysis_files/figure-html/p-odds-top10-1.png" width="50%" /&gt;
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-42-1.png" width="50%" /&gt;
+
+
 
 ---
 
-&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-42-1.png" width="80%" /&gt;
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-43-1.png" width="70%" /&gt;
 
 ---
-
 
 name: 04-4
 class: title1
@@ -1177,10 +1178,7 @@ class: title1
 
 #### 감정 단어가 사용된 원문 살펴보기
 
-- `"소름"`, `"미친"` 부정적인 의미
-- 긍정적인 감정을 극적으로 표현하기 위해 사용된 단어
-
-긍정적인 의미로 사용되었음을 알 수 있습니다. --&gt;
+- `"소름"`, `"미친"`: 긍정적인 감정을 극적으로 표현한 단어
 
 
 ```r
@@ -1192,295 +1190,550 @@ score_comment %&gt;%
 
 ```
 ## # A tibble: 131 x 1
-##    reply                                                                        
-##    &lt;chr&gt;                                                                        
-##  1 소름돋네요                                                                   
-##  2 와..진짜소름 저 소리처음질렀어요 눈물나요.. ㅠㅠ                             
-##  3 생중계 보며 봉준호 할 때 소름이~~~!! ㅠㅠ 수상소감들으며 함께 가슴이 벅차네요. 축하합니다. 자랑스럽습니다!!! 노미네이트되진 못했…
-##  4 와 보다가 소름 짝 수고들하셨어요                                             
-##  5 한국어 소감 듣는데 소름돋네 축하드립니다                                     
-##  6 대단하다!! 봉준호 이름 나오자마자 소름                                       
-##  7 와우 브라보~ 키아누리브스의 봉준호, 순간 소름이.. 멋지십니다.                
-##  8 소름 돋네요. 축하합니다                                                      
-##  9 소름.... 기생충 각본집 산거 다시한번 잘했다는 생각이ㅠㅠㅠ 축하해요!!!!!!    
-## 10 소름끼쳤어요 너무 멋집니다 ^^!!!!                                            
+##    reply                                          
+##    &lt;chr&gt;                                          
+##  1 소름돋네요                                     
+##  2 와..진짜소름 저 소리처음질렀어요 눈물나요.. ㅠㅠ…
+##  3 생중계 보며 봉준호 할 때 소름이~~~!! ㅠㅠ 수상소감들으며 함께 가슴이 벅차네요…
+##  4 와 보다가 소름 짝 수고들하셨어요               
+##  5 한국어 소감 듣는데 소름돋네 축하드립니다       
+##  6 대단하다!! 봉준호 이름 나오자마자 소름         
+##  7 와우 브라보~ 키아누리브스의 봉준호, 순간 소름이.. 멋지십니다.…
+##  8 소름 돋네요. 축하합니다                        
+##  9 소름.... 기생충 각본집 산거 다시한번 잘했다는 생각이ㅠㅠㅠ 축하해요!!!!!!…
+## 10 소름끼쳤어요 너무 멋집니다 ^^!!!!              
 ## # … with 121 more rows
+```
+
+---
+
+#### 감정 단어가 사용된 원문 살펴보기
+
+- `"소름"`, `"미친"`: 긍정적인 감정을 극적으로 표현한 단어
+
+
+```r
+# "미친"이 사용된 댓글
+score_comment %&gt;%
+  filter(str_detect(reply, "미친")) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 15 x 1
+##    reply                                          
+##    &lt;chr&gt;                                          
+##  1 와 3관왕 미친                                  
+##  2 미친거야 이건~~                                
+##  3 Korea 대단합니다 김연아 방탄 봉준호 스포츠 음악 영화 못하는게 없어요 좌빨 감…
+##  4 청룡영화제에서 다른나라가 상을 휩쓴거죠? 와..미쳤다 미국영화제에서 한국이 빅5중에…
+##  5 설마했는데 감독상, 작품상, 각본상을 죄다 휩쓸어버릴 줄이야. 이건 미친 꿈이야!!…
+##  6 완전 완전...미친촌재감~이런게 바로 애국이지~ 존경합니다~…
+##  7 이세상엔 참 미 친 인간들이 많다는걸 댓글에서 다시한번 느낀다..모두가 축하해줘야할…
+##  8 올해 아카데미 최다 수상작이기도 하다 이건 진짜 미친사건이다…
+##  9 CJ회장이 저기서 왜 언급되는지... 미친 부회장.. 공과사 구분 못하는 정권의 홍…
+## 10 미친봉                                         
+## # … with 5 more rows
+```
+
+---
+
+- `"소름"`, `"미친"`이 감정 사전에 부정적인 단어로 분류되어 있어서 생긴 문제
+- 텍스트의 맥락이 감정 사전의 맥락과 다르면 반대되는 감정 점수 부여
+- 감정 사전 수정 필요
+
+
+```r
+dic %&gt;% filter(word %in% c("소름", "소름이", "미친"))
+```
+
+```
+## # A tibble: 3 x 2
+##   word   polarity
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 소름이       -2
+## 2 소름         -2
+## 3 미친         -2
 ```
 
 
 ---
 
+#### 감정 사전 수정하기
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # "미친"이 사용된 댓글 --&gt;
-&lt;!-- score_comment %&gt;% --&gt;
-&lt;!--   filter(str_detect(reply, "미친")) %&gt;% --&gt;
-&lt;!--   select(reply) --&gt;
-&lt;!-- ``` --&gt;
+- `"소름이"`, `"소름"`, `"미친"`의 `polarity`를 양수 2로 수정
 
-&lt;!-- --- --&gt;
 
+```r
+new_dic &lt;- dic %&gt;%
+  mutate(polarity = ifelse(word %in% c("소름", "소름이", "미친"), 2, polarity))
 
-&lt;!-- - 감정 사전에 부정적인 단어로 분류되어 있어서 생긴 문제 --&gt;
-&lt;!-- - 텍스트의 맥락이 감정 사전의 맥락과 다르면 반대되는 감정 점수 부여하는 오류 발생 --&gt;
-&lt;!-- - 정확하게 분석하려면 감정 사전 수정 --&gt;
+new_dic %&gt;% filter(word %in% c("소름", "소름이", "미친"))
+```
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- dic %&gt;% filter(word %in% c("소름", "소름이", "미친")) --&gt;
-&lt;!-- ``` --&gt;
+```
+## # A tibble: 3 x 2
+##   word   polarity
+##   &lt;chr&gt;     &lt;dbl&gt;
+## 1 소름이        2
+## 2 소름          2
+## 3 미친          2
+```
 
+---
 
-&lt;!-- --- --&gt;
 
-&lt;!-- #### 감정 사전 수정하기 --&gt;
+#### 수정한 사전으로 감정 점수 부여하기
 
-&lt;!-- - `"소름이"`, `"소름"`, `"미친"`의 `polarity`를 양수 2로 수정 --&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_dic &lt;- dic %&gt;% --&gt;
-&lt;!--   mutate(polarity = ifelse(word %in% c("소름", "소름이", "미친"), 2, polarity)) --&gt;
+```r
+new_word_comment &lt;- word_comment %&gt;%
+  select(-polarity) %&gt;%
+  left_join(new_dic, by = "word") %&gt;%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity))
+```
 
-&lt;!-- new_dic %&gt;% filter(word %in% c("소름", "소름이", "미친")) --&gt;
-&lt;!-- ``` --&gt;
+---
 
-&lt;!-- --- --&gt;
+#### 댓글별 감정 점수 구하기
 
+&lt;br-back-10&gt;
 
-&lt;!-- #### 수정한 사전으로 감정 점수 부여하기 --&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_word_comment &lt;- word_comment %&gt;% --&gt;
-&lt;!--   select(-polarity) %&gt;% --&gt;
-&lt;!--   left_join(new_dic, by = "word") %&gt;% --&gt;
-&lt;!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) --&gt;
-&lt;!-- ``` --&gt;
+```r
+new_score_comment &lt;- new_word_comment %&gt;%
+  group_by(id, reply) %&gt;%
+  summarise(score = sum(polarity)) %&gt;%
+  ungroup()
 
-&lt;!-- --- --&gt;
+new_score_comment %&gt;%
+  select(score, reply) %&gt;%
+  arrange(-score)
+```
 
-&lt;!-- #### 댓글별 감정 점수 구하기 --&gt;
+```
+## # A tibble: 4,140 x 2
+##    score reply                                    
+##    &lt;dbl&gt; &lt;chr&gt;                                    
+##  1    11 아니 다른상을 받은것도 충분히 대단하고 굉장하지만 최고의 영예인 작품상을…
+##  2     9 봉준호의 위대한 업적은 진보 영화계의 위대한 업적이고 대한민국의 업적입니…
+##  3     8 소름 소름 진짜 멋지다 대단하다           
+##  4     7 이 수상소식을 듣고 억수로 기뻐하는 가족이 있을것 같다. SNS를 통해 …
+##  5     7 감사 감사 감사 수상 소감도 3관왕 답네요  
+##  6     6 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼!! 나의 일인 양 …
+##  7     6 와 너무 기쁘다! 이 시국에 정말 내 일같이 기쁘고 감사하다!!! 축하드…
+##  8     6 축하 축하 축하 모두들 수고 하셨어요 기생충 화이팅…
+##  9     6 생중계 보며 봉준호 할 때 소름이~~~!! ㅠㅠ 수상소감들으며 함께 가슴…
+## 10     6 축하!!!! 축하!!!!! 오스카의 정복은 무엇보다 시나리오의 힘이다. …
+## # … with 4,130 more rows
+```
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_score_comment &lt;- new_word_comment %&gt;% --&gt;
-&lt;!--   group_by(id, reply) %&gt;% --&gt;
-&lt;!--   summarise(score = sum(polarity)) %&gt;% --&gt;
-&lt;!--   ungroup() --&gt;
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `ungroup()`: 이후 분석 작업은 그룹별로 처리하지 않도록 그룹 해제
 
-&lt;!-- new_score_comment %&gt;% --&gt;
-&lt;!--   select(score, reply) %&gt;% --&gt;
-&lt;!--   arrange(-score) --&gt;
-&lt;!-- ``` --&gt;
+---
 
-&lt;!-- &lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `ungroup()`: 이후 분석 작업은 그룹별로 처리하지 않도록 그룹 해제 --&gt;
 
-&lt;!-- --- --&gt;
 
 
-&lt;!-- #### 전반적인 감정 경향 살펴보기 --&gt;
+#### 전반적인 감정 경향 살펴보기
 
 
-&lt;!-- ##### 1. 감정 분류하기 --&gt;
+##### 1. 감정 분류하기
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 1점 기준으로 긍정 중립 부정 분류 --&gt;
-&lt;!-- new_score_comment &lt;- new_score_comment %&gt;% --&gt;
-&lt;!--   mutate(sentiment = ifelse(score &gt;=  1, "pos", --&gt;
-&lt;!--                      ifelse(score &lt;= -1, "neg", "neu"))) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- ##### 2. 감정 범주별 빈도와 비율 구하기 --&gt;
+```r
+# 1점 기준으로 긍정 중립 부정 분류
+new_score_comment &lt;- new_score_comment %&gt;%
+  mutate(sentiment = ifelse(score &gt;=  1, "pos",
+                     ifelse(score &lt;= -1, "neg", "neu")))
+```
 
+---
 
-&lt;!-- .pull-left[ --&gt;
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 원본 감정 사전 활용 --&gt;
-&lt;!-- score_comment %&gt;% --&gt;
-&lt;!--   count(sentiment) %&gt;% --&gt;
-&lt;!--   mutate(ratio = n/sum(n)*100) --&gt;
-&lt;!-- ``` --&gt;
+##### 2. 감정 범주별 빈도와 비율 구하기
 
+.pull-left[
 
-&lt;!-- .pull-right[ --&gt;
+```r
+# 원본 감정 사전 활용
+*score_comment %&gt;%
+  count(sentiment) %&gt;%
+  mutate(ratio = n/sum(n)*100)
+```
+
+```
+## # A tibble: 3 x 3
+##   sentiment     n ratio
+## * &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt;
+## 1 neg         436  10.5
+## 2 neu        2897  70.0
+## 3 pos         807  19.5
+```
+]
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 수정한 감정 사전 활용 --&gt;
-&lt;!-- new_score_comment %&gt;% --&gt;
-&lt;!--   count(sentiment) %&gt;% --&gt;
-&lt;!--   mutate(ratio = n/sum(n)*100) --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
+.pull-right[
 
-&lt;!-- --- --&gt;
 
-&lt;!-- ##### 3. 분석 결과 비교하기 --&gt;
+```r
+# 수정한 감정 사전 활용
+*new_score_comment %&gt;%
+  count(sentiment) %&gt;%
+  mutate(ratio = n/sum(n)*100)
+```
 
-&lt;!-- .pull-left[ --&gt;
+```
+## # A tibble: 3 x 3
+##   sentiment     n ratio
+## * &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt;
+## 1 neg         368  8.89
+## 2 neu        2890 69.8 
+## 3 pos         882 21.3
+```
+]
 
+---
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- word &lt;- "소름|소름이|미친" --&gt;
+##### 3. 분석 결과 비교하기
 
-&lt;!-- # 원본 감정 사전 활용 --&gt;
-&lt;!-- score_comment %&gt;% --&gt;
-&lt;!--   filter(str_detect(reply, word)) %&gt;% --&gt;
-&lt;!--   count(sentiment) --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
 
-&lt;!-- .pull-right[ --&gt;
+```r
+word &lt;- "소름|소름이|미친"
+```
 
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 수정한 감정 사전 활용 --&gt;
-&lt;!-- new_score_comment %&gt;% --&gt;
-&lt;!--   filter(str_detect(reply, word)) %&gt;% --&gt;
-&lt;!--   count(sentiment) --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
+.pull-left[
 
-&lt;!-- &lt;svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; `str_detect()`에 여러 문자를 입력할 때는 `|`로 문자를 구분 --&gt;
+```r
+# 원본 감정 사전 활용
+*score_comment %&gt;%
+  filter(str_detect(reply, word)) %&gt;%
+  count(sentiment)
+```
 
-&lt;!-- --- --&gt;
+```
+## # A tibble: 3 x 2
+##   sentiment     n
+## * &lt;chr&gt;     &lt;int&gt;
+## 1 neg          73
+## 2 neu          63
+## 3 pos           9
+```
+]
 
-&lt;!-- #### 감정 범주별 주요 단어 살펴보기 --&gt;
+.pull-right[
 
 
-&lt;!-- ##### 1. 두 글자 이상 한글 단어만 남기고 단어 빈도 구하기 --&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 토큰화 및 전처리 --&gt;
-&lt;!-- new_comment &lt;- new_score_comment %&gt;% --&gt;
-&lt;!--   unnest_tokens(input = reply, --&gt;
-&lt;!--                 output = word, --&gt;
-&lt;!--                 token = "words", --&gt;
-&lt;!--                 drop = F) %&gt;% --&gt;
-&lt;!--   filter(str_detect(word, "[가-힣]") &amp; --&gt;
-&lt;!--            str_count(word) &gt;= 2) --&gt;
+```r
+# 수정한 감정 사전 활용
+*new_score_comment %&gt;%
+  filter(str_detect(reply, word)) %&gt;%
+  count(sentiment)
+```
 
-&lt;!-- # 감정 및 단어별 빈도 구하기 --&gt;
-&lt;!-- new_frequency_word &lt;- new_comment %&gt;% --&gt;
-&lt;!--   count(sentiment, word, sort = T) --&gt;
-&lt;!-- ``` --&gt;
+```
+## # A tibble: 3 x 2
+##   sentiment     n
+## * &lt;chr&gt;     &lt;int&gt;
+## 1 neg           5
+## 2 neu          56
+## 3 pos          84
+```
+]
 
+&lt;svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; `str_detect()`에 여러 문자를 입력할 때는 `|`로 문자를 구분
 
-&lt;!-- --- --&gt;
+---
 
-&lt;!-- ##### 2. 로그 오즈비 구하기 --&gt;
+#### 감정 범주별 주요 단어 살펴보기
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # Wide form으로 변환 --&gt;
-&lt;!-- new_comment_wide &lt;- new_frequency_word %&gt;% --&gt;
-&lt;!--   filter(sentiment != "neu") %&gt;% --&gt;
-&lt;!--   pivot_wider(names_from = sentiment, --&gt;
-&lt;!--               values_from = n, --&gt;
-&lt;!--               values_fill = list(n = 0)) --&gt;
+##### 1. 두 글자 이상 한글 단어만 남기고 단어 빈도 구하기
 
-&lt;!-- # 로그 오즈비 구하기 --&gt;
-&lt;!-- new_comment_wide &lt;- new_comment_wide %&gt;% --&gt;
-&lt;!--   mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) / --&gt;
-&lt;!--                               ((neg + 1) / (sum(neg + 1))))) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- --- --&gt;
+```r
+# 토큰화 및 전처리
+new_comment &lt;- new_score_comment %&gt;%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",
+                drop = F) %&gt;%
+  filter(str_detect(word, "[가-힣]") &amp;
+           str_count(word) &gt;= 2)
 
-&lt;!-- ##### 3. 로그 오즈비가 큰 단어로 막대 그래프 만들기 --&gt;
+# 감정 및 단어별 빈도 구하기
+new_frequency_word &lt;- new_comment %&gt;%
+  count(sentiment, word, sort = T)
+```
 
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_top10 &lt;- new_comment_wide %&gt;% --&gt;
-&lt;!--   group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt;
-&lt;!--   slice_max(abs(log_odds_ratio), n = 10, with_ties = F) --&gt;
+---
 
-&lt;!-- # 막대 그래프 만들기 --&gt;
-&lt;!-- ggplot(new_top10, aes(x = reorder(word, log_odds_ratio), --&gt;
-&lt;!--                       y = log_odds_ratio, --&gt;
-&lt;!--                       fill = sentiment)) + --&gt;
-&lt;!--   geom_col() + --&gt;
-&lt;!--   coord_flip() + --&gt;
-&lt;!--   labs(x = NULL) + --&gt;
-&lt;!--   theme(text = element_text(family = "nanumgothic")) --&gt;
-&lt;!-- ``` --&gt;
+##### 2. 로그 오즈비 구하기
 
 
-&lt;!-- --- --&gt;
+```r
+# Wide form으로 변환
+new_comment_wide &lt;- new_frequency_word %&gt;%
+  filter(sentiment != "neu") %&gt;%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = list(n = 0))
 
-&lt;!-- ##### 4. 주요 단어가 사용된 댓글 살펴보기 --&gt;
+# 로그 오즈비 구하기
+new_comment_wide &lt;- new_comment_wide %&gt;%
+  mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) /
+                              ((neg + 1) / (sum(neg + 1)))))
+```
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 긍정 댓글 원문 --&gt;
-&lt;!-- new_score_comment %&gt;% --&gt;
-&lt;!--   filter(sentiment == "pos" &amp; str_detect(reply, "축하")) %&gt;% --&gt;
-&lt;!--   select(reply) %&gt;% --&gt;
-&lt;!--   print(n = 3) --&gt;
-&lt;!-- ``` --&gt;
+---
 
+##### 3. 로그 오즈비가 큰 단어로 막대 그래프 만들기
 
-&lt;!-- --- --&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_score_comment %&gt;% --&gt;
-&lt;!--   filter(sentiment == "pos" &amp; str_detect(reply, "소름")) %&gt;% --&gt;
-&lt;!--   select(reply) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- --- --&gt;
+```r
+new_top10 &lt;- new_comment_wide %&gt;%
+  group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
 
+ggplot(new_top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
+
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-58-1.png" width="38%" /&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 부정 댓글 원문 --&gt;
-&lt;!-- new_score_comment %&gt;% --&gt;
-&lt;!--   filter(sentiment == "neg" &amp; str_detect(reply, "좌빨")) %&gt;% --&gt;
-&lt;!--   select(reply) --&gt;
-&lt;!-- ``` --&gt;
+---
 
-&lt;!-- --- --&gt;
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-59-1.png" width="80%" /&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_score_comment %&gt;% --&gt;
-&lt;!--   filter(sentiment == "neg" &amp; str_detect(reply, "못한")) %&gt;% --&gt;
-&lt;!--   select(reply) %&gt;% --&gt;
-&lt;!--   print(n = 3) --&gt;
-&lt;!-- ``` --&gt;
+---
 
-&lt;!-- --- --&gt;
+##### 4. 주요 단어가 사용된 댓글 살펴보기
 
-&lt;!-- ##### 5. 분석 결과 비교하기 --&gt;
+##### 긍정 댓글 원문
 
-&lt;!-- .pull-left[ --&gt;
-&lt;!-- # 수정한 감정 사전 활용 --&gt;
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_top10 %&gt;%  --&gt;
-&lt;!--   select(-pos, -neg) %&gt;%  --&gt;
-&lt;!--   arrange(-log_odds_ratio) %&gt;%  --&gt;
-&lt;!--   print(n = Inf) --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
 
-&lt;!-- .pull-right[ --&gt;
+```r
+new_score_comment %&gt;%
+  filter(sentiment == "pos" &amp; str_detect(reply, "축하")) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 189 x 1
+##    reply                                          
+##    &lt;chr&gt;                                          
+##  1 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼!! 나의 일인 양 행복합니다!…
+##  2 와 너무 기쁘다! 이 시국에 정말 내 일같이 기쁘고 감사하다!!! 축하드려요 진심으…
+##  3 우리나라의 영화감독분들 그리고 앞으로 그 꿈을 그리는 분들에게 큰 영감을 주시게된 …
+##  4 아카데미나 다른 상이나 지들만의 잔치지~ 난 대한민국에서 받는 상이 제일 가치 있다…
+##  5 정부에 빨대 꼽은 정치시민단체 기생충들이 득실거리는 떼한민국애서 훌륭한 영화 기생충…
+##  6 대단해요 나는 안봤는데 그렇게 잘 만들어 한국인의 기백을 세계에 알리는 큰 일을 하…
+##  7 나한테 돌아오는게 하나도 없는데 왜이렇게 자랑스럽지?ㅎㅎㅎ 축하 합니다~작품상 수상…
+##  8 한국영화 100년사에 한횟을 긋네요. 정말 축하 합니다…
+##  9 와 대단하다 진짜 축하드려요!!! 대박 진짜       
+## 10 각본상, 국제 영화상 수상 축하. 편집상은 꽝남.  
+## # … with 179 more rows
+```
+
+---
+
+##### 4. 주요 단어가 사용된 댓글 살펴보기
+
+##### 긍정 댓글 원문
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 원본 감정 사전 활용 --&gt;
-&lt;!-- top10 %&gt;%   --&gt;
-&lt;!--   select(-pos, -neg) %&gt;%   --&gt;
-&lt;!--   arrange(-log_odds_ratio) %&gt;%   --&gt;
-&lt;!--   print(n = Inf) --&gt;
-&lt;!-- ``` --&gt;
-&lt;!-- ] --&gt;
 
-&lt;!-- --- --&gt;
+
+```r
+new_score_comment %&gt;%
+  filter(sentiment == "pos" &amp; str_detect(reply, "소름")) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 77 x 1
+##    reply                                          
+##    &lt;chr&gt;                                          
+##  1 생중계 보며 봉준호 할 때 소름이~~~!! ㅠㅠ 수상소감들으며 함께 가슴이 벅차네요…
+##  2 와 보다가 소름 짝 수고들하셨어요               
+##  3 대단하다!! 봉준호 이름 나오자마자 소름         
+##  4 와우 브라보~ 키아누리브스의 봉준호, 순간 소름이.. 멋지십니다.…
+##  5 소름 돋네요. 축하합니다                        
+##  6 소름.... 기생충 각본집 산거 다시한번 잘했다는 생각이ㅠㅠㅠ 축하해요!!!!!!…
+##  7 봉준호 아저씨 우리나라 자랑입니다 헐리웃 배우들과 화면에 같이 비춰지는게 아직도 믿…
+##  8 추카해요. 봉준호하는데 막 완전 소름 돋았어요.  
+##  9 소름돋아서 닭살돋고.. 그냥 막 감동이라 눈물이 나려했어요.. 대단하고 자랑스럽습니…
+## 10 한국 영화 최초 아카데미상 수상, 92년 역사의 국제 장편 영화상과 최우수작품상 동…
+## # … with 67 more rows
+```
+
+---
+
+##### 4. 주요 단어가 사용된 댓글 살펴보기
+
+##### 부정 댓글 원문
+
+
+```r
+new_score_comment %&gt;%
+  filter(sentiment == "neg" &amp; str_detect(reply, "좌빨")) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 34 x 1
+##    reply                                          
+##    &lt;chr&gt;                                          
+##  1 자칭 보수들은 분노의 타이핑중 ㅋㅋㅋㅋㅋㅋ전세계를 좌빨로 몰수는 없고 자존심에 본인…
+##  2 자칭보수 왈 : 미국에 로비했다 ㅋㅋ좌빨영화가 상받을리 없다 ㅋㅋㅋㅋㅋㅋㅋ 본인들의…
+##  3 좌빨 봉준호 영화는 쳐다도 안본다 ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ…
+##  4 봉준호 그렇게 미국 싫어하는데 상은 쳐 받으러 가는 좌빨 수준ㅋㅋㅋ…
+##  5 좌빨 기생충들은 댓글도 달지마라 미국 영화제 수상이 니들하고 뭔상관인데.…
+##  6 얘들은 왜 인정을 안하냐? ㅋㅋ 니들 이미 변호인 찍을대 부터 송강호 욕해대고 좌빨…
+##  7 넷상 보수들 만큼 이중적인 새1끼들 없음. 봉준호 송강호 보고 종북좌빨 홍어드립 치…
+##  8 우선 축하합니다.그리고 다음에는 조씨가족을 모델로한 뻔뻔하고 거짓말을 밥 먹듯이 하…
+##  9 Korea 대단합니다 김연아 방탄 봉준호 스포츠 음악 영화 못하는게 없어요 좌빨 감…
+## 10 좌빨 감독이라고 블랙리스트에 올랐던 사람을 세계인이 인정해주네. 방구석에 앉아서 댓…
+## # … with 24 more rows
+```
+
+---
+
+##### 4. 주요 단어가 사용된 댓글 살펴보기
+
+##### 부정 댓글 원문
+
+
+```r
+new_score_comment %&gt;%
+  filter(sentiment == "neg" &amp; str_detect(reply, "못한")) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 7 x 1
+##   reply                                           
+##   &lt;chr&gt;                                           
+## 1 한번도경험하지. 못한 조국가족사기단기생충. 개봉박두…
+## 2 여기서 정치얘기하는 건 학창시절 공부 못한 거 인증하는 꼴... 주제좀 벗어나지 말아…
+## 3 이 기사를 반문으로 먹고 사는 자유왜국당과, mb아바타 간철수 댓글알바들이 매우 싫어…
+## 4 한국미국일본 vs 주적북한,중국러시아 이 구도인 현 시대 상황 속에서, 미국 일본을 …
+## 5 친일수꼴 들과 자한당넘들이 나라에 경사만 있으면 엄청 싫어합니다, 맨날 사고만 나길 …
+## 6 각본상,국제상,감독상 ...어디서 듣도보도 못한 아차상 같은 쩌리처리용 상 아닌가? …
+## 7 난 밥을 먹고 기생충은 오스카를 먹다, 기생충은 대한민국의 국격을 높였는데 난 무엇인…
+```
+
+---
+
+##### 5. 분석 결과 비교하기
+
+.pull-left[
+
+```r
+# 수정한 감정 사전 활용
+*new_top10 %&gt;%
+  select(-pos, -neg) %&gt;%
+  arrange(-log_odds_ratio)
+```
+]
+
+.pull-right[
+
+
+```r
+# 원본 감정 사전 활용
+*top10 %&gt;%
+  select(-pos, -neg) %&gt;%
+  arrange(-log_odds_ratio)
+```
+]
+
+---
+
+.pull-left[
+
+```
+## # A tibble: 20 x 3
+## # Groups:   sentiment [2]
+##    word       log_odds_ratio sentiment
+##    &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;    
+##  1 축하                 3.88 pos      
+##  2 멋지다               3.76 pos      
+*##  3 소름                 3.76 pos      
+##  4 대단한               3.59 pos      
+##  5 대단하다             3.49 pos      
+##  6 좋은                 3.48 pos      
+##  7 자랑스럽다           3.40 pos      
+##  8 최고                 3.09 pos      
+##  9 세계적인             2.94 pos      
+## 10 최고의               2.90 pos      
+## 11 닭그네              -1.89 neg      
+## 12 못하고              -1.89 neg      
+## 13 사회적              -1.89 neg      
+## 14 싫다                -1.89 neg      
+## 15 가난한              -2.07 neg      
+## 16 모르는              -2.07 neg      
+## 17 아쉽다              -2.07 neg      
+## 18 좌좀                -2.22 neg      
+## 19 못한                -2.36 neg      
+## 20 좌빨                -2.68 neg
+```
+]
+
+.pull-right[
+
+
+```
+## # A tibble: 20 x 3
+## # Groups:   sentiment [2]
+##    word       log_odds_ratio sentiment
+##    &lt;chr&gt;               &lt;dbl&gt; &lt;chr&gt;    
+##  1 축하                 3.95 pos      
+##  2 멋지다               3.81 pos      
+##  3 대단한               3.66 pos      
+##  4 좋은                 3.55 pos      
+##  5 대단하다             3.52 pos      
+##  6 자랑스럽다           3.46 pos      
+##  7 최고                 3.12 pos      
+##  8 세계적인             3.01 pos      
+##  9 최고의               2.97 pos      
+## 10 위대한               2.92 pos      
+## 11 닭그네              -1.82 neg      
+## 12 가난한              -2.00 neg      
+## 13 모르는              -2.00 neg      
+## 14 아쉽다              -2.00 neg      
+## 15 소름이              -2.08 neg      
+## 16 좌좀                -2.16 neg      
+## 17 못한                -2.29 neg      
+*## 18 미친                -2.29 neg      
+## 19 좌빨                -2.61 neg      
+*## 20 소름                -3.03 neg
+```
+]
+
+---
+
+- `"미친"`이 목록에서 사라짐: 로그 오즈비가 10위 안에 들지 못할 정도로 낮기 때문
+  - 긍정 단어 10위 `"최고의"` 로그 오즈비 2.90
+
+
+```r
+new_comment_wide %&gt;% 
+  filter(word == "미친")
+```
+
+```
+## # A tibble: 1 x 4
+##   word    pos   neg log_odds_ratio
+##   &lt;chr&gt; &lt;int&gt; &lt;int&gt;          &lt;dbl&gt;
+## 1 미친      7     0           1.80
+```
 
-&lt;!-- - `"미친"`이 목록에서 사라진 이유 --&gt;
-&lt;!-- - 로그 오즈비가 10위 안에 들지 못할 정도로 낮기 때문 --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- new_comment_wide --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &lt;!-- 니다. 다음 코드의 출력 결과를 보면 "미친"의 로그 오즈비가 1.80입니다. new_top10에서  --&gt; --&gt;
-&lt;!-- &lt;!-- 긍정 단어 10위인 "최고의"의 로그 오즈비가 2.90이므로 "미친"이 목록에 포함되지 않은 것 --&gt; --&gt;
-&lt;!-- &lt;!-- 입니다.  --&gt; --&gt;
-
-
-&lt;!-- --- --&gt;
 
 
 

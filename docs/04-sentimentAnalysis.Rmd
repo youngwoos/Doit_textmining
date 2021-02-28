@@ -15,7 +15,7 @@ output:
       navigation:
         scroll: true
 editor_options: 
-  chunk_output_type: c=onsole
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -34,7 +34,8 @@ options(htmltools.dir.version = FALSE,
 
 
 knitr::opts_chunk$set(cache = T, warning = F, message = F, 
-                      dpi = 300, fig.height = 4, out.width = "100%")
+                      dpi = 300, fig.height = 4)
+                      # out.width = "100%"
 
 #xaringanExtra::use_tile_view()
 
@@ -779,7 +780,22 @@ top10
 
 ##### 3. 막대 그래프 만들기
 
-```{r p-odds-top10, fig.width=6, fig.height=4, out.width="50%"}
+```{r fig.width=6, fig.height=4, out.width="50%"}
+# 막대 그래프 만들기
+ggplot(top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
+
+
+
+---
+
+```{r fig.width=6, fig.height=4, out.width="70%", echo=F}
 # 막대 그래프 만들기
 ggplot(top10, aes(x = reorder(word, log_odds_ratio),
                       y = log_odds_ratio,
@@ -792,12 +808,6 @@ ggplot(top10, aes(x = reorder(word, log_odds_ratio),
 
 ---
 
-```{r ref.label="p-odds-top10", echo=F, fig.width=6, fig.height=4, out.width="80%"}
-```
-
----
-
-
 name: 04-4
 class: title1
 
@@ -807,292 +817,742 @@ class: title1
 
 #### 감정 단어가 사용된 원문 살펴보기
 
-- `"소름"`, `"미친"` 부정적인 의미
-- 긍정적인 감정을 극적으로 표현하기 위해 사용된 단어
+- `"소름"`, `"미친"`: 긍정적인 감정을 극적으로 표현한 단어
 
-긍정적인 의미로 사용되었음을 알 수 있습니다. -->
-
-```{r}
+```{r, R.options=list(tibble.width = 50)}
 # "소름"이 사용된 댓글
 score_comment %>%
   filter(str_detect(reply, "소름")) %>%
   select(reply)
 ```
 
+---
+
+#### 감정 단어가 사용된 원문 살펴보기
+
+- `"소름"`, `"미친"`: 긍정적인 감정을 극적으로 표현한 단어
+
+```{r, R.options=list(tibble.width = 50, tibble.print_max=10)}
+# "미친"이 사용된 댓글
+score_comment %>%
+  filter(str_detect(reply, "미친")) %>%
+  select(reply)
+```
+
+---
+
+- `"소름"`, `"미친"`이 감정 사전에 부정적인 단어로 분류되어 있어서 생긴 문제
+- 텍스트의 맥락이 감정 사전의 맥락과 다르면 반대되는 감정 점수 부여
+- 감정 사전 수정 필요
+
+```{r}
+dic %>% filter(word %in% c("소름", "소름이", "미친"))
+```
+
+
+---
+
+#### 감정 사전 수정하기
+
+- `"소름이"`, `"소름"`, `"미친"`의 `polarity`를 양수 2로 수정
+
+```{r}
+new_dic <- dic %>%
+  mutate(polarity = ifelse(word %in% c("소름", "소름이", "미친"), 2, polarity))
+
+new_dic %>% filter(word %in% c("소름", "소름이", "미친"))
+```
 
 ---
 
 
-<!-- ```{r} -->
-<!-- # "미친"이 사용된 댓글 -->
-<!-- score_comment %>% -->
-<!--   filter(str_detect(reply, "미친")) %>% -->
-<!--   select(reply) -->
-<!-- ``` -->
+#### 수정한 사전으로 감정 점수 부여하기
 
-<!-- --- -->
+```{r}
+new_word_comment <- word_comment %>%
+  select(-polarity) %>%
+  left_join(new_dic, by = "word") %>%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity))
+```
 
+---
 
-<!-- - 감정 사전에 부정적인 단어로 분류되어 있어서 생긴 문제 -->
-<!-- - 텍스트의 맥락이 감정 사전의 맥락과 다르면 반대되는 감정 점수 부여하는 오류 발생 -->
-<!-- - 정확하게 분석하려면 감정 사전 수정 -->
+#### 댓글별 감정 점수 구하기
 
-<!-- ```{r} -->
-<!-- dic %>% filter(word %in% c("소름", "소름이", "미친")) -->
-<!-- ``` -->
+<br-back-10>
 
+```{r, R.options=list(tibble.width = 50)}
+new_score_comment <- new_word_comment %>%
+  group_by(id, reply) %>%
+  summarise(score = sum(polarity)) %>%
+  ungroup()
 
-<!-- --- -->
+new_score_comment %>%
+  select(score, reply) %>%
+  arrange(-score)
+```
 
-<!-- #### 감정 사전 수정하기 -->
+`r fontawesome("lightbulb")` `ungroup()`: 이후 분석 작업은 그룹별로 처리하지 않도록 그룹 해제
 
-<!-- - `"소름이"`, `"소름"`, `"미친"`의 `polarity`를 양수 2로 수정 -->
+---
 
-<!-- ```{r} -->
-<!-- new_dic <- dic %>% -->
-<!--   mutate(polarity = ifelse(word %in% c("소름", "소름이", "미친"), 2, polarity)) -->
 
-<!-- new_dic %>% filter(word %in% c("소름", "소름이", "미친")) -->
-<!-- ``` -->
 
-<!-- --- -->
 
+#### 전반적인 감정 경향 살펴보기
 
-<!-- #### 수정한 사전으로 감정 점수 부여하기 -->
 
-<!-- ```{r} -->
-<!-- new_word_comment <- word_comment %>% -->
-<!--   select(-polarity) %>% -->
-<!--   left_join(new_dic, by = "word") %>% -->
-<!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) -->
-<!-- ``` -->
+##### 1. 감정 분류하기
 
-<!-- --- -->
+```{r}
+# 1점 기준으로 긍정 중립 부정 분류
+new_score_comment <- new_score_comment %>%
+  mutate(sentiment = ifelse(score >=  1, "pos",
+                     ifelse(score <= -1, "neg", "neu")))
+```
 
-<!-- #### 댓글별 감정 점수 구하기 -->
+---
 
-<!-- ```{r} -->
-<!-- new_score_comment <- new_word_comment %>% -->
-<!--   group_by(id, reply) %>% -->
-<!--   summarise(score = sum(polarity)) %>% -->
-<!--   ungroup() -->
+##### 2. 감정 범주별 빈도와 비율 구하기
 
-<!-- new_score_comment %>% -->
-<!--   select(score, reply) %>% -->
-<!--   arrange(-score) -->
-<!-- ``` -->
+.pull-left[
+```{r}
+# 원본 감정 사전 활용
+score_comment %>% #<<
+  count(sentiment) %>%
+  mutate(ratio = n/sum(n)*100)
+```
+]
 
-<!-- `r fontawesome("lightbulb")` `ungroup()`: 이후 분석 작업은 그룹별로 처리하지 않도록 그룹 해제 -->
+.pull-right[
 
-<!-- --- -->
+```{r}
+# 수정한 감정 사전 활용
+new_score_comment %>% #<<
+  count(sentiment) %>%
+  mutate(ratio = n/sum(n)*100)
+```
+]
 
+---
 
-<!-- #### 전반적인 감정 경향 살펴보기 -->
+##### 3. 분석 결과 비교하기
 
+```{r}
+word <- "소름|소름이|미친"
+```
 
-<!-- ##### 1. 감정 분류하기 -->
 
-<!-- ```{r} -->
-<!-- # 1점 기준으로 긍정 중립 부정 분류 -->
-<!-- new_score_comment <- new_score_comment %>% -->
-<!--   mutate(sentiment = ifelse(score >=  1, "pos", -->
-<!--                      ifelse(score <= -1, "neg", "neu"))) -->
-<!-- ``` -->
+.pull-left[
+```{r}
+# 원본 감정 사전 활용
+score_comment %>% #<<
+  filter(str_detect(reply, word)) %>%
+  count(sentiment)
+```
+]
 
-<!-- ##### 2. 감정 범주별 빈도와 비율 구하기 -->
+.pull-right[
 
 
-<!-- .pull-left[ -->
-<!-- ```{r} -->
-<!-- # 원본 감정 사전 활용 -->
-<!-- score_comment %>% -->
-<!--   count(sentiment) %>% -->
-<!--   mutate(ratio = n/sum(n)*100) -->
-<!-- ``` -->
+```{r}
+# 수정한 감정 사전 활용
+new_score_comment %>% #<<
+  filter(str_detect(reply, word)) %>%
+  count(sentiment)
+```
+]
 
+`r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` `str_detect()`에 여러 문자를 입력할 때는 `|`로 문자를 구분
 
-<!-- .pull-right[ -->
+---
 
-<!-- ```{r} -->
-<!-- # 수정한 감정 사전 활용 -->
-<!-- new_score_comment %>% -->
-<!--   count(sentiment) %>% -->
-<!--   mutate(ratio = n/sum(n)*100) -->
-<!-- ``` -->
-<!-- ] -->
+#### 감정 범주별 주요 단어 살펴보기
 
-<!-- --- -->
+##### 1. 두 글자 이상 한글 단어만 남기고 단어 빈도 구하기
 
-<!-- ##### 3. 분석 결과 비교하기 -->
+```{r}
+# 토큰화 및 전처리
+new_comment <- new_score_comment %>%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",
+                drop = F) %>%
+  filter(str_detect(word, "[가-힣]") &
+           str_count(word) >= 2)
 
-<!-- .pull-left[ -->
+# 감정 및 단어별 빈도 구하기
+new_frequency_word <- new_comment %>%
+  count(sentiment, word, sort = T)
+```
 
 
-<!-- ```{r} -->
-<!-- word <- "소름|소름이|미친" -->
+---
 
-<!-- # 원본 감정 사전 활용 -->
-<!-- score_comment %>% -->
-<!--   filter(str_detect(reply, word)) %>% -->
-<!--   count(sentiment) -->
-<!-- ``` -->
-<!-- ] -->
+##### 2. 로그 오즈비 구하기
 
-<!-- .pull-right[ -->
+```{r}
+# Wide form으로 변환
+new_comment_wide <- new_frequency_word %>%
+  filter(sentiment != "neu") %>%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = list(n = 0))
 
+# 로그 오즈비 구하기
+new_comment_wide <- new_comment_wide %>%
+  mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) /
+                              ((neg + 1) / (sum(neg + 1)))))
+```
 
-<!-- ```{r} -->
-<!-- # 수정한 감정 사전 활용 -->
-<!-- new_score_comment %>% -->
-<!--   filter(str_detect(reply, word)) %>% -->
-<!--   count(sentiment) -->
-<!-- ``` -->
-<!-- ] -->
+---
 
-<!-- `r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` `str_detect()`에 여러 문자를 입력할 때는 `|`로 문자를 구분 -->
+##### 3. 로그 오즈비가 큰 단어로 막대 그래프 만들기
 
-<!-- --- -->
 
-<!-- #### 감정 범주별 주요 단어 살펴보기 -->
+```{r fig.width=6, fig.height=4, out.width="38%"}
+new_top10 <- new_comment_wide %>%
+  group_by(sentiment = ifelse(log_odds_ratio > 0, "pos", "neg")) %>%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
 
+ggplot(new_top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
 
-<!-- ##### 1. 두 글자 이상 한글 단어만 남기고 단어 빈도 구하기 -->
+---
 
-<!-- ```{r} -->
-<!-- # 토큰화 및 전처리 -->
-<!-- new_comment <- new_score_comment %>% -->
-<!--   unnest_tokens(input = reply, -->
-<!--                 output = word, -->
-<!--                 token = "words", -->
-<!--                 drop = F) %>% -->
-<!--   filter(str_detect(word, "[가-힣]") & -->
-<!--            str_count(word) >= 2) -->
+```{r fig.width=6, fig.height=4, out.width="80%", echo=FALSE}
+new_top10 <- new_comment_wide %>%
+  group_by(sentiment = ifelse(log_odds_ratio > 0, "pos", "neg")) %>%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
 
-<!-- # 감정 및 단어별 빈도 구하기 -->
-<!-- new_frequency_word <- new_comment %>% -->
-<!--   count(sentiment, word, sort = T) -->
-<!-- ``` -->
+ggplot(new_top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
 
+---
 
-<!-- --- -->
+##### 4. 주요 단어가 사용된 댓글 살펴보기
 
-<!-- ##### 2. 로그 오즈비 구하기 -->
+##### 긍정 댓글 원문
 
-<!-- ```{r} -->
-<!-- # Wide form으로 변환 -->
-<!-- new_comment_wide <- new_frequency_word %>% -->
-<!--   filter(sentiment != "neu") %>% -->
-<!--   pivot_wider(names_from = sentiment, -->
-<!--               values_from = n, -->
-<!--               values_fill = list(n = 0)) -->
+```{r, R.options=list(tibble.width = 50)}
+new_score_comment %>%
+  filter(sentiment == "pos" & str_detect(reply, "축하")) %>%
+  select(reply)
+```
 
-<!-- # 로그 오즈비 구하기 -->
-<!-- new_comment_wide <- new_comment_wide %>% -->
-<!--   mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) / -->
-<!--                               ((neg + 1) / (sum(neg + 1))))) -->
-<!-- ``` -->
+---
 
-<!-- --- -->
+##### 4. 주요 단어가 사용된 댓글 살펴보기
 
-<!-- ##### 3. 로그 오즈비가 큰 단어로 막대 그래프 만들기 -->
+##### 긍정 댓글 원문
 
 
-<!-- ```{r} -->
-<!-- new_top10 <- new_comment_wide %>% -->
-<!--   group_by(sentiment = ifelse(log_odds_ratio > 0, "pos", "neg")) %>% -->
-<!--   slice_max(abs(log_odds_ratio), n = 10, with_ties = F) -->
+```{r, R.options=list(tibble.width = 50)}
+new_score_comment %>%
+  filter(sentiment == "pos" & str_detect(reply, "소름")) %>%
+  select(reply)
+```
 
-<!-- # 막대 그래프 만들기 -->
-<!-- ggplot(new_top10, aes(x = reorder(word, log_odds_ratio), -->
-<!--                       y = log_odds_ratio, -->
-<!--                       fill = sentiment)) + -->
-<!--   geom_col() + -->
-<!--   coord_flip() + -->
-<!--   labs(x = NULL) + -->
-<!--   theme(text = element_text(family = "nanumgothic")) -->
-<!-- ``` -->
+---
 
+##### 4. 주요 단어가 사용된 댓글 살펴보기
 
-<!-- --- -->
+##### 부정 댓글 원문
 
-<!-- ##### 4. 주요 단어가 사용된 댓글 살펴보기 -->
+```{r, R.options=list(tibble.width = 50, tibble.print_max = 15)}
+new_score_comment %>%
+  filter(sentiment == "neg" & str_detect(reply, "좌빨")) %>%
+  select(reply)
+```
 
-<!-- ```{r} -->
-<!-- # 긍정 댓글 원문 -->
-<!-- new_score_comment %>% -->
-<!--   filter(sentiment == "pos" & str_detect(reply, "축하")) %>% -->
-<!--   select(reply) %>% -->
-<!--   print(n = 3) -->
-<!-- ``` -->
+---
 
+##### 4. 주요 단어가 사용된 댓글 살펴보기
 
-<!-- --- -->
+##### 부정 댓글 원문
 
-<!-- ```{r} -->
-<!-- new_score_comment %>% -->
-<!--   filter(sentiment == "pos" & str_detect(reply, "소름")) %>% -->
-<!--   select(reply) -->
-<!-- ``` -->
+```{r, R.options=list(tibble.width = 50)}
+new_score_comment %>%
+  filter(sentiment == "neg" & str_detect(reply, "못한")) %>%
+  select(reply)
+```
 
-<!-- --- -->
+---
 
+##### 5. 분석 결과 비교하기
 
-<!-- ```{r} -->
-<!-- # 부정 댓글 원문 -->
-<!-- new_score_comment %>% -->
-<!--   filter(sentiment == "neg" & str_detect(reply, "좌빨")) %>% -->
-<!--   select(reply) -->
-<!-- ``` -->
+.pull-left[
+```{r eval=F}
+# 수정한 감정 사전 활용
+new_top10 %>% #<<
+  select(-pos, -neg) %>%
+  arrange(-log_odds_ratio)
+```
+]
 
-<!-- --- -->
+.pull-right[
 
-<!-- ```{r} -->
-<!-- new_score_comment %>% -->
-<!--   filter(sentiment == "neg" & str_detect(reply, "못한")) %>% -->
-<!--   select(reply) %>% -->
-<!--   print(n = 3) -->
-<!-- ``` -->
+```{r eval=F}
+# 원본 감정 사전 활용
+top10 %>% #<<
+  select(-pos, -neg) %>%
+  arrange(-log_odds_ratio)
+```
+]
 
-<!-- --- -->
+---
 
-<!-- ##### 5. 분석 결과 비교하기 -->
+.pull-left[
+```{r echo=F, highlight.output = c(7)}
+# 수정한 감정 사전 활용
+new_top10 %>%
+  select(-pos, -neg) %>%
+  arrange(-log_odds_ratio)
+```
+]
 
-<!-- .pull-left[ -->
-<!-- # 수정한 감정 사전 활용 -->
-<!-- ```{r} -->
-<!-- new_top10 %>%  -->
-<!--   select(-pos, -neg) %>%  -->
-<!--   arrange(-log_odds_ratio) %>%  -->
-<!--   print(n = Inf) -->
-<!-- ``` -->
-<!-- ] -->
+.pull-right[
 
-<!-- .pull-right[ -->
+```{r echo=F, highlight.output = c(22, 24)}
+# 원본 감정 사전 활용
+top10 %>%
+  select(-pos, -neg) %>%
+  arrange(-log_odds_ratio)
+```
+]
 
-<!-- ```{r} -->
-<!-- # 원본 감정 사전 활용 -->
-<!-- top10 %>%   -->
-<!--   select(-pos, -neg) %>%   -->
-<!--   arrange(-log_odds_ratio) %>%   -->
-<!--   print(n = Inf) -->
-<!-- ``` -->
-<!-- ] -->
+---
 
-<!-- --- -->
+- `"미친"`이 목록에서 사라짐: 로그 오즈비가 10위 안에 들지 못할 정도로 낮기 때문
+  - 긍정 단어 10위 `"최고의"` 로그 오즈비 2.90
 
-<!-- - `"미친"`이 목록에서 사라진 이유 -->
-<!-- - 로그 오즈비가 10위 안에 들지 못할 정도로 낮기 때문 -->
+```{r}
+new_comment_wide %>% 
+  filter(word == "미친")
+```
 
-<!-- ```{r} -->
-<!-- new_comment_wide -->
-<!-- ``` -->
 
-<!-- <!-- 니다. 다음 코드의 출력 결과를 보면 "미친"의 로그 오즈비가 1.80입니다. new_top10에서  --> -->
-<!-- <!-- 긍정 단어 10위인 "최고의"의 로그 오즈비가 2.90이므로 "미친"이 목록에 포함되지 않은 것 --> -->
-<!-- <!-- 입니다.  --> -->
+---
 
 
-<!-- --- -->
+class: title1
 
+정리하기
 
+---
 
+### 정리하기
+
+##### 1. 단어 빈도 비교하기
+
+```{r eval=F}
+# 토큰화
+speeches <- speeches %>%
+  unnest_tokens(input = value,
+                output = word,
+                token = extractNoun)
+
+# 하위 집단별 단어 빈도 구하기
+frequency <- speeches %>%
+  count(president, word) %>%
+  filter(str_count(word) > 1)
+
+# 가장 많이 사용된 단어 추출
+top10 <- frequency %>%
+  group_by(president) %>%
+  slice_max(n, n = 10, with_ties = F)
+```
+
+---
+
+### 정리하기
+
+##### 2. 로그 오즈비로 단어 비교하기
+
+```{r}
+# long form을 wide form으로 변환
+frequency_wide <- frequency %>%
+  pivot_wider(names_from = president,
+              values_from = n,
+              values_fill = list(n = 0))
+
+# 로그 오즈비 구하기
+frequency_wide <- frequency_wide %>%
+  mutate(log_odds_ratio = log(((moon + 1) / (sum(moon + 1))) /
+                              ((park + 1) / (sum(park + 1)))))
+
+# 상대적으로 중요한 단어 추출
+top10 <- frequency_wide %>%
+  group_by(president = ifelse(log_odds_ratio > 0, "moon", "park")) %>%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
+```
+
+---
+
+### 정리하기
+
+##### 3. TF-IDF로 단어 비교하기
+
+```{r eval=F}
+# TF-IDF 구하기
+frequecy <- frequecy %>%
+  bind_tf_idf(term = word,
+              document = president,
+              n = n) %>%
+  arrange(-tf_idf)
+
+# 상대적으로 중요한 단어 추출
+top10 <- frequecy %>%
+  arrange(tf_idf) %>%
+  group_by(president) %>%
+  slice_max(tf_idf, n = 10, with_ties = F)
+```
+
+---
+
+class: title1
+
+분석 도전
+
+---
+
+### 분석 도전(1/2)
+
+**Q1. 역대 대통령의 대선 출마 선언문을 담은 `speeches_presidents.csv`를 이용해 문제를 해결해 보세요.**
+
+Q1.1 `speeches_presidents.csv`를 불러와 이명박 전 대통령과 노무현 전 대통령의 연설문을 추출하고 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 분석에 적합하게 전처리하세요.
+
+Q1.2 연설문에서 명사를 추출한 다음 연설문별 단어 빈도를 구하세요.
+
+Q1.3 로그 오즈비를 이용해 두 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+Q1.4 두 연설문에서 상대적으로 중요한 단어를 나타낸 막대 그래프를 만드세요.
+
+
+
+---
+
+Q1.1 `speeches_presidents.csv`를 불러와 이명박 전 대통령과 노무현 전 대통령의 연설문을 추출하고 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 분석에 적합하게 전처리하세요.
+
+```{r eval=FALSE}
+# 데이터 불러오기
+library(readr)
+raw_speeches <- read_csv("speeches_presidents.csv")
+
+# 전처리
+library(dplyr)
+library(stringr)
+speeches <- raw_speeches %>%
+  filter(president %in% c("이명박", "노무현")) %>%
+  mutate(value = str_replace_all(value, "[^가-힣]", " "),
+         value = str_squish(value))
+
+speeches
+```
+
+```{r echo=F, R.options=list(tibble.width = 50)}
+library(readr)
+raw_speeches <- read_csv("../Data/speeches_presidents.csv")
+
+# 전처리
+library(dplyr)
+library(stringr)
+speeches <- raw_speeches %>%
+  filter(president %in% c("이명박", "노무현")) %>%
+  mutate(value = str_replace_all(value, "[^가-힣]", " "),
+         value = str_squish(value))
+
+speeches
+```
+
+---
+
+Q1.2 연설문에서 명사를 추출한 다음 연설문별 단어 빈도를 구하세요.
+
+<br-back-10>
+
+```{r eval=FALSE}
+# 명사 추출
+library(tidytext)
+library(KoNLP)
+speeches <- speeches %>%
+  unnest_tokens(input = value,
+                output = word,
+                token = extractNoun)
+
+speeches
+```
+
+<br-back-10>
+
+```{r echo=FALSE}
+# 명사 추출
+library(tidytext)
+library(KoNLP)
+speeches <- speeches %>%
+  unnest_tokens(input = value,
+                output = word,
+                token = extractNoun)
+
+speeches
+```
+
+
+
+---
+
+Q1.2 연설문에서 명사를 추출한 다음 연설문별 단어 빈도를 구하세요.
+
+```{r}
+# 연설문별 단어 빈도 구하기
+frequency <- speeches %>%
+  count(president, word) %>%
+  filter(str_count(word) > 1)
+
+frequency
+```
+
+---
+
+Q1.3 로그 오즈비를 이용해 두 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+```{r}
+# long form을 wide form으로 변환
+library(tidyr)
+frequency_wide <- frequency %>%
+  pivot_wider(names_from = president,     # 변수명으로 만들 값
+              values_from = n,            # 변수에 채워 넣을 값
+              values_fill = list(n = 0))  # 결측치 0으로 변환
+
+frequency_wide
+```
+
+---
+
+Q1.3 로그 오즈비를 이용해 두 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+```{r}
+# 로그 오즈비 구하기
+frequency_wide <- frequency_wide %>%
+  mutate(log_odds_ratio = log(((이명박 + 1) / (sum(이명박 + 1))) /
+                              ((노무현 + 1) / (sum(노무현 + 1)))))
+
+frequency_wide
+```
+
+---
+
+Q1.3 로그 오즈비를 이용해 두 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+```{r eval=F}
+# 상대적으로 중요한 단어 추출
+top10 <- frequency_wide %>%
+  group_by(president = ifelse(log_odds_ratio > 0, "lee", "roh")) %>%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
+
+top10
+```
+
+---
+```{r echo=FALSE}
+# 상대적으로 중요한 단어 추출
+top10 <- frequency_wide %>%
+  group_by(president = ifelse(log_odds_ratio > 0, "lee", "roh")) %>%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
+
+top10
+```
+
+
+---
+
+Q1.4 두 연설문에서 상대적으로 중요한 단어를 나타낸 막대 그래프를 만드세요.
+```{r fig.width=6, fig.height=4, out.width="50%"}
+library(ggplot2)
+ggplot(top10, aes(x = reorder(word, log_odds_ratio),
+                  y = log_odds_ratio,
+                  fill = president)) +
+  geom_col() +
+  coord_flip () +
+  labs(x = NULL)
+```
+
+---
+```{r echo=F, fig.width=6, fig.height=4, out.width="90%"}
+ggplot(top10, aes(x = reorder(word, log_odds_ratio),
+                  y = log_odds_ratio,
+                  fill = president)) +
+  geom_col() +
+  coord_flip () +
+  labs(x = NULL)
+```
+
+---
+
+
+### 분석 도전(2/2)
+
+**Q2. 역대 대통령의 취임사를 담은 `inaugural_address.csv`를 이용해 문제를 해결해 보세요.**
+
+Q2.1 `inaugural_address.csv`를 불러와 분석에 적합하게 전처리하고 연설문에서 명사를 추출하세요.
+
+Q2.2 TF-IDF를 이용해 각 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+Q2.3 각 연설문에서 상대적으로 중요한 단어를 나타낸 막대 그래프를 만드세요.
+
+---
+
+Q2.1 `inaugural_address.csv`를 불러와 분석에 적합하게 전처리하고 연설문에서 명사를 추출하세요.
+
+```{r eval=FALSE}
+# 데이터 불러오기
+library(readr)
+raw_speeches <- read_csv("inaugural_address.csv")
+
+# 전처리
+library(dplyr)
+library(stringr)
+speeches <- raw_speeches %>%
+  mutate(value = str_replace_all(value, "[^가-힣]", " "),
+         value = str_squish(value))
+
+speeches
+```
+
+```{r echo=FALSE, R.options=list(tibble.width = 50)}
+# 데이터 불러오기
+library(readr)
+raw_speeches <- read_csv("../Data/inaugural_address.csv")
+
+# 전처리
+library(dplyr)
+library(stringr)
+speeches <- raw_speeches %>%
+  mutate(value = str_replace_all(value, "[^가-힣]", " "),
+         value = str_squish(value))
+
+speeches
+```
+
+---
+
+Q2.1 `inaugural_address.csv`를 불러와 분석에 적합하게 전처리하고 연설문에서 명사를 추출하세요.
+
+
+```{r eval=F}
+# 명사 기준 토큰화
+library(tidytext)
+library(KoNLP)
+speeches <- speeches %>%
+  unnest_tokens(input = value,
+                output = word,
+                token = extractNoun)
+
+speeches
+```
+
+---
+```{r echo=F}
+# 명사 기준 토큰화
+library(tidytext)
+library(KoNLP)
+speeches <- speeches %>%
+  unnest_tokens(input = value,
+                output = word,
+                token = extractNoun)
+
+speeches
+```
+
+---
+
+Q2.2 TF-IDF를 이용해 각 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+```{r}
+# 단어 빈도 구하기
+frequecy <- speeches %>%
+  count(president, word) %>%
+  filter(str_count(word) > 1)
+
+frequecy
+```
+
+---
+
+Q2.2 TF-IDF를 이용해 각 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+```{r}
+# TF-IDF 구하기
+frequecy <- frequecy %>%
+  bind_tf_idf(term = word,           # 단어
+              document = president,  # 텍스트 구분 변수
+              n = n) %>%             # 단어 빈도
+  arrange(-tf_idf)
+
+frequecy
+```
+
+---
+
+Q2.2 TF-IDF를 이용해 각 연설문에서 상대적으로 중요한 단어를 10개씩 추출하세요.
+
+```{r}
+# 상대적으로 중요한 단어 추출
+top10 <- frequecy %>%
+  group_by(president) %>%
+  slice_max(tf_idf, n = 10, with_ties = F)
+
+head(top10)
+```
+
+
+---
+
+
+
+Q2.3 각 연설문에서 상대적으로 중요한 단어를 나타낸 막대 그래프를 만드세요.
+
+```{r fig.width=6, fig.height=5, out.width="35%"}
+library(ggplot2)
+ggplot(top10, aes(x = reorder_within(word, tf_idf, president),
+                  y = tf_idf,
+                  fill = president)) +
+  geom_col(show.legend = F) +
+  coord_flip () +
+  facet_wrap(~ president, scales = "free", ncol = 2) +
+  scale_x_reordered() +
+  labs(x = NULL)
+```
+
+---
+
+
+```{r echo=F, fig.width=6, fig.height=5, out.width="75%"}
+ggplot(top10, aes(x = reorder_within(word, tf_idf, president),
+                  y = tf_idf,
+                  fill = president)) +
+  geom_col(show.legend = F) +
+  coord_flip () +
+  facet_wrap(~ president, scales = "free", ncol = 2) +
+  scale_x_reordered() +
+  labs(x = NULL)
+```
+
+---
+
+
+class: title0
+
+끝
