@@ -895,166 +895,503 @@ frequency_score
 
 ---
 
-&lt;!-- ```{r p-frequency_score-ratio, out.width="40%", fig.width=4, fig.height=4} --&gt;
-&lt;!-- ggplot(frequency_score, aes(x = dummy, y = ratio, fill = sentiment)) + --&gt;
-&lt;!--   geom_col() + --&gt;
-&lt;!--   geom_text(aes(label = paste0(round(ratio, 1), "%")), --&gt;
-&lt;!--               position = position_stack(vjust = 0.5)) + --&gt;
-&lt;!--   theme(axis.title.x = element_blank(),  # x축 이름 삭제 --&gt;
-&lt;!--         axis.text.x  = element_blank(),  # x축 값 삭제 --&gt;
-&lt;!--         axis.ticks.x = element_blank())  # x축 눈금 삭제 --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- --- --&gt;
-&lt;!-- ```{r ref.label="p-frequency_score-ratio", echo=F, out.width="60%", fig.width=4, fig.height=4} --&gt;
-&lt;!-- ``` --&gt;
+```r
+ggplot(frequency_score, aes(x = dummy, y = ratio, fill = sentiment)) +
+  geom_col() +
+  geom_text(aes(label = paste0(round(ratio, 1), "%")),
+              position = position_stack(vjust = 0.5)) +
+  theme(axis.title.x = element_blank(),  # x축 이름 삭제
+        axis.text.x  = element_blank(),  # x축 값 삭제
+        axis.ticks.x = element_blank())  # x축 눈금 삭제
+```
 
-&lt;!-- --- --&gt;
+&lt;img src="04-sentimentAnalysis_files/figure-html/p-frequency_score-ratio-1.png" width="40%" /&gt;
 
-&lt;!-- name: 04-3 --&gt;
-&lt;!-- class: title1 --&gt;
+---
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-35-1.png" width="60%" /&gt;
 
-&lt;!-- 04-3 감정 범주별 주요 단어 살펴보기 --&gt;
+---
 
-&lt;!-- --- --&gt;
+name: 04-3
+class: title1
+
+04-3 감정 범주별 주요 단어 살펴보기
+
+---
 
 
-&lt;!-- #### 감정 범주별 단어 빈도 구하기 --&gt;
+#### 감정 범주별 단어 빈도 구하기
 
-&lt;!-- ##### 1. 토큰화하고 두 글자 이상 한글 단어만 남기기 --&gt;
+##### 1. 토큰화하고 두 글자 이상 한글 단어만 남기기
+
+
+```r
+comment &lt;- score_comment %&gt;%
+  unnest_tokens(input = reply,          # 단어 기준 토큰화
+                output = word,
+                token = "words",
+                drop = F) %&gt;%
+  filter(str_detect(word, "[가-힣]") &amp;  # 한글 추출
+         str_count(word) &gt;= 2)          # 두 글자 이상 추출
+```
+
+---
+
+##### 2. 감정 범주별 빈도 구하기
+
+
+```r
+# 감정 및 단어별 빈도 구하기
+frequency_word &lt;- comment %&gt;%
+  filter(str_count(word) &gt;= 2) %&gt;%
+  count(sentiment, word, sort = T)
+
+frequency_word
+```
+
+```
+## # A tibble: 19,223 x 3
+##    sentiment word               n
+##    &lt;chr&gt;     &lt;chr&gt;          &lt;int&gt;
+##  1 neu       축하합니다       214
+##  2 neu       봉준호           203
+##  3 neu       기생충           164
+##  4 neu       축하드립니다     155
+##  5 neu       정말             146
+##  6 neu       대박             134
+##  7 neu       진짜             121
+##  8 pos       봉준호           106
+##  9 pos       정말              97
+## 10 neu       자랑스럽습니다    96
+## # … with 19,213 more rows
+```
+
+---
+
+.pull-left[
+
+```r
+# 긍정 댓글 고빈도 단어
+frequency_word %&gt;%
+  filter(sentiment == "pos")
+```
+
+```
+## # A tibble: 5,234 x 3
+##    sentiment word           n
+##    &lt;chr&gt;     &lt;chr&gt;      &lt;int&gt;
+##  1 pos       봉준호       106
+##  2 pos       정말          97
+##  3 pos       대단하다      83
+##  4 pos       진짜          79
+##  5 pos       자랑스럽다    78
+##  6 pos       축하          63
+##  7 pos       대한민국      61
+##  8 pos       영화          58
+##  9 pos       멋지다        55
+## 10 pos       기생충        53
+## # … with 5,224 more rows
+```
+]
+
+.pull-right[
+
+```r
+# 부정 댓글 고빈도 단어
+frequency_word %&gt;%
+  filter(sentiment == "neg")
+```
+
+```
+## # A tibble: 4,080 x 3
+##    sentiment word             n
+##    &lt;chr&gt;     &lt;chr&gt;        &lt;int&gt;
+##  1 neg       소름            49
+##  2 neg       봉준호          47
+##  3 neg       기생충          33
+##  4 neg       이런            33
+##  5 neg       정말            32
+##  6 neg       진짜            26
+##  7 neg       좌빨            21
+##  8 neg       너무            20
+##  9 neg       블랙리스트에    19
+## 10 neg       영화            18
+## # … with 4,070 more rows
+```
+
+]
+
+
+---
+
+#### 상대적으로 자주 사용된 단어 비교하기
+
+##### 1. 로그 오즈비 구하기
+
+.pull-left[
+
+
+```r
+# wide form으로 변환
+library(tidyr)
+comment_wide &lt;- frequency_word %&gt;%
+  filter(sentiment != "neu") %&gt;%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = list(n = 0))
+
+comment_wide
+```
+]
+
+.pull-right[
+
+
+```
+## # A tibble: 8,380 x 3
+##    word         pos   neg
+##    &lt;chr&gt;      &lt;int&gt; &lt;int&gt;
+##  1 봉준호       106    47
+##  2 정말          97    32
+##  3 대단하다      83     1
+##  4 진짜          79    26
+##  5 자랑스럽다    78     1
+##  6 축하          63     0
+##  7 대한민국      61     4
+##  8 영화          58    18
+##  9 멋지다        55     0
+## 10 기생충        53    33
+## # … with 8,370 more rows
+```
+
+]
+
+
+---
+
+
+```r
+# 로그 오즈비 구하기
+comment_wide &lt;- comment_wide %&gt;%
+  mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) /
+                              ((neg + 1) / (sum(neg + 1)))))
+
+comment_wide
+```
+
+```
+## # A tibble: 8,380 x 4
+##    word         pos   neg log_odds_ratio
+##    &lt;chr&gt;      &lt;int&gt; &lt;int&gt;          &lt;dbl&gt;
+##  1 봉준호       106    47          0.589
+##  2 정말          97    32          0.876
+##  3 대단하다      83     1          3.52 
+##  4 진짜          79    26          0.873
+##  5 자랑스럽다    78     1          3.46 
+##  6 축하          63     0          3.95 
+##  7 대한민국      61     4          2.30 
+##  8 영화          58    18          0.920
+##  9 멋지다        55     0          3.81 
+## 10 기생충        53    33          0.250
+## # … with 8,370 more rows
+```
+
+
+---
+
+##### 2. 로그 오즈비가 가장 큰 단어 10개씩 추출하기
+
+
+```r
+top10 &lt;- comment_wide %&gt;%
+  group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
+
+top10
+```
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; 로그 오즈비 동점 단어 제외
+
+---
+
+
+```
+## # A tibble: 20 x 5
+## # Groups:   sentiment [2]
+##    word         pos   neg log_odds_ratio sentiment
+##    &lt;chr&gt;      &lt;int&gt; &lt;int&gt;          &lt;dbl&gt; &lt;chr&gt;    
+##  1 소름           2    49          -3.03 neg      
+##  2 좌빨           1    21          -2.61 neg      
+##  3 못한           0     7          -2.29 neg      
+##  4 미친           0     7          -2.29 neg      
+##  5 좌좀           0     6          -2.16 neg      
+##  6 소름이         1    12          -2.08 neg      
+##  7 가난한         0     5          -2.00 neg      
+##  8 모르는         0     5          -2.00 neg      
+##  9 아쉽다         0     5          -2.00 neg      
+## 10 닭그네         0     4          -1.82 neg      
+## 11 축하          63     0           3.95 pos      
+## 12 멋지다        55     0           3.81 pos      
+## 13 대단한        47     0           3.66 pos      
+## 14 좋은          42     0           3.55 pos      
+## 15 대단하다      83     1           3.52 pos      
+## 16 자랑스럽다    78     1           3.46 pos      
+## 17 최고          27     0           3.12 pos      
+## 18 세계적인      24     0           3.01 pos      
+## 19 최고의        23     0           2.97 pos      
+## 20 위대한        22     0           2.92 pos
+```
+
+---
+
+##### 3. 막대 그래프 만들기
+
+
+```r
+# 막대 그래프 만들기
+ggplot(top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
+
+&lt;img src="04-sentimentAnalysis_files/figure-html/p-odds-top10-1.png" width="50%" /&gt;
+
+---
+
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-42-1.png" width="80%" /&gt;
+
+---
+
+
+name: 04-4
+class: title1
+
+04-4 감정 사전 수정하기
+
+---
+
+#### 감정 단어가 사용된 원문 살펴보기
+
+- `"소름"`, `"미친"` 부정적인 의미
+- 긍정적인 감정을 극적으로 표현하기 위해 사용된 단어
+
+긍정적인 의미로 사용되었음을 알 수 있습니다. --&gt;
+
+
+```r
+# "소름"이 사용된 댓글
+score_comment %&gt;%
+  filter(str_detect(reply, "소름")) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 131 x 1
+##    reply                                                                        
+##    &lt;chr&gt;                                                                        
+##  1 소름돋네요                                                                   
+##  2 와..진짜소름 저 소리처음질렀어요 눈물나요.. ㅠㅠ                             
+##  3 생중계 보며 봉준호 할 때 소름이~~~!! ㅠㅠ 수상소감들으며 함께 가슴이 벅차네요. 축하합니다. 자랑스럽습니다!!! 노미네이트되진 못했…
+##  4 와 보다가 소름 짝 수고들하셨어요                                             
+##  5 한국어 소감 듣는데 소름돋네 축하드립니다                                     
+##  6 대단하다!! 봉준호 이름 나오자마자 소름                                       
+##  7 와우 브라보~ 키아누리브스의 봉준호, 순간 소름이.. 멋지십니다.                
+##  8 소름 돋네요. 축하합니다                                                      
+##  9 소름.... 기생충 각본집 산거 다시한번 잘했다는 생각이ㅠㅠㅠ 축하해요!!!!!!    
+## 10 소름끼쳤어요 너무 멋집니다 ^^!!!!                                            
+## # … with 121 more rows
+```
+
+
+---
+
 
 &lt;!-- ```{r} --&gt;
-&lt;!-- comment &lt;- score_comment %&gt;% --&gt;
-&lt;!--   unnest_tokens(input = reply,          # 단어 기준 토큰화 --&gt;
-&lt;!--                 output = word, --&gt;
-&lt;!--                 token = "words", --&gt;
-&lt;!--                 drop = F) %&gt;% --&gt;
-&lt;!--   filter(str_detect(word, "[가-힣]") &amp;  # 한글 추출 --&gt;
-&lt;!--          str_count(word) &gt;= 2)          # 두 글자 이상 추출 --&gt;
+&lt;!-- # "미친"이 사용된 댓글 --&gt;
+&lt;!-- score_comment %&gt;% --&gt;
+&lt;!--   filter(str_detect(reply, "미친")) %&gt;% --&gt;
+&lt;!--   select(reply) --&gt;
 &lt;!-- ``` --&gt;
 
 &lt;!-- --- --&gt;
 
-&lt;!-- ##### 2. 감정 범주별 빈도 구하기 --&gt;
+
+&lt;!-- - 감정 사전에 부정적인 단어로 분류되어 있어서 생긴 문제 --&gt;
+&lt;!-- - 텍스트의 맥락이 감정 사전의 맥락과 다르면 반대되는 감정 점수 부여하는 오류 발생 --&gt;
+&lt;!-- - 정확하게 분석하려면 감정 사전 수정 --&gt;
 
 &lt;!-- ```{r} --&gt;
-&lt;!-- # 감정 및 단어별 빈도 구하기 --&gt;
-&lt;!-- frequency_word &lt;- comment %&gt;% --&gt;
-&lt;!--   filter(str_count(word) &gt;= 2) %&gt;% --&gt;
-&lt;!--   count(sentiment, word, sort = T) --&gt;
+&lt;!-- dic %&gt;% filter(word %in% c("소름", "소름이", "미친")) --&gt;
 &lt;!-- ``` --&gt;
 
-&lt;!-- &lt;br-back-10&gt; --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- #### 감정 사전 수정하기 --&gt;
+
+&lt;!-- - `"소름이"`, `"소름"`, `"미친"`의 `polarity`를 양수 2로 수정 --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- new_dic &lt;- dic %&gt;% --&gt;
+&lt;!--   mutate(polarity = ifelse(word %in% c("소름", "소름이", "미친"), 2, polarity)) --&gt;
+
+&lt;!-- new_dic %&gt;% filter(word %in% c("소름", "소름이", "미친")) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+
+&lt;!-- #### 수정한 사전으로 감정 점수 부여하기 --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- new_word_comment &lt;- word_comment %&gt;% --&gt;
+&lt;!--   select(-polarity) %&gt;% --&gt;
+&lt;!--   left_join(new_dic, by = "word") %&gt;% --&gt;
+&lt;!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- #### 댓글별 감정 점수 구하기 --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- new_score_comment &lt;- new_word_comment %&gt;% --&gt;
+&lt;!--   group_by(id, reply) %&gt;% --&gt;
+&lt;!--   summarise(score = sum(polarity)) %&gt;% --&gt;
+&lt;!--   ungroup() --&gt;
+
+&lt;!-- new_score_comment %&gt;% --&gt;
+&lt;!--   select(score, reply) %&gt;% --&gt;
+&lt;!--   arrange(-score) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `ungroup()`: 이후 분석 작업은 그룹별로 처리하지 않도록 그룹 해제 --&gt;
+
+&lt;!-- --- --&gt;
+
+
+&lt;!-- #### 전반적인 감정 경향 살펴보기 --&gt;
+
+
+&lt;!-- ##### 1. 감정 분류하기 --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 1점 기준으로 긍정 중립 부정 분류 --&gt;
+&lt;!-- new_score_comment &lt;- new_score_comment %&gt;% --&gt;
+&lt;!--   mutate(sentiment = ifelse(score &gt;=  1, "pos", --&gt;
+&lt;!--                      ifelse(score &lt;= -1, "neg", "neu"))) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ##### 2. 감정 범주별 빈도와 비율 구하기 --&gt;
+
+
+&lt;!-- .pull-left[ --&gt;
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 원본 감정 사전 활용 --&gt;
+&lt;!-- score_comment %&gt;% --&gt;
+&lt;!--   count(sentiment) %&gt;% --&gt;
+&lt;!--   mutate(ratio = n/sum(n)*100) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- .pull-right[ --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 수정한 감정 사전 활용 --&gt;
+&lt;!-- new_score_comment %&gt;% --&gt;
+&lt;!--   count(sentiment) %&gt;% --&gt;
+&lt;!--   mutate(ratio = n/sum(n)*100) --&gt;
+&lt;!-- ``` --&gt;
+&lt;!-- ] --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ##### 3. 분석 결과 비교하기 --&gt;
 
 &lt;!-- .pull-left[ --&gt;
 
-&lt;!-- &lt;br-back-30&gt; --&gt;
+
 &lt;!-- ```{r} --&gt;
-&lt;!-- # 긍정 댓글 고빈도 단어 --&gt;
-&lt;!-- frequency_word %&gt;% --&gt;
-&lt;!--   filter(sentiment == "pos") --&gt;
+&lt;!-- word &lt;- "소름|소름이|미친" --&gt;
+
+&lt;!-- # 원본 감정 사전 활용 --&gt;
+&lt;!-- score_comment %&gt;% --&gt;
+&lt;!--   filter(str_detect(reply, word)) %&gt;% --&gt;
+&lt;!--   count(sentiment) --&gt;
 &lt;!-- ``` --&gt;
 &lt;!-- ] --&gt;
 
 &lt;!-- .pull-right[ --&gt;
 
-&lt;!-- &lt;br-back-30&gt; --&gt;
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 부정 댓글 고빈도 단어 --&gt;
-&lt;!-- frequency_word %&gt;% --&gt;
-&lt;!--   filter(sentiment == "neg") --&gt;
-&lt;!-- ``` --&gt;
 
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 수정한 감정 사전 활용 --&gt;
+&lt;!-- new_score_comment %&gt;% --&gt;
+&lt;!--   filter(str_detect(reply, word)) %&gt;% --&gt;
+&lt;!--   count(sentiment) --&gt;
+&lt;!-- ``` --&gt;
 &lt;!-- ] --&gt;
 
+&lt;!-- &lt;svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; `str_detect()`에 여러 문자를 입력할 때는 `|`로 문자를 구분 --&gt;
 
----
+&lt;!-- --- --&gt;
 
-&lt;!-- ### 4.3.2 상대적으로 자주 사용된 단어 비교하기 --&gt;
-
-&lt;!-- 로그 오즈비를 구해 긍정 댓글과 부정 댓글에서 상대적으로 많이 사용된 단어가 무엇인지 살펴보겠습니다. --&gt;
+&lt;!-- #### 감정 범주별 주요 단어 살펴보기 --&gt;
 
 
-&lt;!-- #### 1. 로그 오즈비 구하기 --&gt;
-
-&lt;!-- 먼저 `frequency_word` 를 Wide form으로 변환한 뒤 로그 오즈비를 계산하겠습니다. --&gt;
+&lt;!-- ##### 1. 두 글자 이상 한글 단어만 남기고 단어 빈도 구하기 --&gt;
 
 &lt;!-- ```{r} --&gt;
-&lt;!-- library(tidyr) --&gt;
-&lt;!-- comment_wide &lt;- frequency_word %&gt;% --&gt;
-&lt;!--   filter(sentiment != "neu") %&gt;%  # 중립 제외 --&gt;
+&lt;!-- # 토큰화 및 전처리 --&gt;
+&lt;!-- new_comment &lt;- new_score_comment %&gt;% --&gt;
+&lt;!--   unnest_tokens(input = reply, --&gt;
+&lt;!--                 output = word, --&gt;
+&lt;!--                 token = "words", --&gt;
+&lt;!--                 drop = F) %&gt;% --&gt;
+&lt;!--   filter(str_detect(word, "[가-힣]") &amp; --&gt;
+&lt;!--            str_count(word) &gt;= 2) --&gt;
+
+&lt;!-- # 감정 및 단어별 빈도 구하기 --&gt;
+&lt;!-- new_frequency_word &lt;- new_comment %&gt;% --&gt;
+&lt;!--   count(sentiment, word, sort = T) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ##### 2. 로그 오즈비 구하기 --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # Wide form으로 변환 --&gt;
+&lt;!-- new_comment_wide &lt;- new_frequency_word %&gt;% --&gt;
+&lt;!--   filter(sentiment != "neu") %&gt;% --&gt;
 &lt;!--   pivot_wider(names_from = sentiment, --&gt;
 &lt;!--               values_from = n, --&gt;
 &lt;!--               values_fill = list(n = 0)) --&gt;
 
-&lt;!-- comment_wide --&gt;
-
 &lt;!-- # 로그 오즈비 구하기 --&gt;
-&lt;!-- comment_wide &lt;- comment_wide %&gt;% --&gt;
+&lt;!-- new_comment_wide &lt;- new_comment_wide %&gt;% --&gt;
 &lt;!--   mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) / --&gt;
 &lt;!--                               ((neg + 1) / (sum(neg + 1))))) --&gt;
-
-&lt;!-- comment_wide --&gt;
 &lt;!-- ``` --&gt;
 
+&lt;!-- --- --&gt;
 
-&lt;!-- #### 2. 로그 오즈비가 가장 큰 단어 10개씩 추출하기 --&gt;
+&lt;!-- ##### 3. 로그 오즈비가 큰 단어로 막대 그래프 만들기 --&gt;
 
-&lt;!-- &lt;!-- 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출하겠습니다. 그럼 다음, 로그 오즈비가 0보다 크면 `"pos"`, 그렇지 않으면 `"neg"`로 분류하고, 결과를 보기 편하게 로그 오즈비 기준으로 내림차순 정렬하겠습니다. 출력 결과를 살펴보면 긍정 댓글과 부정 댓글에 상대적으로 어떤 단어가 더 많이 사용됐는지 알 수 있습니다. --&gt; --&gt;
-
-&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
-&lt;!-- &lt;!-- top10 &lt;- comment_wide %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   filter(rank(log_odds_ratio) &lt;= 10 | rank(-log_odds_ratio) &lt;= 10) %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   mutate(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   arrange(-log_odds_ratio) --&gt; --&gt;
-
-&lt;!-- &lt;!-- top10 %&gt;% print(n = Inf) --&gt; --&gt;
-&lt;!-- &lt;!-- ``` --&gt; --&gt;
-
-
-&lt;!-- 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출하겠습니다. 먼저 `log_odds_ratio`가 `0`보다 크면 `"pos"`, 그렇지 않으면 `"neg"`로 분류한 다음, `log_odds_ratio`의 절대값이 가장 높은 단어를 10개씩 추출하겠습니다. 출력 결과를 보면 긍정 댓글과 부정 댓글에 상대적으로 어떤 단어가 더 많이 사용됐는지 알 수 있습니다. --&gt;
 
 &lt;!-- ```{r} --&gt;
-&lt;!-- top10 &lt;- comment_wide %&gt;% --&gt;
-&lt;!--   group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt;
-&lt;!--   slice_max(abs(log_odds_ratio), n = 10) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- top10 %&gt;% print(n = Inf) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- top10 %&gt;% print(n = 10) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- #### 로그 오즈비가 동점인 단어는 제외하고 추출하기 --&gt;
-
-&lt;!-- `top10` 출력 결과의 `A tibble: 30 x 5`를 보면 `top10`이 30행으로 구성됨을 알 수 있습니다. 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출했는데 20행이 아니라 30행인 이유는  --&gt;
-&lt;!-- 부정 댓글에서 `log_odds_ratio`가 동점인 단어가 모두 추출됐기 때문입니다. `slice_max()`에 `with_ties = F`를 입력해 동점을 제외하고 로그 오즈비가 가장 큰 단어를 10개씩 추출하겠습니다. 출력 결과의 `A tibble: 20 x 5`를 보면 20개의 단어가 추출됐음을 알 수 있습니다. --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- top10 &lt;- comment_wide %&gt;% --&gt;
+&lt;!-- new_top10 &lt;- new_comment_wide %&gt;% --&gt;
 &lt;!--   group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt;
 &lt;!--   slice_max(abs(log_odds_ratio), n = 10, with_ties = F) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- top10 %&gt;% print(n = Inf) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- top10 %&gt;% print(n = 10) --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- #### 3. 막대 그래프 만들기 --&gt;
-
-&lt;!-- 로그 오즈비를 이용해 막대 그래프를 만들겠습니다. 출력된 그래프를 보면 긍정 댓글과 부정 댓글에 상대적으로 어떤 단어가 많이 사용되었는지 알 수 있습니다. --&gt;
-
-&lt;!-- ```{r} --&gt;
 &lt;!-- # 막대 그래프 만들기 --&gt;
-&lt;!-- ggplot(top10, aes(x = reorder(word, log_odds_ratio), --&gt;
+&lt;!-- ggplot(new_top10, aes(x = reorder(word, log_odds_ratio), --&gt;
 &lt;!--                       y = log_odds_ratio, --&gt;
 &lt;!--                       fill = sentiment)) + --&gt;
 &lt;!--   geom_col() + --&gt;
@@ -1064,47 +1401,89 @@ frequency_score
 &lt;!-- ``` --&gt;
 
 
+&lt;!-- --- --&gt;
 
-&lt;!-- &lt;!-- #### 로그 오즈비가 동점인 단어는 제외하고 추출하기 - `rank(ties.method = "first")` --&gt; --&gt;
+&lt;!-- ##### 4. 주요 단어가 사용된 댓글 살펴보기 --&gt;
 
-&lt;!-- &lt;!-- `top10` 출력 결과의 `A tibble: 19 x 5`를 보면 `top10`이 19행으로 구성됨을 알 수 있습니다. 긍정 댓글과 부정 댓글에서 로그 오즈비가 가장 큰 단어를 10개씩 추출했는데 20행이 아니라 19행인 이유는 부정 댓글의 단어가 9개만 추출됐기 때문입니다. `sentiment`가 `"neg"인 행을 추출하면 10 행이 아니라 8행임을 알 수 있습니다. --&gt; --&gt;
-
-&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
-&lt;!-- &lt;!-- top10 %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   filter(sentiment == "neg") --&gt; --&gt;
-&lt;!-- &lt;!-- ``` --&gt; --&gt;
-
-&lt;!-- &lt;!-- 이는 `rank()`의 동점 처리 방식 때문에 생긴 현상입니다. 순위를 나타낸 변수를 여러가지 방식으로 만든 다음 차이를 살펴보겠습니다. --&gt; --&gt;
-
-&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
-&lt;!-- &lt;!-- comment_wide %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   arrange(log_odds_ratio) %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   mutate(num_row = row_number(),                       # 행 순서 --&gt; --&gt;
-&lt;!-- &lt;!--          num_rank = rank(log_odds_ratio),              # 동점시 평균 --&gt; --&gt;
-&lt;!-- &lt;!--          num_rank2 = rank(log_odds_ratio,              # 동점시 행 순서 --&gt; --&gt;
-&lt;!-- &lt;!--                           ties.method = "first")) %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   select(-pos, -neg) %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   head(10) --&gt; --&gt;
-&lt;!-- &lt;!-- ``` --&gt; --&gt;
-
-&lt;!-- &lt;!-- `rank()`는 값이 동일한 행이 여럿이면 행 순서 값을 평균해서 순위를 구합니다. 앞 코드의 출력 결과에서 `num_rank`를 보면 `"못한"`과 `"미친"`의 값이 `3.5`입니다. 이는 `"못한"`과 `"미친"`의 `log_odds_ratio`가 동점이므로 행 순서 값`3`과 `4`를 평균한 것입니다. 마찬가지로 `"가난한"`, `"모르는"`, `"아쉽다"`의 `num_rank`도 행 순서 값 `6`, `7`, `8`을 평균한 `8` 입니다. 따라서 `rank()`로 순위를 구하면 9행 까지는 `8`이하이고 10행부터는 `15` 이상이므로 `filter()`로 순위 값 `10` 이하를 추출하면 9번째 행 까지만 남게 되는 것입니다. --&gt; --&gt;
-
-&lt;!-- &lt;!-- 이 문제를 피하려면 동점일 때 행 순서 값을 부여하도록 `rank()`에 `ties.method = "first"`를 입력하면 됩니다. `num_rank2`를 보면 `log_odds_ratio`가 같을 때 행 순서대로 순위가 부여된 것을 알 수 있습니다. --&gt; --&gt;
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 긍정 댓글 원문 --&gt;
+&lt;!-- new_score_comment %&gt;% --&gt;
+&lt;!--   filter(sentiment == "pos" &amp; str_detect(reply, "축하")) %&gt;% --&gt;
+&lt;!--   select(reply) %&gt;% --&gt;
+&lt;!--   print(n = 3) --&gt;
+&lt;!-- ``` --&gt;
 
 
-&lt;!-- &lt;!-- #### 동점을 제외하고 로그 오즈비가 가장 큰 단어 10개씩 추출하기 --&gt; --&gt;
+&lt;!-- --- --&gt;
 
-&lt;!-- &lt;!-- 긍정 댓글과 부정 댓글에서 동점을 제외하고 로그 오즈비가 가장 큰 단어 10개씩 추출하겠습니다. 출력 결과의 `A tibble: 20 x 5`를 보면 기대한 대로 20개의 단어가 추출됐음을 알 수 있습니다. --&gt; --&gt;
+&lt;!-- ```{r} --&gt;
+&lt;!-- new_score_comment %&gt;% --&gt;
+&lt;!--   filter(sentiment == "pos" &amp; str_detect(reply, "소름")) %&gt;% --&gt;
+&lt;!--   select(reply) --&gt;
+&lt;!-- ``` --&gt;
 
-&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
-&lt;!-- &lt;!-- top10 &lt;- comment_wide %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 10 | --&gt; --&gt;
-&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 10) %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   mutate(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;% --&gt; --&gt;
-&lt;!-- &lt;!--   arrange(-log_odds_ratio) --&gt; --&gt;
+&lt;!-- --- --&gt;
 
-&lt;!-- &lt;!-- top10 --&gt; --&gt;
-&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 부정 댓글 원문 --&gt;
+&lt;!-- new_score_comment %&gt;% --&gt;
+&lt;!--   filter(sentiment == "neg" &amp; str_detect(reply, "좌빨")) %&gt;% --&gt;
+&lt;!--   select(reply) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- new_score_comment %&gt;% --&gt;
+&lt;!--   filter(sentiment == "neg" &amp; str_detect(reply, "못한")) %&gt;% --&gt;
+&lt;!--   select(reply) %&gt;% --&gt;
+&lt;!--   print(n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- ##### 5. 분석 결과 비교하기 --&gt;
+
+&lt;!-- .pull-left[ --&gt;
+&lt;!-- # 수정한 감정 사전 활용 --&gt;
+&lt;!-- ```{r} --&gt;
+&lt;!-- new_top10 %&gt;%  --&gt;
+&lt;!--   select(-pos, -neg) %&gt;%  --&gt;
+&lt;!--   arrange(-log_odds_ratio) %&gt;%  --&gt;
+&lt;!--   print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+&lt;!-- ] --&gt;
+
+&lt;!-- .pull-right[ --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 원본 감정 사전 활용 --&gt;
+&lt;!-- top10 %&gt;%   --&gt;
+&lt;!--   select(-pos, -neg) %&gt;%   --&gt;
+&lt;!--   arrange(-log_odds_ratio) %&gt;%   --&gt;
+&lt;!--   print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+&lt;!-- ] --&gt;
+
+&lt;!-- --- --&gt;
+
+&lt;!-- - `"미친"`이 목록에서 사라진 이유 --&gt;
+&lt;!-- - 로그 오즈비가 10위 안에 들지 못할 정도로 낮기 때문 --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- new_comment_wide --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &lt;!-- 니다. 다음 코드의 출력 결과를 보면 "미친"의 로그 오즈비가 1.80입니다. new_top10에서  --&gt; --&gt;
+&lt;!-- &lt;!-- 긍정 단어 10위인 "최고의"의 로그 오즈비가 2.90이므로 "미친"이 목록에 포함되지 않은 것 --&gt; --&gt;
+&lt;!-- &lt;!-- 입니다.  --&gt; --&gt;
+
+
+&lt;!-- --- --&gt;
+
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>

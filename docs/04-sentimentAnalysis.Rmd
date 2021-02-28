@@ -691,13 +691,13 @@ comment <- score_comment %>%
 frequency_word <- comment %>%
   filter(str_count(word) >= 2) %>%
   count(sentiment, word, sort = T)
+
+frequency_word
 ```
 
-<br-back-10>
+---
 
 .pull-left[
-
-<br-back-30>
 ```{r}
 # 긍정 댓글 고빈도 단어
 frequency_word %>%
@@ -706,8 +706,6 @@ frequency_word %>%
 ]
 
 .pull-right[
-
-<br-back-30>
 ```{r}
 # 부정 댓글 고빈도 단어
 frequency_word %>%
@@ -718,4 +716,383 @@ frequency_word %>%
 
 
 ---
+
+#### 상대적으로 자주 사용된 단어 비교하기
+
+##### 1. 로그 오즈비 구하기
+
+.pull-left[
+
+```{r comment_wide, eval=F}
+# wide form으로 변환
+library(tidyr)
+comment_wide <- frequency_word %>%
+  filter(sentiment != "neu") %>%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = list(n = 0))
+
+comment_wide
+```
+]
+
+.pull-right[
+
+```{r ref.label="comment_wide", echo=F}
+```
+
+]
+
+
+---
+
+```{r}
+# 로그 오즈비 구하기
+comment_wide <- comment_wide %>%
+  mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) /
+                              ((neg + 1) / (sum(neg + 1)))))
+
+comment_wide
+```
+
+
+---
+
+##### 2. 로그 오즈비가 가장 큰 단어 10개씩 추출하기
+
+```{r odds-top10, eval=F}
+top10 <- comment_wide %>%
+  group_by(sentiment = ifelse(log_odds_ratio > 0, "pos", "neg")) %>%
+  slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
+
+top10
+```
+
+`r fontawesome("lightbulb")` 로그 오즈비 동점 단어 제외
+
+---
+
+```{r odds-top10, echo=F}
+```
+
+---
+
+##### 3. 막대 그래프 만들기
+
+```{r p-odds-top10, fig.width=6, fig.height=4, out.width="50%"}
+# 막대 그래프 만들기
+ggplot(top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
+
+---
+
+```{r ref.label="p-odds-top10", echo=F, fig.width=6, fig.height=4, out.width="80%"}
+```
+
+---
+
+
+name: 04-4
+class: title1
+
+04-4 감정 사전 수정하기
+
+---
+
+#### 감정 단어가 사용된 원문 살펴보기
+
+- `"소름"`, `"미친"` 부정적인 의미
+- 긍정적인 감정을 극적으로 표현하기 위해 사용된 단어
+
+긍정적인 의미로 사용되었음을 알 수 있습니다. -->
+
+```{r}
+# "소름"이 사용된 댓글
+score_comment %>%
+  filter(str_detect(reply, "소름")) %>%
+  select(reply)
+```
+
+
+---
+
+
+<!-- ```{r} -->
+<!-- # "미친"이 사용된 댓글 -->
+<!-- score_comment %>% -->
+<!--   filter(str_detect(reply, "미친")) %>% -->
+<!--   select(reply) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+
+<!-- - 감정 사전에 부정적인 단어로 분류되어 있어서 생긴 문제 -->
+<!-- - 텍스트의 맥락이 감정 사전의 맥락과 다르면 반대되는 감정 점수 부여하는 오류 발생 -->
+<!-- - 정확하게 분석하려면 감정 사전 수정 -->
+
+<!-- ```{r} -->
+<!-- dic %>% filter(word %in% c("소름", "소름이", "미친")) -->
+<!-- ``` -->
+
+
+<!-- --- -->
+
+<!-- #### 감정 사전 수정하기 -->
+
+<!-- - `"소름이"`, `"소름"`, `"미친"`의 `polarity`를 양수 2로 수정 -->
+
+<!-- ```{r} -->
+<!-- new_dic <- dic %>% -->
+<!--   mutate(polarity = ifelse(word %in% c("소름", "소름이", "미친"), 2, polarity)) -->
+
+<!-- new_dic %>% filter(word %in% c("소름", "소름이", "미친")) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+
+<!-- #### 수정한 사전으로 감정 점수 부여하기 -->
+
+<!-- ```{r} -->
+<!-- new_word_comment <- word_comment %>% -->
+<!--   select(-polarity) %>% -->
+<!--   left_join(new_dic, by = "word") %>% -->
+<!--   mutate(polarity = ifelse(is.na(polarity), 0, polarity)) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+<!-- #### 댓글별 감정 점수 구하기 -->
+
+<!-- ```{r} -->
+<!-- new_score_comment <- new_word_comment %>% -->
+<!--   group_by(id, reply) %>% -->
+<!--   summarise(score = sum(polarity)) %>% -->
+<!--   ungroup() -->
+
+<!-- new_score_comment %>% -->
+<!--   select(score, reply) %>% -->
+<!--   arrange(-score) -->
+<!-- ``` -->
+
+<!-- `r fontawesome("lightbulb")` `ungroup()`: 이후 분석 작업은 그룹별로 처리하지 않도록 그룹 해제 -->
+
+<!-- --- -->
+
+
+<!-- #### 전반적인 감정 경향 살펴보기 -->
+
+
+<!-- ##### 1. 감정 분류하기 -->
+
+<!-- ```{r} -->
+<!-- # 1점 기준으로 긍정 중립 부정 분류 -->
+<!-- new_score_comment <- new_score_comment %>% -->
+<!--   mutate(sentiment = ifelse(score >=  1, "pos", -->
+<!--                      ifelse(score <= -1, "neg", "neu"))) -->
+<!-- ``` -->
+
+<!-- ##### 2. 감정 범주별 빈도와 비율 구하기 -->
+
+
+<!-- .pull-left[ -->
+<!-- ```{r} -->
+<!-- # 원본 감정 사전 활용 -->
+<!-- score_comment %>% -->
+<!--   count(sentiment) %>% -->
+<!--   mutate(ratio = n/sum(n)*100) -->
+<!-- ``` -->
+
+
+<!-- .pull-right[ -->
+
+<!-- ```{r} -->
+<!-- # 수정한 감정 사전 활용 -->
+<!-- new_score_comment %>% -->
+<!--   count(sentiment) %>% -->
+<!--   mutate(ratio = n/sum(n)*100) -->
+<!-- ``` -->
+<!-- ] -->
+
+<!-- --- -->
+
+<!-- ##### 3. 분석 결과 비교하기 -->
+
+<!-- .pull-left[ -->
+
+
+<!-- ```{r} -->
+<!-- word <- "소름|소름이|미친" -->
+
+<!-- # 원본 감정 사전 활용 -->
+<!-- score_comment %>% -->
+<!--   filter(str_detect(reply, word)) %>% -->
+<!--   count(sentiment) -->
+<!-- ``` -->
+<!-- ] -->
+
+<!-- .pull-right[ -->
+
+
+<!-- ```{r} -->
+<!-- # 수정한 감정 사전 활용 -->
+<!-- new_score_comment %>% -->
+<!--   filter(str_detect(reply, word)) %>% -->
+<!--   count(sentiment) -->
+<!-- ``` -->
+<!-- ] -->
+
+<!-- `r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` `str_detect()`에 여러 문자를 입력할 때는 `|`로 문자를 구분 -->
+
+<!-- --- -->
+
+<!-- #### 감정 범주별 주요 단어 살펴보기 -->
+
+
+<!-- ##### 1. 두 글자 이상 한글 단어만 남기고 단어 빈도 구하기 -->
+
+<!-- ```{r} -->
+<!-- # 토큰화 및 전처리 -->
+<!-- new_comment <- new_score_comment %>% -->
+<!--   unnest_tokens(input = reply, -->
+<!--                 output = word, -->
+<!--                 token = "words", -->
+<!--                 drop = F) %>% -->
+<!--   filter(str_detect(word, "[가-힣]") & -->
+<!--            str_count(word) >= 2) -->
+
+<!-- # 감정 및 단어별 빈도 구하기 -->
+<!-- new_frequency_word <- new_comment %>% -->
+<!--   count(sentiment, word, sort = T) -->
+<!-- ``` -->
+
+
+<!-- --- -->
+
+<!-- ##### 2. 로그 오즈비 구하기 -->
+
+<!-- ```{r} -->
+<!-- # Wide form으로 변환 -->
+<!-- new_comment_wide <- new_frequency_word %>% -->
+<!--   filter(sentiment != "neu") %>% -->
+<!--   pivot_wider(names_from = sentiment, -->
+<!--               values_from = n, -->
+<!--               values_fill = list(n = 0)) -->
+
+<!-- # 로그 오즈비 구하기 -->
+<!-- new_comment_wide <- new_comment_wide %>% -->
+<!--   mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) / -->
+<!--                               ((neg + 1) / (sum(neg + 1))))) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+<!-- ##### 3. 로그 오즈비가 큰 단어로 막대 그래프 만들기 -->
+
+
+<!-- ```{r} -->
+<!-- new_top10 <- new_comment_wide %>% -->
+<!--   group_by(sentiment = ifelse(log_odds_ratio > 0, "pos", "neg")) %>% -->
+<!--   slice_max(abs(log_odds_ratio), n = 10, with_ties = F) -->
+
+<!-- # 막대 그래프 만들기 -->
+<!-- ggplot(new_top10, aes(x = reorder(word, log_odds_ratio), -->
+<!--                       y = log_odds_ratio, -->
+<!--                       fill = sentiment)) + -->
+<!--   geom_col() + -->
+<!--   coord_flip() + -->
+<!--   labs(x = NULL) + -->
+<!--   theme(text = element_text(family = "nanumgothic")) -->
+<!-- ``` -->
+
+
+<!-- --- -->
+
+<!-- ##### 4. 주요 단어가 사용된 댓글 살펴보기 -->
+
+<!-- ```{r} -->
+<!-- # 긍정 댓글 원문 -->
+<!-- new_score_comment %>% -->
+<!--   filter(sentiment == "pos" & str_detect(reply, "축하")) %>% -->
+<!--   select(reply) %>% -->
+<!--   print(n = 3) -->
+<!-- ``` -->
+
+
+<!-- --- -->
+
+<!-- ```{r} -->
+<!-- new_score_comment %>% -->
+<!--   filter(sentiment == "pos" & str_detect(reply, "소름")) %>% -->
+<!--   select(reply) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+
+<!-- ```{r} -->
+<!-- # 부정 댓글 원문 -->
+<!-- new_score_comment %>% -->
+<!--   filter(sentiment == "neg" & str_detect(reply, "좌빨")) %>% -->
+<!--   select(reply) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+<!-- ```{r} -->
+<!-- new_score_comment %>% -->
+<!--   filter(sentiment == "neg" & str_detect(reply, "못한")) %>% -->
+<!--   select(reply) %>% -->
+<!--   print(n = 3) -->
+<!-- ``` -->
+
+<!-- --- -->
+
+<!-- ##### 5. 분석 결과 비교하기 -->
+
+<!-- .pull-left[ -->
+<!-- # 수정한 감정 사전 활용 -->
+<!-- ```{r} -->
+<!-- new_top10 %>%  -->
+<!--   select(-pos, -neg) %>%  -->
+<!--   arrange(-log_odds_ratio) %>%  -->
+<!--   print(n = Inf) -->
+<!-- ``` -->
+<!-- ] -->
+
+<!-- .pull-right[ -->
+
+<!-- ```{r} -->
+<!-- # 원본 감정 사전 활용 -->
+<!-- top10 %>%   -->
+<!--   select(-pos, -neg) %>%   -->
+<!--   arrange(-log_odds_ratio) %>%   -->
+<!--   print(n = Inf) -->
+<!-- ``` -->
+<!-- ] -->
+
+<!-- --- -->
+
+<!-- - `"미친"`이 목록에서 사라진 이유 -->
+<!-- - 로그 오즈비가 10위 안에 들지 못할 정도로 낮기 때문 -->
+
+<!-- ```{r} -->
+<!-- new_comment_wide -->
+<!-- ``` -->
+
+<!-- <!-- 니다. 다음 코드의 출력 결과를 보면 "미친"의 로그 오즈비가 1.80입니다. new_top10에서  --> -->
+<!-- <!-- 긍정 단어 10위인 "최고의"의 로그 오즈비가 2.90이므로 "미친"이 목록에 포함되지 않은 것 --> -->
+<!-- <!-- 입니다.  --> -->
+
+
+<!-- --- -->
+
+
 
