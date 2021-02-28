@@ -23,6 +23,7 @@ Do it! 쉽게 배우는 R 텍스트 마이닝
 
 ---
 
+
 &lt;br&gt;
 
 .pull-left[
@@ -119,7 +120,7 @@ include_graphics("Image/etc/04_1_dic.png")
 
 - KNU 한국어 감성사전
   - 군산대학교 소프트웨어융합공학과에서 개발
-  - `word`: 감정 단어 
+  - `word`: 감정 단어
   - `polarity`: 감정의 강도
 
 &lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; KNU 한국어 감성사전 출처: github.com/park1200656/KnuSentiLex
@@ -201,7 +202,7 @@ dic %&gt;%
 
 - `word`
   - 한 단어로 된 단일어,  둘 이상 단어 결합된 복합어
-  - 이모티콘: `^^`, `ㅠㅠ` 
+  - 이모티콘: `^^`, `ㅠㅠ`
 
 
 - `polarity`
@@ -428,7 +429,7 @@ class: title1
 - html 특수 문자 제거하기: 웹에서 만들어진 텍스트는 html 특수 문자 포함되어 내용 알아보기 불편
   - `textclean::replace_html()` : html 태그를 공백으로 바꾸기
   - `stringr::str_squish()`: 중복 공백 제거
-- 특수 문자와 두 글자 미만 단어 포함하기: 
+- 특수 문자와 두 글자 미만 단어 포함하기:
   - 감정 사전의 특수 문자, 모음, 자음으로 된 두 글자 미만의 이모티콘 활용
 
 
@@ -638,7 +639,7 @@ ggplot(top10_sentiment, aes(x = reorder(word, n),
 ##### 1. 댓글별 감정 점수 구하기
 
 - `id`, `reply`별로 분리한 다음 `polarity` 합산
-- `id`로 먼저 나누는 이유: 
+- `id`로 먼저 나누는 이유:
     - 내용이 같은 댓글이 여럿 있더라도 서로 다른 댓글로 취급
     - `id`별로 먼저 나누지 않으면 내용 같은 댓글 점수 모두 하나로 합산
 
@@ -1723,7 +1724,7 @@ new_score_comment %&gt;%
 
 
 ```r
-new_comment_wide %&gt;% 
+new_comment_wide %&gt;%
   filter(word == "미친")
 ```
 
@@ -1735,8 +1736,635 @@ new_comment_wide %&gt;%
 ```
 
 
+---
 
 
+class: title1
+
+정리하기
+
+---
+
+### 정리하기
+
+##### 1. 자주 사용된 감정 단어 살펴보기
+
+
+```r
+# 단어에 감정 점수 부여
+word_comment &lt;- word_comment %&gt;%
+  left_join(dic, by = "word") %&gt;%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity))
+
+# 감정 분류
+word_comment &lt;- word_comment %&gt;%
+  mutate(sentiment = ifelse(polarity ==  2, "pos",
+                     ifelse(polarity == -2, "neg", "neu")))
+
+# 자주 사용된 감정 단어 추출
+top10_sentiment &lt;- word_comment %&gt;%
+  filter(sentiment != "neu") %&gt;%
+  count(sentiment, word) %&gt;%
+  group_by(sentiment) %&gt;%
+  slice_max(n, n = 10)
+```
+
+---
+
+##### 2. 텍스트의 감정 점수 구하기
+
+
+```r
+# 텍스트별로 단어의 감정 점수 합산
+score_comment &lt;- word_comment %&gt;%
+  group_by(id, reply) %&gt;%
+  summarise(score = sum(polarity)) %&gt;%
+  ungroup()
+```
+
+
+---
+
+##### 3. 감정 범주별 주요 단어 살펴보기
+
+
+
+```r
+# 감정 범주 변수 생성
+score_comment &lt;- score_comment %&gt;%
+  mutate(sentiment = ifelse(score &gt;=  1, "pos",
+                     ifelse(score &lt;= -1, "neg", "neu")))
+
+# 토큰화 및 전처리
+comment &lt;- score_comment %&gt;%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",
+                drop = F) %&gt;%
+  filter(str_detect(word, "[가-힣]") &amp;
+         str_count(word) &gt;= 2)
+
+# 감정 범주별 단어 빈도 구하기
+frequency_word &lt;- comment %&gt;%
+  count(sentiment, word, sort = T)
+```
+
+---
+
+##### 3. 감정 범주별 주요 단어 살펴보기
+
+
+```r
+# 로그 오즈비 구하기
+comment_wide &lt;- frequency_word %&gt;%
+  filter(sentiment != "neu") %&gt;%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = list(n = 0))
+
+comment_wide &lt;- comment_wide %&gt;%
+  mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) /
+                              ((neg + 1) / (sum(neg + 1)))))
+
+# 긍정, 부정 텍스트에 상대적으로 자주 사용된 단어 추출
+top10 &lt;- comment_wide %&gt;%
+  group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;%
+  slice_max(abs(log_odds_ratio), n = 10)
+```
+
+---
+
+class: title1
+
+분석 도전
+
+---
+
+### 분석 도전
+
+**`"news_comment_BTS.csv"`에는 2020년 9월 21일 방탄소년단이 '빌보드 핫 100 차트' 1위에 오른 소식을 &lt;br&gt;다룬 기사에 달린 댓글이 들어있습니다. `"news_comment_BTS.csv"`를 이용해 문제를 해결해 보세요.**
+
+Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 &lt;br&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;전처리하세요.
+
+
+Q2. 댓글을 띄어쓰기 기준으로 토큰화하고 감정 사전을 이용해 댓글의 감정 점수를 구하세요.
+
+Q3. 감정 범주별 댓글 빈도를 나타낸 막대 그래프를 만드세요.
+
+Q4. 댓글을 띄어쓰기 기준으로 토큰화한 다음 감정 범주별 단어 빈도를 구하세요.
+
+Q5. 로그 오즈비를 이용해 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 10개씩 추출하세요.
+
+Q6. 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 나타낸 막대 그래프를 만드세요.
+
+Q7. 'Q3'에서 만든 데이터를 이용해 '긍정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 감정 점수가 높은 순으로 출력하세요.
+
+Q8. 'Q3'에서 만든 데이터를 이용해 '부정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;감정 점수가 낮은 순으로 출력하세요.
+
+---
+
+Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 &lt;br&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;전처리하세요.
+
+
+
+```r
+# 기사 댓글 불러오기
+library(readr)
+library(dplyr)
+raw_news_comment &lt;- read_csv("news_comment_BTS.csv")
+glimpse(raw_news_comment)
+```
+
+
+```
+## Rows: 1,200
+## Columns: 5
+## $ reg_time &lt;dttm&gt; 2020-09-01 22:58:09, 2020-09-01 09:56:46…
+## $ reply    &lt;chr&gt; "국보소년단&lt;U+0001F49C&gt;", "아줌마가 들어도 좋더라", "팩트체…
+## $ press    &lt;chr&gt; "한국경제", "한국경제", "한국경제", "한국경제", "한국경제", "…
+## $ title    &lt;chr&gt; "[속보]BTS '다이너마이트', 한국 가수 최초로 빌보드 싱글 1위", …
+## $ url      &lt;chr&gt; "https://news.naver.com/main/read.nhn?mod…
+```
+
+---
+
+Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 &lt;br&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;전처리하세요.
+
+
+```r
+# 전처리
+library(stringr)
+library(textclean)
+news_comment &lt;- raw_news_comment %&gt;%
+  mutate(id = row_number(),
+         reply = str_squish(replace_html(reply)))
+
+news_comment %&gt;%
+  select(id, reply)
+```
+
+---
+
+
+```
+## # A tibble: 1,200 x 2
+##       id reply                                    
+##    &lt;int&gt; &lt;chr&gt;                                    
+##  1     1 국보소년단                               
+##  2     2 아줌마가 들어도 좋더라                   
+##  3     3 팩트체크 현재 빌보드 HOT 100 1위 방탄소년단[BTS] 2위 Car…
+##  4     4 방탄소년단이 한국사람이라 너무 자랑스러워요 ㅠㅠ 우리오래오래 함께하자!…
+##  5     5 대단한 BTS, 월드 클래스는 다르네^^ 좋은 소식!! 응원해요…
+##  6     6 정국오빠 생일과 더불어 빌보드 1위기사라니ㅠㅠ축제구나…
+##  7     7 정말 축하하고 응원하지만 집에서 여러 계정으로 스트리밍 돌리고 사재기하고…
+##  8     8 기자는 자고 일어났지만, 팬들은 못자고 발표 기다림…
+##  9     9 자랑스럽다!!!!!! 축하합니다!!!!          
+## 10    10 SuperM 늘 응원하고 사랑합니다~           
+## # … with 1,190 more rows
+```
+
+
+
+---
+
+Q2. 댓글을 띄어쓰기 기준으로 토큰화하고 감정 사전을 이용해 댓글의 감정 점수를 구하세요.
+
+
+
+```r
+# 토큰화
+library(tidytext)
+library(KoNLP)
+word_comment &lt;- news_comment %&gt;%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",  # 띄어쓰기 기준
+                drop = F)         # 원문 유지
+
+word_comment %&gt;%
+  select(word)
+```
+
+---
+
+
+
+```
+## # A tibble: 11,673 x 1
+##    word      
+##    &lt;chr&gt;     
+##  1 국보소년단
+##  2 아줌마가  
+##  3 들어도    
+##  4 좋더라    
+##  5 팩트체크  
+##  6 현재      
+##  7 빌보드    
+##  8 hot       
+##  9 100       
+## 10 1         
+## # … with 11,663 more rows
+```
+
+
+---
+
+Q2. 댓글을 띄어쓰기 기준으로 토큰화하고 감정 사전을 이용해 댓글의 감정 점수를 구하세요.
+
+
+```r
+# 감정 사전 불러오기
+dic &lt;- read_csv("knu_sentiment_lexicon.csv")
+
+# 단어에 감정 점수 부여
+word_comment &lt;- word_comment %&gt;%
+  left_join(dic, by = "word") %&gt;%
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity))
+
+word_comment %&gt;%
+  select(word, polarity) %&gt;%
+  arrange(-polarity)
+```
+
+---
+
+
+```
+## # A tibble: 11,673 x 2
+##    word       polarity
+##    &lt;chr&gt;         &lt;dbl&gt;
+##  1 대단한            2
+##  2 좋은              2
+##  3 자랑스럽다        2
+##  4 자랑스럽다        2
+##  5 자랑스럽다        2
+##  6 장하다            2
+##  7 꾸준히            2
+##  8 행복한            2
+##  9 대단한            2
+## 10 대단한            2
+## # … with 11,663 more rows
+```
+
+
+---
+
+Q2. 댓글을 띄어쓰기 기준으로 토큰화하고 감정 사전을 이용해 댓글의 감정 점수를 구하세요.
+
+
+```r
+# 댓글별로 단어의 감정 점수 합산
+score_comment &lt;- word_comment %&gt;%
+  group_by(id, reply) %&gt;%
+  summarise(score = sum(polarity)) %&gt;%
+  ungroup()
+
+score_comment %&gt;%
+  select(score, reply) %&gt;%
+  arrange(-score)
+```
+
+
+---
+
+
+```
+## # A tibble: 1,194 x 2
+##    score reply                                    
+##    &lt;dbl&gt; &lt;chr&gt;                                    
+##  1     8 멋지다, 자랑스럽다, 대단하다 방탄소년단!!! 다이너마이트 빌보드 핫10…
+##  2     7 팬은 아니야. 그래서 저 노력과 업적이 더 대단해보여. 정말 멋지다. 잘…
+##  3     6 축하 합니다 우리에 보물이네 대한미국에 애국자 들이다 나라 홍보도하고 달…
+##  4     6 우리딸이 보는 눈이 있네 호르몬전쟁 노래부터 애네들 좋아했는데 그때는 주…
+##  5     6 ㅜㅜ . 진짜 이 코로나에 너희들이 빛이여. 핫백 1위라니. 모든 기록을…
+##  6     6 축하 축하 아미분들도 축하^^              
+##  7     6 정말 대단하고 자랑스럽습니다.. 국격이 업그레이드 된거 같습니다..축하 …
+##  8     6 빌보드 핫100 1위 축하해요 여기까지 오느라 힘들었을텐데 수고했어요 앞…
+##  9     6 진짜 대단하다. K팝 아시아 최고 넘어서 빌보드 1위 등극 이제 BTS가…
+## 10     6 정국이 생일에 빌보드 핫100 1위라니... 정말 뜻깊은 하루네요ㅠㅠ 좋…
+## # … with 1,184 more rows
+```
+
+
+---
+
+Q3. 감정 범주별 댓글 빈도를 나타낸 막대 그래프를 만드세요.
+
+
+```r
+# 감정 범주 변수 생성
+score_comment &lt;- score_comment %&gt;%
+  mutate(sentiment = ifelse(score &gt;=  1, "pos",
+                     ifelse(score &lt;= -1, "neg", "neu")))
+
+score_comment %&gt;%
+  select(sentiment, reply)
+```
+
+```
+## # A tibble: 1,194 x 2
+##    sentiment reply                                
+##    &lt;chr&gt;     &lt;chr&gt;                                
+##  1 neu       국보소년단                           
+##  2 neu       아줌마가 들어도 좋더라               
+##  3 pos       팩트체크 현재 빌보드 HOT 100 1위 방탄소년단[BTS] 2위…
+##  4 neg       방탄소년단이 한국사람이라 너무 자랑스러워요 ㅠㅠ 우리오래오래 함께…
+##  5 pos       대단한 BTS, 월드 클래스는 다르네^^ 좋은 소식!! 응원해요…
+##  6 neg       정국오빠 생일과 더불어 빌보드 1위기사라니ㅠㅠ축제구나…
+##  7 neu       정말 축하하고 응원하지만 집에서 여러 계정으로 스트리밍 돌리고 사…
+##  8 neu       기자는 자고 일어났지만, 팬들은 못자고 발표 기다림…
+##  9 pos       자랑스럽다!!!!!! 축하합니다!!!!      
+## 10 neu       SuperM 늘 응원하고 사랑합니다~       
+## # … with 1,184 more rows
+```
+
+---
+
+Q3. 감정 범주별 댓글 빈도를 나타낸 막대 그래프를 만드세요.
+
+
+```r
+# 감정 범주 빈도 구하기
+frequency_score &lt;- score_comment %&gt;%
+  count(sentiment)
+
+frequency_score
+```
+
+```
+## # A tibble: 3 x 2
+##   sentiment     n
+## * &lt;chr&gt;     &lt;int&gt;
+## 1 neg         113
+## 2 neu         743
+## 3 pos         338
+```
+
+---
+
+Q3. 감정 범주별 댓글 빈도를 나타낸 막대 그래프를 만드세요.
+
+
+```r
+# 막대 그래프 만들기
+library(ggplot2)
+ggplot(frequency_score, aes(x = sentiment, y = n, fill = sentiment)) +
+  geom_col() +
+  geom_text(aes(label = n), vjust = -0.3)
+```
+
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-81-1.png" width="50%" /&gt;
+
+---
+
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-82-1.png" width="80%" /&gt;
+
+
+
+---
+
+Q4. 댓글을 띄어쓰기 기준으로 토큰화한 다음 감정 범주별 단어 빈도를 구하세요.
+
+.pull-left[
+
+
+```r
+# 토큰화
+comment &lt;- score_comment %&gt;%
+  unnest_tokens(input = reply,
+                output = word,
+                token = "words",
+                drop = F)
+
+# 감정 범주별 단어 빈도 구하기
+frequency_word &lt;- comment %&gt;%
+  count(sentiment, word, sort = T)
+
+frequency_word
+```
+]
+
+.pull-right[
+
+
+```
+## # A tibble: 6,900 x 3
+##    sentiment word           n
+##    &lt;chr&gt;     &lt;chr&gt;      &lt;int&gt;
+##  1 neu       1            126
+##  2 pos       진짜          90
+##  3 pos       1             82
+##  4 neu       진짜          79
+##  5 pos       자랑스럽다    77
+##  6 neu       bts           72
+##  7 pos       너무          70
+##  8 neu       빌보드        66
+##  9 pos       정말          57
+## 10 neu       군면제        48
+## # … with 6,890 more rows
+```
+
+]
+
+---
+
+Q5. 로그 오즈비를 이용해 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 10개씩 추출하세요.
+
+.pull-left[
+
+
+```r
+# long form을 wide form으로 변환
+library(tidyr)
+comment_wide &lt;- frequency_word %&gt;%
+  filter(sentiment != "neu") %&gt;%
+  pivot_wider(names_from = sentiment,
+              values_from = n,
+              values_fill = list(n = 0))
+
+comment_wide
+```
+
+]
+
+.pull-right[
+
+```
+## # A tibble: 3,247 x 3
+##    word         pos   neg
+##    &lt;chr&gt;      &lt;int&gt; &lt;int&gt;
+##  1 진짜          90    20
+##  2 1             82    29
+##  3 자랑스럽다    77     0
+##  4 너무          70    14
+##  5 정말          57     5
+##  6 위            46    11
+##  7 빌보드        40    15
+##  8 방탄          39     8
+##  9 방탄소년단    39    13
+## 10 bts           37    21
+## # … with 3,237 more rows
+```
+
+
+]
+
+
+
+---
+
+Q5. 로그 오즈비를 이용해 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 10개씩 추출하세요.
+
+
+```r
+# 로그 오즈비 구하기
+comment_wide &lt;- comment_wide %&gt;%
+  mutate(log_odds_ratio = log(((pos + 1) / (sum(pos + 1))) /
+                              ((neg + 1) / (sum(neg + 1)))))
+
+comment_wide
+```
+
+```
+## # A tibble: 3,247 x 4
+##    word         pos   neg log_odds_ratio
+##    &lt;chr&gt;      &lt;int&gt; &lt;int&gt;          &lt;dbl&gt;
+##  1 진짜          90    20          1.03 
+##  2 1             82    29          0.586
+##  3 자랑스럽다    77     0          3.93 
+##  4 너무          70    14          1.12 
+##  5 정말          57     5          1.84 
+##  6 위            46    11          0.934
+##  7 빌보드        40    15          0.510
+##  8 방탄          39     8          1.06 
+##  9 방탄소년단    39    13          0.618
+## 10 bts           37    21          0.115
+## # … with 3,237 more rows
+```
+
+
+---
+
+Q5. 로그 오즈비를 이용해 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 10개씩 추출하세요.
+
+
+```r
+# 긍정, 부정 댓글에 상대적으로 자주 사용된 단어 추출
+top10 &lt;- comment_wide %&gt;%
+  group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;%
+  slice_max(abs(log_odds_ratio), n = 10)
+
+top10
+```
+
+```
+## # A tibble: 25 x 5
+## # Groups:   sentiment [2]
+##    word     pos   neg log_odds_ratio sentiment
+##    &lt;chr&gt;  &lt;int&gt; &lt;int&gt;          &lt;dbl&gt; &lt;chr&gt;    
+##  1 국내       0     5          -2.22 neg      
+##  2 모르는     0     4          -2.04 neg      
+##  3 없어서     0     4          -2.04 neg      
+##  4 있다       0     4          -2.04 neg      
+##  5 널리       0     3          -1.82 neg      
+##  6 독도       0     3          -1.82 neg      
+##  7 보다       0     3          -1.82 neg      
+##  8 아니다     0     3          -1.82 neg      
+##  9 없다       0     3          -1.82 neg      
+## 10 케이팝     0     3          -1.82 neg      
+## # … with 15 more rows
+```
+
+
+
+
+
+---
+
+Q6. 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 나타낸 막대 그래프를 만드세요.
+
+```r
+ggplot(top10, aes(x = reorder(word, log_odds_ratio),
+                      y = log_odds_ratio,
+                      fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = NULL)
+```
+
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-88-1.png" width="50%" /&gt;
+
+---
+
+&lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-89-1.png" width="80%" /&gt;
+
+
+
+---
+
+Q7. 'Q3'에서 만든 데이터를 이용해 '긍정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 감정 점수가 높은 순으로 출력하세요.
+
+
+```r
+score_comment %&gt;%
+  filter(str_detect(reply, "자랑스럽다")) %&gt;%
+  arrange(-score) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 82 x 1
+##    reply                                          
+##    &lt;chr&gt;                                          
+##  1 멋지다, 자랑스럽다, 대단하다 방탄소년단!!! 다이너마이트 빌보드 핫100 1위 진…
+##  2 축하 합니다 우리에 보물이네 대한미국에 애국자 들이다 나라 홍보도하고 달라도벌고 코…
+##  3 자랑스러운 방탄소년단.... 아~~이거 방탄소년단 아입니까!!!! 사랑하는 막둥이정…
+##  4 자랑스럽다 역사적인 길들을 함께 걸어갈 수 있어 감사하다…
+##  5 아시아에서 60년만에 빌보드 핫백 차트 1위 아시아에서 최초로 200차트와 핫백 차…
+##  6 와 진짜 너무 대단하고 자랑스럽다 ! 진짜 꿈인지 생시인지 모르겠네요! 이건 정말 …
+##  7 정말 대단하고 자랑스럽다~                      
+##  8 이건 진짜 대서특필 감이다.. 혼란스러운 이 시국에 이렇게 기쁜 소식이라니 진짜 고…
+##  9 진짜 대박이다 방탄 역사를 썼다 대단하고 자랑스럽다!!!!…
+## 10 정말 너무 자랑스럽다. 역사의 순간에 있다는 게 고맙고 뿌듯하다…
+## # … with 72 more rows
+```
+
+
+---
+
+Q8. 'Q3'에서 만든 데이터를 이용해 '부정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;감정 점수가 낮은 순으로 출력하세요.
+
+
+```r
+score_comment %&gt;%
+  filter(str_detect(reply, "국내")) %&gt;%
+  arrange(score) %&gt;%
+  select(reply)
+```
+
+```
+## # A tibble: 10 x 1
+##    reply                                          
+##    &lt;chr&gt;                                          
+##  1 "국위선양 한건 대단 하지만 40대 이후로는 BTS 이름만 알지 히트곡은 전혀모름 …
+##  2 "국내 국악대회 거기 입상한 애들도 군대 안간다던데 세계 1위 한거 인정해서 면죄 …
+##  3 "아니 진짜 군면제하자 뭘더 얼마나 일등을 해야해 국내 클래식 콩쿨 1등해도 면제해…
+##  4 "진짜 세계를 kpop이 이렇게 휩쓸고 있는데, 정작 국내는 뽕짝만 주구장창 나오는…
+##  5 "아시아 아티스트로서는 57년만이랍니다... 방탄소년단 국내 시상식 대상도 못받았던…
+##  6 "bts 너무 자랑스러워요 국내에는 웃을일이 없는데 bts 때문에 기분이 좋네요"…
+##  7 "이렇게 국위선양하고 BTS때문에 파생되는 경제효과는 어마어마한데 애들은 군대 가야…
+##  8 "그냥 국내 1등 아이돌 가수같은데 감흥이없네 여튼 축하해요"…
+##  9 "아니 진짜 방탄 팬도아니고 그냥 노래 나오면 즐겨듣는정돈데 방탄 군대 왜보냄 진짜…
+## 10 "국내 콩쿨에서 입상해도 군면제 해주는데... 신지어 빌보드 1위인데.. 군대 보내…
+```
+
+
+---
+
+
+class: title0
+
+끝
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="libs/remark-latest.min.js"></script>
