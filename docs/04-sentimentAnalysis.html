@@ -6,6 +6,8 @@
     <meta name="author" content="김영우" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
     <link rel="stylesheet" href="css/custom.css" type="text/css" />
   </head>
   <body>
@@ -22,6 +24,7 @@ class: title0
 Do it! 쉽게 배우는 R 텍스트 마이닝
 
 ---
+
 
 
 &lt;br&gt;
@@ -1771,6 +1774,8 @@ top10_sentiment &lt;- word_comment %&gt;%
 
 ---
 
+### 정리하기
+
 ##### 2. 텍스트의 감정 점수 구하기
 
 
@@ -1784,6 +1789,8 @@ score_comment &lt;- word_comment %&gt;%
 
 
 ---
+
+### 정리하기
 
 ##### 3. 감정 범주별 주요 단어 살펴보기
 
@@ -1811,6 +1818,8 @@ frequency_word &lt;- comment %&gt;%
 
 ---
 
+### 정리하기
+
 ##### 3. 감정 범주별 주요 단어 살펴보기
 
 
@@ -1831,12 +1840,6 @@ top10 &lt;- comment_wide %&gt;%
   group_by(sentiment = ifelse(log_odds_ratio &gt; 0, "pos", "neg")) %&gt;%
   slice_max(abs(log_odds_ratio), n = 10)
 ```
-
----
-
-class: title1
-
-분석 도전
 
 ---
 
@@ -1862,6 +1865,7 @@ Q7. 'Q3'에서 만든 데이터를 이용해 '긍정 댓글에 가장 자주 사
 Q8. 'Q3'에서 만든 데이터를 이용해 '부정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;감정 점수가 낮은 순으로 출력하세요.
 
 ---
+
 
 Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 &lt;br&gt; &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;전처리하세요.
 
@@ -2275,10 +2279,6 @@ top10
 ## # … with 15 more rows
 ```
 
-
-
-
-
 ---
 
 Q6. 긍정 댓글과 부정 댓글에 상대적으로 자주 사용된 단어를 나타낸 막대 그래프를 만드세요.
@@ -2297,8 +2297,6 @@ ggplot(top10, aes(x = reorder(word, log_odds_ratio),
 ---
 
 &lt;img src="04-sentimentAnalysis_files/figure-html/unnamed-chunk-89-1.png" width="80%" /&gt;
-
-
 
 ---
 
