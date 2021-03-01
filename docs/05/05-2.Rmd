@@ -1,0 +1,75 @@
+---
+title: "Do it! 쉽게 배우는 R 텍스트 마이닝 - 05 의미망 분석: <br> 어떤 맥락에서 단어를 썼을까?"
+author: "김영우"
+output:
+  xaringan::moon_reader:
+    seal: false
+    css: ["default", "../css/custom.css"]
+    lib_dir: libs
+    chakra: ../libs/remark-latest.min.js
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: true
+      ratio: '16:10'
+      navigation:
+        scroll: true
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r include=FALSE}
+options(htmltools.dir.version = FALSE, 
+        width = 80,
+        # width = 70,
+        
+        max.print = 80,
+        tibble.print_max = 40,
+        
+        tibble.width = 80,
+        # tibble.width = 70,
+        
+        # pillar.min_chars = Inf, # tibble 문자 출력 제한
+        servr.interval = 0.01) # Viewer 수정 반영 속도
+
+
+knitr::opts_chunk$set(cache = T, warning = F, message = F, 
+                      dpi = 300, fig.height = 4)
+                      # out.width = "100%"
+
+#xaringanExtra::use_tile_view()
+
+library(knitr)
+library(icon)
+library(here)
+```
+
+
+```{r echo=FALSE}
+rm(list = ls())
+
+library(showtext)
+font_add_google(name = "Nanum Gothic", family = "nanumgothic")
+showtext_auto()
+showtext_opts(dpi = 300) # opts_chunk$set(dpi=300)
+
+# code highlighting
+hook_source <- knitr::knit_hooks$get('source')
+knitr::knit_hooks$set(source = function(x, options) {
+  x <- stringr::str_replace(x, "^[[:blank:]]?([^*].+?)[[:blank:]]*#<<[[:blank:]]*$", "*\\1")
+  hook_source(x, options)
+})
+
+
+```
+
+---
+
+class: title1
+
+05-2 동시 출현 네트워크:  
+Co-occurrence network
+
+---
+
+abc

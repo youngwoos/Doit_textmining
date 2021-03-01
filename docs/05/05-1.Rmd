@@ -63,6 +63,7 @@ knitr::knit_hooks$set(source = function(x, options) {
 
 ```
 
+
 class: title0
 
 Do it! 쉽게 배우는 R 텍스트 마이닝
@@ -167,9 +168,9 @@ class: title1
 - 단어 간의 관계를 살펴보는 분석 방법
 - '손-장갑', '머리-모자' 처럼 관계가 있는 단어 파악
 - 단어의 관계를 표현한 의미망(semantic network) 만드는데 활용
-    
+
 --
- 
+
 #### 기본적인 전처리
 
 ---
@@ -239,13 +240,13 @@ comment_pos %>%
 
 ---
 
-##### 품사 분리하여 행 구성하기 
+##### 품사 분리하여 행 구성하기
 
 - 원하는 품사를 추출하기 쉽도록 한 행을 한 품사로 구성하기
-- `tidyr::separate_rows()`: 
+- `tidyr::separate_rows()`:
   - 정규 표현식에 따라 텍스트를 여러 행으로 나누기
   - `sep  = "[+]"`: `"+"`가 등장할 때마다 행을 나눔
- 
+
 ```{r comment_pos, R.options=list(tibble.width = 50), eval=F}
 # 품사별로 행 분리
 library(tidyr)
@@ -304,7 +305,7 @@ noun %>%
 
 - 동사 `"/pv"`, 형용사:`"/pa"` 붙어있는 단어 추출
 - 단어 뒤에 태그 대신 '다'를 붙여 이해하기 편하게 수정하기
-  - ex) "받" → "받다", "멋지" → "멋지다" 
+  - ex) "받" → "받다", "멋지" → "멋지다"
 
 ```{r pvpa, R.options=list(tibble.width = 50)}
 # 동사, 형용사 추출하기
@@ -347,9 +348,9 @@ comment %>%
 
 .box[
   .info[`r icon_style(fontawesome("rocket"), fill = "#FF7333")` 명사, 동사, 형용사를 한 번에 추출하기]
-  
+
   - 명사, 동사, 형용사를 추출해 결합한 후 두 글자 이상만 남기기
-  
+
 ```{r eval=F}
 comment_new <- comment_pos %>%
   separate_rows(word, sep = "[+]") %>%
@@ -368,13 +369,13 @@ comment_new <- comment_pos %>%
 
 
 
-#### 단어 동시 출현 빈도 구하기 
+#### 단어 동시 출현 빈도 구하기
 
 - `widyr::pairwise_count()`
   - `item`: 단어
   - `feature`: 텍스트 구분 기준
   - `sort = T`: 빈도가 높은 순으로 출력 결과 정렬
- 
+
 ```{r eval=F}
 install.packages("widyr")
 library(widyr)
