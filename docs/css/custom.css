@@ -324,6 +324,10 @@ slides > slide {
 
 /*title 페이지*/
 
+.no-page-num .remark-slide-number {
+  display: none;
+}
+
 .title0 {
   background-color: #FF7232;
   color: white;
