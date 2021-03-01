@@ -333,6 +333,12 @@ slides > slide {
   text-align: center;
 }
 
+/*remove title slide num */
+.title0 .remark-slide-number {
+  display: none;
+}
+
+
 .title0-2 {
   color: #FF7232;
   font-family:'Jua';
@@ -342,6 +348,12 @@ slides > slide {
   line-height: 50%;
 }
 
+/*remove title slide num */
+.title0-2 .remark-slide-number {
+  display: none;
+}
+
+
 .title1 {
   background-color: #FFCE32;
   color: white;
@@ -350,6 +362,13 @@ slides > slide {
   vertical-align: middle;
   text-align: center;
 }
+
+/*remove title slide num */
+.title1 .remark-slide-number {
+  display: none;
+}
+
+
 
 
 /*알아두면 좋아요 폰트*/
