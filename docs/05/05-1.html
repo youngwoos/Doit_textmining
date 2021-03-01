@@ -6,8 +6,6 @@
     <meta name="author" content="김영우" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
-    <script src="libs/tile-view/tile-view.js"></script>
     <link rel="stylesheet" href="../css/custom.css" type="text/css" />
   </head>
   <body>
@@ -25,7 +23,7 @@ Do it! 쉽게 배우는 R 텍스트 마이닝
 
 ---
 
-
+class: no-page-num
 
 &lt;br&gt;
 
@@ -103,7 +101,6 @@ and
 
 ---
 
-
 name: 05-1
 class: title1
 
@@ -111,250 +108,427 @@ class: title1
 
 ---
 
-- 단어 빈도 중심 분석의 한계: 단어가 사용된 맥락을 알 수 없다
-- 텍스트의 맥락을 이해하려면
-  - 단어의 관계를 이용해 의미망(semantic network) 만들기
-  - 단어들이 어떤 관계를 가지고 있는지 살펴보기
-
---
-
-
 ##### 동시 출현 단어 분석(Co-occurrence analysis)
 
-- 단어 간의 *관계*를 살펴보는 분석 방법
-   - '손-장갑', '머리-모자' 처럼 관계가 있는 단어 파악
-
----
+- 단어 간의 관계를 살펴보는 분석 방법
+- '손-장갑', '머리-모자' 처럼 관계가 있는 단어 파악
+- 단어의 관계를 표현한 의미망(semantic network) 만드는데 활용
+    
+--
  
 #### 기본적인 전처리
 
 ---
 
-&lt;!-- 영화 기생충 기사 댓글을 불러와 분석에 적합하게 전처리를 하겠습니다. 여기서도 같은 내용의 댓글을 구분할 수 있도록 `row_number()`를 이용해 고유값 `id`를 추가하겠습니다. --&gt;
 
-&lt;!-- &lt;!-- 원고 코드 --&gt; --&gt;
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- # 기생충 기사 댓글 불러오기 --&gt;
-&lt;!-- library(readr) --&gt;
-&lt;!-- raw_news_comment &lt;- read_csv("news_comment_parasite.csv") --&gt;
+```r
+# 기생충 기사 댓글 불러오기
+library(readr)
+raw_news_comment &lt;- read_csv("news_comment_parasite.csv")
+
+# 전처리
+library(dplyr)
+library(stringr)
+library(textclean)
 
-&lt;!-- # 전처리 --&gt;
-&lt;!-- library(dplyr) --&gt;
-&lt;!-- library(stringr) --&gt;
-&lt;!-- library(textclean) --&gt;
+news_comment &lt;- raw_news_comment %&gt;%
+  select(reply) %&gt;%
+  mutate(reply = str_replace_all(reply, "[^가-힣]", " "),
+         reply = str_squish(reply),
+         id = row_number())
+```
 
-&lt;!-- news_comment &lt;- raw_news_comment %&gt;% --&gt;
-&lt;!--   select(reply) %&gt;% --&gt;
-&lt;!--   mutate(reply = str_replace_all(reply, "[^가-힣]", " "), --&gt;
-&lt;!--          reply = str_squish(reply),          --&gt;
-&lt;!--          id = row_number()) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- &lt;!-- 실행 코드 --&gt; --&gt;
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- library(readr) --&gt;
-&lt;!-- library(dplyr) --&gt;
-&lt;!-- library(stringr) --&gt;
-&lt;!-- library(textclean) --&gt;
 
-&lt;!-- # 기생충 기사 댓글 불러오기 --&gt;
-&lt;!-- raw_news_comment &lt;- read_csv(here::here("files/news_comment_parasite.csv")) --&gt;
+---
 
-&lt;!-- news_comment &lt;- raw_news_comment %&gt;% --&gt;
-&lt;!--   select(reply) %&gt;% --&gt;
-&lt;!--   mutate(reply = str_replace_all(reply, "[^가-힣]", " "), --&gt;
-&lt;!--          reply = str_squish(reply), --&gt;
-&lt;!--          id = row_number()) --&gt;
+#### 토큰화하기
 
-&lt;!-- ``` --&gt;
+- 단어가 사용된 맥락을 살펴봐야 하므로 명사, 형용사, 동사 함께 추출
 
+##### 1. 형태소 분석기를 이용해 품사 기준으로 토큰화하기
 
-&lt;!-- ### 5.1.2 토큰화하기 --&gt;
+- `SimplePos22()` : 문장의 단어를 22개의 품사로 구분
 
-&lt;!-- 동시 출현 단어 분석은 단어가 사용된 맥락을 이해하는 것이므로 명사 뿐 아니라 형용사와 동사를 함께 살펴봐야 합니다. 텍스트에 사용된 형용사와 동사에 따라 명사의 의미가 달라지기 때문입니다. --&gt;
 
-&lt;!-- #### 1. 형태소 분석기를 이용해 토큰화하기 --&gt;
+```r
+library(tidytext)
+library(KoNLP)
 
-&lt;!-- 지금까지는 토큰화 할 때 명사를 추출하도록 `unnest_tokens()`의 `token`에 `extractNoun()`을 이용했습니다. 하지만 여기서는 다른 품사들도 함께 추출해야 하므로 `SimplePos22()`를 이용해야 합니다. `SimplePos22()`는 문장을 구성하는 단어를 22개의 품사로 구분해 줍니다. --&gt;
+comment_pos &lt;- news_comment %&gt;%
+  unnest_tokens(input = reply,
+                output = word,
+                token = SimplePos22,
+                drop = F)
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- library(tidytext) --&gt;
-&lt;!-- library(KoNLP) --&gt;
+comment_pos %&gt;%
+  select(reply, word)
+```
 
-&lt;!-- comment_pos &lt;- news_comment %&gt;% --&gt;
-&lt;!--   unnest_tokens(input = reply, --&gt;
-&lt;!--                 output = word, --&gt;
-&lt;!--                 token = SimplePos22, --&gt;
-&lt;!--                 drop = F) --&gt;
+---
+
 
-&lt;!-- comment_pos %&gt;%  --&gt;
-&lt;!--   select(word, reply) --&gt;
-&lt;!-- ``` --&gt;
+```
+## # A tibble: 39,956 x 2
+##    reply                                word      
+##    &lt;chr&gt;                                &lt;chr&gt;     
+##  1 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 정말/ma   
+##  2 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 우리/np   
+##  3 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 집/nc+에/jc…
+##  4 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 좋/pa+은/et…
+##  5 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 일/nc+이/jc…
+##  6 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 생기/pv+어/e…
+##  7 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 기쁘/pa+고/e…
+##  8 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 행복한/nc 
+##  9 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 것/nb+처럼/j…
+## 10 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인… 나/np+의/jc…
+## # … with 39,946 more rows
+```
 
-&lt;!-- &gt; [편집] 출력 줄맞춤 --&gt;
+---
+
+##### 품사 분리하여 행 구성하기 
+
+- 원하는 품사를 추출하기 쉽도록 한 행을 한 품사로 구성하기
+- `tidyr::separate_rows()`: 
+  - 정규 표현식에 따라 텍스트를 여러 행으로 나누기
+  - `sep  = "[+]"`: `"+"`가 등장할 때마다 행을 나눔
+ 
+
+```r
+# 품사별로 행 분리
+library(tidyr)
+comment_pos &lt;- comment_pos %&gt;%
+  separate_rows(word, sep = "[+]")
 
-&lt;!-- &lt;br&gt; --&gt;
+comment_pos %&gt;%
+  select(word, reply)
+```
 
-&lt;!-- &gt; [참고] `SimplePos22()`가 품사를 어떻게 구분하는지 궁금하다면 접속해 보세요. --&gt;
+---
 
-&lt;!-- &gt; [- github.com/haven-jeon/KoNLP/blob/master/etcs/KoNLP-API.md](github.com/haven-jeon/KoNLP/blob/master/etcs/KoNLP-API.md) --&gt;
 
+```
+## # A tibble: 70,553 x 2
+##    word    reply                                  
+##    &lt;chr&gt;   &lt;chr&gt;                                  
+##  1 정말/ma 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  2 우리/np 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  3 집/nc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  4 에/jc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  5 좋/pa   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  6 은/et   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  7 일/nc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  8 이/jc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+##  9 생기/pv 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+## 10 어/ec   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
+## # … with 70,543 more rows
+```
+
+---
+
+##### 3. 품사 추출하기
+
+&lt;br10&gt;
+
+##### (1) 명사 추출하기
+
+- `"/n"`이 붙어있는 단어 추출
+- 태그 제거: '/로 시작하는 모든 문자' 제거
+
+
+```r
+# 명사 추출하기
+noun &lt;- comment_pos %&gt;%
+  filter(str_detect(word, "/n")) %&gt;%
+  mutate(word = str_remove(word, "/.*$"))
+
+noun %&gt;%
+  select(word, reply)
+```
+
+---
+
+
+```
+## # A tibble: 27,457 x 2
+##    word   reply                                   
+##    &lt;chr&gt;  &lt;chr&gt;                                   
+##  1 우리   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  2 집     정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  3 일     정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  4 행복한 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  5 것     정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  6 나     정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  7 일     정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  8 양     정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+##  9 행복   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+## 10 행복   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 행…
+## # … with 27,447 more rows
+```
+
+---
+
+
+
+```r
+# 명사 빈도 구하기
+noun %&gt;%
+  count(word, sort = T)
+```
+
+```
+## # A tibble: 8,069 x 2
+##    word         n
+##    &lt;chr&gt;    &lt;int&gt;
+##  1 영화       463
+##  2 기생충     445
+##  3 봉준호     372
+##  4 것         353
+##  5 아카데미   252
+##  6 축하       232
+##  7 나         230
+##  8 대한민국   226
+##  9 자랑       222
+## 10 작품상     218
+## # … with 8,059 more rows
+```
+
+---
+
+
+##### (2) 동사, 형용사 추출하기
+
+- 동사 `"/pv"`, 형용사:`"/pa"` 붙어있는 단어 추출
+- 단어 뒤에 태그 대신 '다'를 붙여 이해하기 편하게 수정하기
+  - ex) "받" → "받다", "멋지" → "멋지다" 
+
+
+```r
+# 동사, 형용사 추출하기
+pvpa &lt;- comment_pos %&gt;%
+  filter(str_detect(word, "/pv|/pa")) %&gt;%         # "/pv", "/pa" 추출
+  mutate(word = str_replace(word, "/.*$", "다"))  # "/"로 시작 문자를 "다"로 바꾸기
+
+pvpa %&gt;%
+  select(word, reply)
+```
+
+```
+## # A tibble: 5,317 x 2
+##    word      reply                                
+##    &lt;chr&gt;     &lt;chr&gt;                                
+##  1 좋다      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  2 생기다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  3 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  4 축하드리다… 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  5 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  6 기쁘다    와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
+##  7 기쁘다    와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
+##  8 축하드리다… 와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
+##  9 불다      우리나라의 영화감독분들 그리고 앞으로 그 꿈을 그리는 분들에게 큰…
+## 10 크다      우리나라의 영화감독분들 그리고 앞으로 그 꿈을 그리는 분들에게 큰…
+## # … with 5,307 more rows
+```
+
+---
+
+
+```
+## # A tibble: 5,317 x 2
+##    word      reply                                
+##    &lt;chr&gt;     &lt;chr&gt;                                
+##  1 좋다      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  2 생기다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  3 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  4 축하드리다… 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  5 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  6 기쁘다    와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
+##  7 기쁘다    와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
+##  8 축하드리다… 와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
+##  9 불다      우리나라의 영화감독분들 그리고 앞으로 그 꿈을 그리는 분들에게 큰…
+## 10 크다      우리나라의 영화감독분들 그리고 앞으로 그 꿈을 그리는 분들에게 큰…
+## # … with 5,307 more rows
+```
+
+---
+
+##### (3) 추출한 데이터 결합하기
+
+- 추출한 단어 결합하기
+- 이해할 수 있는 두 글자 이상 단어만 남기기
+
+
+```r
+# 품사 결합
+comment &lt;- bind_rows(noun, pvpa) %&gt;%
+  filter(str_count(word) &gt;= 2) %&gt;%
+  arrange(id)
+
+comment %&gt;%
+  select(word, reply)
+```
+
+---
+
+
+```
+## # A tibble: 26,860 x 2
+##    word      reply                                
+##    &lt;chr&gt;     &lt;chr&gt;                                
+##  1 우리      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  2 행복한    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  3 행복      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  4 행복      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  5 좋다      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  6 생기다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  7 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  8 축하드리다… 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+##  9 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
+## 10 시국      와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
+## # … with 26,850 more rows
+```
+
+---
+
+.box[
+  .info[&lt;svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt; 명사, 동사, 형용사를 한 번에 추출하기]
+  
+  - 명사, 동사, 형용사를 추출해 결합한 후 두 글자 이상만 남기기
+  
+
+```r
+comment_new &lt;- comment_pos %&gt;%
+  separate_rows(word, sep = "[+]") %&gt;%
+  filter(str_detect(word, "/n|/pv|/pa")) %&gt;%
+  mutate(word = ifelse(str_detect(word, "/pv|/pa"),
+                       str_replace(word, "/.*$", "다"),
+                       str_remove(word, "/.*$"))) %&gt;%
+  filter(str_count(word) &gt;= 2) %&gt;%
+  arrange(id)
+```
+]
+
+
+
+---
+
+
+
+#### 단어 동시 출현 빈도 구하기 
+
+- `widyr::pairwise_count()`
+  - `item`: 단어
+  - `feature`: 텍스트 구분 기준
+  - `sort = T`: 빈도가 높은 순으로 출력 결과 정렬
+ 
+
+```r
+install.packages("widyr")
+library(widyr)
+
+pair &lt;- comment %&gt;%
+  pairwise_count(item = word,
+                 feature = id,
+                 sort = T)
+pair
+```
+
+---
+
+
+```
+## # A tibble: 245,920 x 3
+##    item1      item2      n
+##    &lt;chr&gt;      &lt;chr&gt;  &lt;dbl&gt;
+##  1 영화       기생충   111
+##  2 기생충     영화     111
+##  3 감독       봉준호    86
+##  4 봉준호     감독      86
+##  5 감독님     봉준호    66
+##  6 봉준호     감독님    66
+##  7 만들다     영화      57
+##  8 영화       만들다    57
+##  9 기생충     봉준호    54
+## 10 블랙리스트 감독      54
+## # … with 245,910 more rows
+```
+
+--
+
+- 한 단어를 기준으로 함께 사용된 모든 단어의 빈도를 구함
+- 순서를 바꿔가며 같은 빈도를 지니는 두 개의 행으로 구성됨
+  - ex) "영화-기생충", "기생충-영화"
+
+---
+
+
+##### 특정 단어와 자주 함께 사용된 단어 살펴보기
+
+
+.pull-left[
+
+
+```r
+pair %&gt;% filter(item1 == "영화")
+```
+
+```
+## # A tibble: 2,313 x 3
+##    item1 item2        n
+##    &lt;chr&gt; &lt;chr&gt;    &lt;dbl&gt;
+##  1 영화  기생충     111
+##  2 영화  만들다      57
+##  3 영화  봉준호      52
+##  4 영화  받다        48
+##  5 영화  한국        46
+##  6 영화  아카데미    42
+##  7 영화  같다        41
+##  8 영화  감독        39
+##  9 영화  아니다      38
+## 10 영화  좋다        35
+## # … with 2,303 more rows
+```
+]
+
+.pull-right[
+
+
+
+```r
+pair %&gt;% filter(item1 == "봉준호")
+```
+
+```
+## # A tibble: 1,579 x 3
+##    item1  item2          n
+##    &lt;chr&gt;  &lt;chr&gt;      &lt;dbl&gt;
+##  1 봉준호 감독          86
+##  2 봉준호 감독님        66
+##  3 봉준호 기생충        54
+##  4 봉준호 영화          52
+##  5 봉준호 블랙리스트    48
+##  6 봉준호 대한민국      38
+##  7 봉준호 자랑          33
+##  8 봉준호 축하드리다    30
+##  9 봉준호 송강호        30
+## 10 봉준호 축하          25
+## # … with 1,569 more rows
+```
+]
+
+---
+
+name: 05-2
+class: title1
+
+05-2 동시 출현 네트워크: &lt;br&gt;Co-occurrence network
+
+---
 
-&lt;!-- 출력 결과를 보면 문장을 구성하는 각 단어 뒤에 `"/nc"`, `"/pv"`와 같이 품사를 나타내는 태그(Tag, 꼬리표)가 붙어있습니다. 태그를 이용하면 원하는 품사의 단어를 추출할 수 있습니다. --&gt;
 
-&lt;!-- #### 품사 분리하여 행 구성하기 - `separate_rows()` --&gt;
 
-&lt;!-- `comment_pos`의 `word`는 여러 품사가 결합된 형태로 되어있습니다. 원하는 품사만 추출하기 쉽도록 `tidyr`패키지의 `separate_rows()`를 이용해 한 행이 한 품사의 단어로 구성되도록 만들겠습니다. `separate_rows()`는 텍스트를 `sep`에 입력한 정규표현식에 따라 여러 행으로 나누는 기능을 합니다. 다음 코드는 `sep`에 `"[+]"`를 입력했으므로 `"+"`가 등장할 때마다 행을 나눕니다. --&gt;
 
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 품사별로 행 분리 --&gt;
-&lt;!-- library(tidyr) --&gt;
-&lt;!-- comment_pos &lt;- comment_pos %&gt;% --&gt;
-&lt;!--   separate_rows(word, sep = "[+]") --&gt;
-
-&lt;!-- comment_pos %&gt;%  --&gt;
-&lt;!--   select(word, reply) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &gt; [편집] 출력 줄맞춤 --&gt;
-
-&lt;!-- #### 2. 품사 추출하기 --&gt;
-
-&lt;!-- #### (1) 명사 추출하기 --&gt;
-
-&lt;!-- 이제 분석에 사용할 품사의 단어를 추출할 차례입니다. 우선 명사를 먼저 추출하겠습니다. 단어 뒤에 붙어있는 태그 `"/n"`을 이용하면 명사를 추출할 수 있습니다. 우선 `str_detect()`를 이용해 `"/n"`이 붙어있는 단어를 추출합니다. 그런 다음 `str_remove()`를 이용해 태그를 제거합니다. `str_remove()`에 입력한 `"/.*$"`는 "/로 시작하는 모든 문자"를 의미하는 정규표현식이므로 태그 부분만 제거하게 됩니다. --&gt;
-
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 명사 추출하기 --&gt;
-&lt;!-- noun &lt;- comment_pos %&gt;% --&gt;
-&lt;!--   filter(str_detect(word, "/n")) %&gt;% --&gt;
-&lt;!--   mutate(word = str_remove(word, "/.*$")) --&gt;
-
-&lt;!-- noun %&gt;% --&gt;
-&lt;!--   select(word, reply) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- 이제 `count()`를 이용하면 댓글에서 어떤 명사가 가장 많이 사용됐는지 쉽게 알아볼 수 있습니다. --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- noun %&gt;% --&gt;
-&lt;!--   count(word, sort = T) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- #### (2) 동사, 형용사 추출하기 --&gt;
-
-&lt;!-- 이번에는 동사와 형용사를 추출하겠습니다. 동사에는 `"/pv"`, 형용사에는 `"/pa"`라는 태그가 붙어 있으므로 `str_detect()`에 `"/pv|/pa"`를 입력하면 동사와 형용사가 추출됩니다. 그런 다음, `"받"`은 `"받다"`, `"멋지"`는 `"멋지다"`와 같이 단어 뒤에 태그 대신 "~다"를 붙여 이해하기 편하게 수정하겠습니다. `str_replace()`에 텍스트 규칙으로 `"/.*$"`를 입력해  "/로 시작하는 모든 문자"를 "다"로 바꾸면 됩니다. 이렇게 하면 `"받/pv"`는 `"받다"`로, `"멋지/pa"`는 "멋지다"로 바뀝니다. --&gt;
-
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 동사, 형용사 추출하기 --&gt;
-&lt;!-- pvpa &lt;- comment_pos %&gt;% --&gt;
-&lt;!--   filter(str_detect(word, "/pv|/pa")) %&gt;%         # "/pv", "/pa" 추출 --&gt;
-&lt;!--   mutate(word = str_replace(word, "/.*$", "다"))  # "/"로 시작 문자를 "다"로 바꾸기 --&gt;
-
-&lt;!-- pvpa %&gt;% --&gt;
-&lt;!--   select(word, reply) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &gt; [편집] 출력 줄맞춤 --&gt;
-
-&lt;!-- &lt;br&gt; --&gt;
-
-&lt;!-- &gt; [참고] `str_detect()`에 여러 문자를 입력할 때는 `|`로 구분해야 합니다. --&gt;
-
-
-
-&lt;!-- 이제 댓글에 어떤 동사와 형용사가 가장 많이 사용됐는지 쉽게 알아볼 수 있습니다. --&gt;
-&lt;!-- ```{r} --&gt;
-&lt;!-- pvpa %&gt;% --&gt;
-&lt;!--   count(word, sort = T) --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- #### (3) 추출한 데이터 결합하기 --&gt;
-
-&lt;!-- `bind_rows()`를 이용해 추출한 `noun`과 `pvpa`를 하나로 결합하겠습니다. 그런 다음 단어의 의미를 이해할 수 있도록 두 글자 이상의 단어만 남기겠습니다. --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 품사 결합 --&gt;
-&lt;!-- comment &lt;- bind_rows(noun, pvpa) %&gt;% --&gt;
-&lt;!--   filter(str_count(word) &gt;= 2) %&gt;% --&gt;
-&lt;!--   arrange(id) --&gt;
-
-&lt;!-- comment %&gt;% --&gt;
-&lt;!--   select(word, reply) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &gt; [편집] 출력 줄맞춤 --&gt;
-
-&lt;!-- &lt;br&gt; --&gt;
-
-&lt;!-- &gt; [알아두면 좋아요] 명사, 동사, 형용사 추출하는 간략한 코드 --&gt;
-
-&lt;!-- &gt; 명사, 동사, 형용사를 추출해 결합한 다음 두 글장 이상만 남기는 코드를 아래와 같이 줄여서 작성할 수 있습니다. --&gt;
-
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- comment_new &lt;- comment_pos %&gt;% --&gt;
-&lt;!--   separate_rows(word, sep = "[+]") %&gt;% --&gt;
-&lt;!--   filter(str_detect(word, "/n|/pv|/pa")) %&gt;% --&gt;
-&lt;!--   mutate(word = ifelse(str_detect(word, "/pv|/pa"), --&gt;
-&lt;!--                        str_replace(word, "/.*$", "다"), --&gt;
-&lt;!--                        str_remove(word, "/.*$"))) %&gt;% --&gt;
-&lt;!--   filter(str_count(word) &gt;= 2) %&gt;% --&gt;
-&lt;!--   arrange(id) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &gt; 두 방법으로 만든 데이터는 내용은 같지만 단어의 정렬 순서가 다릅니다. 품사별로 처리해 결합하는 첫 번째 방법은 `id`별로 위쪽에는 명사, 아래쪽에는 동사와 형용사를 나열합니다. 반면 한 번에 처리하는 두 번째 방법은 댓글의 단어 순서에 따라 나열합니다. --&gt;
-
-&lt;!-- &lt;br&gt; --&gt;
-
-&lt;!-- ### 5.1.3 단어 동시 출현 빈도 구하기 - `pairwise_count()` --&gt;
-
-&lt;!-- 토큰화했으니 단어의 동시 출현 빈도를 구할 차례입니다. `widyr` 패키지의 `pairwise_count()`를 이용하면 동시 출현 빈도를 쉽게 구할 수 있습니다. `pairwise_count()`에는 3개의 파라미터를 입력합니다.  --&gt;
-
-&lt;!-- - `item`: 단어가 들어 있는 변수. 여기서는 word를 입력하면 됩니다. --&gt;
-&lt;!-- - `feature`: 텍스트를 구분할 고유값이 들어 있는 변수. 여기서는 id를 입력하면 됩니다. --&gt;
-&lt;!-- - `sort = T`: 빈도가 높은 순으로 단어를 정렬합니다. --&gt;
-
-&lt;!-- 출력 결과를 보면 어떤 단어가 몇 번씩 함께 사용됐는지 알 수 있습니다. 첫 번째 행을 보면 "영화"와 "기생충"이  111번 함께 사용되었고, 전체 댓글에서 가장 많이 함께 사용된 단어쌍임을 알 수 있습니다. --&gt;
-
-&lt;!-- `pairwise_count()`는 하나의 단어를 기준으로 함께 사용된 나머지 모든 단어의 빈도를 구하므로 출력 결과를 보면 "영화-기생충", "기생충-영화"와 같이 순서를 바꿔가며 같은 빈도를 지니는 행으로 구성된다는 특징이 있습니다. --&gt;
-
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- install.packages("widyr") --&gt;
-&lt;!-- library(widyr) --&gt;
-
-&lt;!-- pair &lt;- comment %&gt;% --&gt;
-&lt;!--   pairwise_count(item = word, --&gt;
-&lt;!--                  feature = id, --&gt;
-&lt;!--                  sort = T) --&gt;
-&lt;!-- pair --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- # install.packages("widyr") --&gt;
-&lt;!-- library(widyr) --&gt;
-
-&lt;!-- pair &lt;- comment %&gt;% --&gt;
-&lt;!--   pairwise_count(item = word, --&gt;
-&lt;!--                  feature = id, --&gt;
-&lt;!--                  sort = T) --&gt;
-&lt;!-- pair --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- #### 특정 단어와 자주 함께 사용된 단어 살펴보기 --&gt;
-
-&lt;!-- `filter`를 이용하면 특정 단어와 자주 함께 사용된 단어가 무엇인지 쉽게 알 수 있습니다. --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- pair %&gt;% filter(item1 == "영화") --&gt;
-&lt;!-- pair %&gt;% filter(item1 == "봉준호") --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &gt; [편집] 2단 편집 --&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

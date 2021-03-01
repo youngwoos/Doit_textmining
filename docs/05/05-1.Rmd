@@ -37,7 +37,7 @@ knitr::opts_chunk$set(cache = T, warning = F, message = F,
                       dpi = 300, fig.height = 4)
                       # out.width = "100%"
 
-xaringanExtra::use_tile_view()
+#xaringanExtra::use_tile_view()
 
 library(knitr)
 library(icon)
@@ -69,7 +69,7 @@ Do it! 쉽게 배우는 R 텍스트 마이닝
 
 ---
 
-
+class: no-page-num
 
 <br>
 
@@ -155,7 +155,6 @@ include_graphics("../Image/05/05_4_2.png")
 
 ---
 
-
 name: 05-1
 class: title1
 
@@ -163,248 +162,265 @@ class: title1
 
 ---
 
-- 단어 빈도 중심 분석의 한계: 단어가 사용된 맥락을 알 수 없다
-- 텍스트의 맥락을 이해하려면
-  - 단어의 관계를 이용해 의미망(semantic network) 만들기
-  - 단어들이 어떤 관계를 가지고 있는지 살펴보기
-
---
-
-
 ##### 동시 출현 단어 분석(Co-occurrence analysis)
 
 - 단어 간의 관계를 살펴보는 분석 방법
-   - '손-장갑', '머리-모자' 처럼 관계가 있는 단어 파악
-
----
+- '손-장갑', '머리-모자' 처럼 관계가 있는 단어 파악
+- 단어의 관계를 표현한 의미망(semantic network) 만드는데 활용
+    
+--
  
 #### 기본적인 전처리
 
 ---
 
-<!-- 영화 기생충 기사 댓글을 불러와 분석에 적합하게 전처리를 하겠습니다. 여기서도 같은 내용의 댓글을 구분할 수 있도록 `row_number()`를 이용해 고유값 `id`를 추가하겠습니다. -->
+```{r eval=F}
+# 기생충 기사 댓글 불러오기
+library(readr)
+raw_news_comment <- read_csv("news_comment_parasite.csv")
 
-<!-- <!-- 원고 코드 --> -->
-<!-- ```{r eval=F} -->
-<!-- # 기생충 기사 댓글 불러오기 -->
-<!-- library(readr) -->
-<!-- raw_news_comment <- read_csv("news_comment_parasite.csv") -->
+# 전처리
+library(dplyr)
+library(stringr)
+library(textclean)
 
-<!-- # 전처리 -->
-<!-- library(dplyr) -->
-<!-- library(stringr) -->
-<!-- library(textclean) -->
+news_comment <- raw_news_comment %>%
+  select(reply) %>%
+  mutate(reply = str_replace_all(reply, "[^가-힣]", " "),
+         reply = str_squish(reply),
+         id = row_number())
+```
 
-<!-- news_comment <- raw_news_comment %>% -->
-<!--   select(reply) %>% -->
-<!--   mutate(reply = str_replace_all(reply, "[^가-힣]", " "), -->
-<!--          reply = str_squish(reply),          -->
-<!--          id = row_number()) -->
-<!-- ``` -->
+```{r echo=F}
+library(readr)
+library(dplyr)
+library(stringr)
+library(textclean)
 
-<!-- <!-- 실행 코드 --> -->
-<!-- ```{r echo=F} -->
-<!-- library(readr) -->
-<!-- library(dplyr) -->
-<!-- library(stringr) -->
-<!-- library(textclean) -->
+# 기생충 기사 댓글 불러오기
+raw_news_comment <- read_csv("../../Data/news_comment_parasite.csv")
 
-<!-- # 기생충 기사 댓글 불러오기 -->
-<!-- raw_news_comment <- read_csv(here::here("files/news_comment_parasite.csv")) -->
+news_comment <- raw_news_comment %>%
+  select(reply) %>%
+  mutate(reply = str_replace_all(reply, "[^가-힣]", " "),
+         reply = str_squish(reply),
+         id = row_number())
+```
 
-<!-- news_comment <- raw_news_comment %>% -->
-<!--   select(reply) %>% -->
-<!--   mutate(reply = str_replace_all(reply, "[^가-힣]", " "), -->
-<!--          reply = str_squish(reply), -->
-<!--          id = row_number()) -->
+---
 
-<!-- ``` -->
+#### 토큰화하기
 
+- 단어가 사용된 맥락을 살펴봐야 하므로 명사, 형용사, 동사 함께 추출
 
-<!-- ### 5.1.2 토큰화하기 -->
+##### 1. 형태소 분석기를 이용해 품사 기준으로 토큰화하기
 
-<!-- 동시 출현 단어 분석은 단어가 사용된 맥락을 이해하는 것이므로 명사 뿐 아니라 형용사와 동사를 함께 살펴봐야 합니다. 텍스트에 사용된 형용사와 동사에 따라 명사의 의미가 달라지기 때문입니다. -->
+- `SimplePos22()` : 문장의 단어를 22개의 품사로 구분
 
-<!-- #### 1. 형태소 분석기를 이용해 토큰화하기 -->
+```{r SimplePos22, eval=F}
+library(tidytext)
+library(KoNLP)
 
-<!-- 지금까지는 토큰화 할 때 명사를 추출하도록 `unnest_tokens()`의 `token`에 `extractNoun()`을 이용했습니다. 하지만 여기서는 다른 품사들도 함께 추출해야 하므로 `SimplePos22()`를 이용해야 합니다. `SimplePos22()`는 문장을 구성하는 단어를 22개의 품사로 구분해 줍니다. -->
+comment_pos <- news_comment %>%
+  unnest_tokens(input = reply,
+                output = word,
+                token = SimplePos22,
+                drop = F)
 
-<!-- ```{r} -->
-<!-- library(tidytext) -->
-<!-- library(KoNLP) -->
+comment_pos %>%
+  select(reply, word)
+```
 
-<!-- comment_pos <- news_comment %>% -->
-<!--   unnest_tokens(input = reply, -->
-<!--                 output = word, -->
-<!--                 token = SimplePos22, -->
-<!--                 drop = F) -->
+---
 
-<!-- comment_pos %>%  -->
-<!--   select(word, reply) -->
-<!-- ``` -->
+```{r ref.label="SimplePos22", R.options=list(tibble.width = 50), echo=F}
 
-<!-- > [편집] 출력 줄맞춤 -->
+```
 
-<!-- <br> -->
+---
 
-<!-- > [참고] `SimplePos22()`가 품사를 어떻게 구분하는지 궁금하다면 접속해 보세요. -->
+##### 품사 분리하여 행 구성하기 
 
-<!-- > [- github.com/haven-jeon/KoNLP/blob/master/etcs/KoNLP-API.md](github.com/haven-jeon/KoNLP/blob/master/etcs/KoNLP-API.md) -->
+- 원하는 품사를 추출하기 쉽도록 한 행을 한 품사로 구성하기
+- `tidyr::separate_rows()`: 
+  - 정규 표현식에 따라 텍스트를 여러 행으로 나누기
+  - `sep  = "[+]"`: `"+"`가 등장할 때마다 행을 나눔
+ 
+```{r comment_pos, R.options=list(tibble.width = 50), eval=F}
+# 품사별로 행 분리
+library(tidyr)
+comment_pos <- comment_pos %>%
+  separate_rows(word, sep = "[+]")
 
+comment_pos %>%
+  select(word, reply)
+```
 
-<!-- 출력 결과를 보면 문장을 구성하는 각 단어 뒤에 `"/nc"`, `"/pv"`와 같이 품사를 나타내는 태그(Tag, 꼬리표)가 붙어있습니다. 태그를 이용하면 원하는 품사의 단어를 추출할 수 있습니다. -->
+---
 
-<!-- #### 품사 분리하여 행 구성하기 - `separate_rows()` -->
+```{r ref.label="comment_pos", R.options=list(tibble.width = 50), echo=F}
 
-<!-- `comment_pos`의 `word`는 여러 품사가 결합된 형태로 되어있습니다. 원하는 품사만 추출하기 쉽도록 `tidyr`패키지의 `separate_rows()`를 이용해 한 행이 한 품사의 단어로 구성되도록 만들겠습니다. `separate_rows()`는 텍스트를 `sep`에 입력한 정규표현식에 따라 여러 행으로 나누는 기능을 합니다. 다음 코드는 `sep`에 `"[+]"`를 입력했으므로 `"+"`가 등장할 때마다 행을 나눕니다. -->
+```
 
+---
 
-<!-- ```{r} -->
-<!-- # 품사별로 행 분리 -->
-<!-- library(tidyr) -->
-<!-- comment_pos <- comment_pos %>% -->
-<!--   separate_rows(word, sep = "[+]") -->
+##### 3. 품사 추출하기
 
-<!-- comment_pos %>%  -->
-<!--   select(word, reply) -->
-<!-- ``` -->
+<br10>
 
-<!-- > [편집] 출력 줄맞춤 -->
+##### (1) 명사 추출하기
 
-<!-- #### 2. 품사 추출하기 -->
+- `"/n"`이 붙어있는 단어 추출
+- 태그 제거: '/로 시작하는 모든 문자' 제거
 
-<!-- #### (1) 명사 추출하기 -->
+```{r noun, R.options=list(tibble.width = 50), eval=F}
+# 명사 추출하기
+noun <- comment_pos %>%
+  filter(str_detect(word, "/n")) %>%
+  mutate(word = str_remove(word, "/.*$"))
 
-<!-- 이제 분석에 사용할 품사의 단어를 추출할 차례입니다. 우선 명사를 먼저 추출하겠습니다. 단어 뒤에 붙어있는 태그 `"/n"`을 이용하면 명사를 추출할 수 있습니다. 우선 `str_detect()`를 이용해 `"/n"`이 붙어있는 단어를 추출합니다. 그런 다음 `str_remove()`를 이용해 태그를 제거합니다. `str_remove()`에 입력한 `"/.*$"`는 "/로 시작하는 모든 문자"를 의미하는 정규표현식이므로 태그 부분만 제거하게 됩니다. -->
+noun %>%
+  select(word, reply)
+```
 
+---
 
-<!-- ```{r} -->
-<!-- # 명사 추출하기 -->
-<!-- noun <- comment_pos %>% -->
-<!--   filter(str_detect(word, "/n")) %>% -->
-<!--   mutate(word = str_remove(word, "/.*$")) -->
+```{r ref.label="noun", R.options=list(tibble.width = 50), echo=F}
+```
 
-<!-- noun %>% -->
-<!--   select(word, reply) -->
-<!-- ``` -->
+---
 
-<!-- 이제 `count()`를 이용하면 댓글에서 어떤 명사가 가장 많이 사용됐는지 쉽게 알아볼 수 있습니다. -->
 
-<!-- ```{r} -->
-<!-- noun %>% -->
-<!--   count(word, sort = T) -->
-<!-- ``` -->
+```{r}
+# 명사 빈도 구하기
+noun %>%
+  count(word, sort = T)
+```
 
-<!-- #### (2) 동사, 형용사 추출하기 -->
+---
 
-<!-- 이번에는 동사와 형용사를 추출하겠습니다. 동사에는 `"/pv"`, 형용사에는 `"/pa"`라는 태그가 붙어 있으므로 `str_detect()`에 `"/pv|/pa"`를 입력하면 동사와 형용사가 추출됩니다. 그런 다음, `"받"`은 `"받다"`, `"멋지"`는 `"멋지다"`와 같이 단어 뒤에 태그 대신 "~다"를 붙여 이해하기 편하게 수정하겠습니다. `str_replace()`에 텍스트 규칙으로 `"/.*$"`를 입력해  "/로 시작하는 모든 문자"를 "다"로 바꾸면 됩니다. 이렇게 하면 `"받/pv"`는 `"받다"`로, `"멋지/pa"`는 "멋지다"로 바뀝니다. -->
 
+##### (2) 동사, 형용사 추출하기
 
-<!-- ```{r} -->
-<!-- # 동사, 형용사 추출하기 -->
-<!-- pvpa <- comment_pos %>% -->
-<!--   filter(str_detect(word, "/pv|/pa")) %>%         # "/pv", "/pa" 추출 -->
-<!--   mutate(word = str_replace(word, "/.*$", "다"))  # "/"로 시작 문자를 "다"로 바꾸기 -->
+- 동사 `"/pv"`, 형용사:`"/pa"` 붙어있는 단어 추출
+- 단어 뒤에 태그 대신 '다'를 붙여 이해하기 편하게 수정하기
+  - ex) "받" → "받다", "멋지" → "멋지다" 
 
-<!-- pvpa %>% -->
-<!--   select(word, reply) -->
-<!-- ``` -->
+```{r pvpa, R.options=list(tibble.width = 50)}
+# 동사, 형용사 추출하기
+pvpa <- comment_pos %>%
+  filter(str_detect(word, "/pv|/pa")) %>%         # "/pv", "/pa" 추출
+  mutate(word = str_replace(word, "/.*$", "다"))  # "/"로 시작 문자를 "다"로 바꾸기
 
-<!-- > [편집] 출력 줄맞춤 -->
+pvpa %>%
+  select(word, reply)
+```
 
-<!-- <br> -->
+---
 
-<!-- > [참고] `str_detect()`에 여러 문자를 입력할 때는 `|`로 구분해야 합니다. -->
+```{r ref.label="pvpa", R.options=list(tibble.width = 50, width = 60), echo=F}
+```
 
+---
 
+##### (3) 추출한 데이터 결합하기
 
-<!-- 이제 댓글에 어떤 동사와 형용사가 가장 많이 사용됐는지 쉽게 알아볼 수 있습니다. -->
-<!-- ```{r} -->
-<!-- pvpa %>% -->
-<!--   count(word, sort = T) -->
-<!-- ``` -->
+- 추출한 단어 결합하기
+- 이해할 수 있는 두 글자 이상 단어만 남기기
 
+```{r comment, R.options=list(tibble.width = 50), eval=F}
+# 품사 결합
+comment <- bind_rows(noun, pvpa) %>%
+  filter(str_count(word) >= 2) %>%
+  arrange(id)
 
-<!-- #### (3) 추출한 데이터 결합하기 -->
+comment %>%
+  select(word, reply)
+```
 
-<!-- `bind_rows()`를 이용해 추출한 `noun`과 `pvpa`를 하나로 결합하겠습니다. 그런 다음 단어의 의미를 이해할 수 있도록 두 글자 이상의 단어만 남기겠습니다. -->
+---
 
-<!-- ```{r} -->
-<!-- # 품사 결합 -->
-<!-- comment <- bind_rows(noun, pvpa) %>% -->
-<!--   filter(str_count(word) >= 2) %>% -->
-<!--   arrange(id) -->
+```{r ref.label="comment", R.options=list(tibble.width = 50), echo=F}
+```
 
-<!-- comment %>% -->
-<!--   select(word, reply) -->
-<!-- ``` -->
+---
 
-<!-- > [편집] 출력 줄맞춤 -->
+.box[
+  .info[`r icon_style(fontawesome("rocket"), fill = "#FF7333")` 명사, 동사, 형용사를 한 번에 추출하기]
+  
+  - 명사, 동사, 형용사를 추출해 결합한 후 두 글자 이상만 남기기
+  
+```{r eval=F}
+comment_new <- comment_pos %>%
+  separate_rows(word, sep = "[+]") %>%
+  filter(str_detect(word, "/n|/pv|/pa")) %>%
+  mutate(word = ifelse(str_detect(word, "/pv|/pa"),
+                       str_replace(word, "/.*$", "다"),
+                       str_remove(word, "/.*$"))) %>%
+  filter(str_count(word) >= 2) %>%
+  arrange(id)
+```
+]
 
-<!-- <br> -->
 
-<!-- > [알아두면 좋아요] 명사, 동사, 형용사 추출하는 간략한 코드 -->
 
-<!-- > 명사, 동사, 형용사를 추출해 결합한 다음 두 글장 이상만 남기는 코드를 아래와 같이 줄여서 작성할 수 있습니다. -->
+---
 
-<!-- ```{r eval=F} -->
-<!-- comment_new <- comment_pos %>% -->
-<!--   separate_rows(word, sep = "[+]") %>% -->
-<!--   filter(str_detect(word, "/n|/pv|/pa")) %>% -->
-<!--   mutate(word = ifelse(str_detect(word, "/pv|/pa"), -->
-<!--                        str_replace(word, "/.*$", "다"), -->
-<!--                        str_remove(word, "/.*$"))) %>% -->
-<!--   filter(str_count(word) >= 2) %>% -->
-<!--   arrange(id) -->
-<!-- ``` -->
 
-<!-- > 두 방법으로 만든 데이터는 내용은 같지만 단어의 정렬 순서가 다릅니다. 품사별로 처리해 결합하는 첫 번째 방법은 `id`별로 위쪽에는 명사, 아래쪽에는 동사와 형용사를 나열합니다. 반면 한 번에 처리하는 두 번째 방법은 댓글의 단어 순서에 따라 나열합니다. -->
 
-<!-- <br> -->
+#### 단어 동시 출현 빈도 구하기 
 
-<!-- ### 5.1.3 단어 동시 출현 빈도 구하기 - `pairwise_count()` -->
+- `widyr::pairwise_count()`
+  - `item`: 단어
+  - `feature`: 텍스트 구분 기준
+  - `sort = T`: 빈도가 높은 순으로 출력 결과 정렬
+ 
+```{r eval=F}
+install.packages("widyr")
+library(widyr)
 
-<!-- 토큰화했으니 단어의 동시 출현 빈도를 구할 차례입니다. `widyr` 패키지의 `pairwise_count()`를 이용하면 동시 출현 빈도를 쉽게 구할 수 있습니다. `pairwise_count()`에는 3개의 파라미터를 입력합니다.  -->
+pair <- comment %>%
+  pairwise_count(item = word,
+                 feature = id,
+                 sort = T)
+pair
+```
 
-<!-- - `item`: 단어가 들어 있는 변수. 여기서는 word를 입력하면 됩니다. -->
-<!-- - `feature`: 텍스트를 구분할 고유값이 들어 있는 변수. 여기서는 id를 입력하면 됩니다. -->
-<!-- - `sort = T`: 빈도가 높은 순으로 단어를 정렬합니다. -->
+---
 
-<!-- 출력 결과를 보면 어떤 단어가 몇 번씩 함께 사용됐는지 알 수 있습니다. 첫 번째 행을 보면 "영화"와 "기생충"이  111번 함께 사용되었고, 전체 댓글에서 가장 많이 함께 사용된 단어쌍임을 알 수 있습니다. -->
+```{r echo=F}
+library(widyr)
 
-<!-- `pairwise_count()`는 하나의 단어를 기준으로 함께 사용된 나머지 모든 단어의 빈도를 구하므로 출력 결과를 보면 "영화-기생충", "기생충-영화"와 같이 순서를 바꿔가며 같은 빈도를 지니는 행으로 구성된다는 특징이 있습니다. -->
+pair <- comment %>%
+  pairwise_count(item = word,
+                 feature = id,
+                 sort = T)
+pair
+```
 
-<!-- ```{r eval=F} -->
-<!-- install.packages("widyr") -->
-<!-- library(widyr) -->
+--
 
-<!-- pair <- comment %>% -->
-<!--   pairwise_count(item = word, -->
-<!--                  feature = id, -->
-<!--                  sort = T) -->
-<!-- pair -->
-<!-- ``` -->
+- 한 단어를 기준으로 함께 사용된 모든 단어의 빈도를 구함
+- 순서를 바꿔가며 같은 빈도를 지니는 두 개의 행으로 구성됨
+  - ex) "영화-기생충", "기생충-영화"
 
-<!-- ```{r echo=F} -->
-<!-- # install.packages("widyr") -->
-<!-- library(widyr) -->
+---
 
-<!-- pair <- comment %>% -->
-<!--   pairwise_count(item = word, -->
-<!--                  feature = id, -->
-<!--                  sort = T) -->
-<!-- pair -->
-<!-- ``` -->
 
+##### 특정 단어와 자주 함께 사용된 단어 살펴보기
 
-<!-- #### 특정 단어와 자주 함께 사용된 단어 살펴보기 -->
 
-<!-- `filter`를 이용하면 특정 단어와 자주 함께 사용된 단어가 무엇인지 쉽게 알 수 있습니다. -->
+.pull-left[
 
-<!-- ```{r} -->
-<!-- pair %>% filter(item1 == "영화") -->
-<!-- pair %>% filter(item1 == "봉준호") -->
-<!-- ``` -->
+```{r}
+pair %>% filter(item1 == "영화")
+```
+]
 
-<!-- > [편집] 2단 편집 -->
+.pull-right[
 
+
+```{r}
+pair %>% filter(item1 == "봉준호")
+```
+]
