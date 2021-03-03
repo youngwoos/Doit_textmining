@@ -389,7 +389,7 @@ pair
 
 ---
 
-```{r echo=F}
+```{r pair, echo=F}
 library(widyr)
 
 pair <- comment %>%
@@ -425,3 +425,9 @@ pair %>% filter(item1 == "영화")
 pair %>% filter(item1 == "봉준호")
 ```
 ]
+
+
+```{r, echo=F}
+save.image("05-1.rdata")
+```
+
