@@ -428,6 +428,6 @@ pair %>% filter(item1 == "봉준호")
 
 
 ```{r, echo=F}
-save.image("05-1.rdata")
+save(pair, comment, news_comment, file = "05-1.rdata")
 ```
 

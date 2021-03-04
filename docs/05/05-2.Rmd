@@ -418,10 +418,22 @@ graph_comment %>%
 
 #### 연결 중심성이 높은 주요 단어 살펴보기
 
-```{r}
+.pull-left[
+
+```{r eval=FALSE}
 graph_comment %>%
   arrange(-centrality)
 ```
+]
+
+.pull-right[
+```{r echo=FALSE}
+graph_comment %>%
+  arrange(-centrality)
+```
+
+]
+
 
 ---
 
@@ -440,8 +452,6 @@ graph_comment %>%
 ---
 
 #### 4. 주요 단어가 사용된 원문 살펴보기
-
-네트워크에 표현된 단어와 텍스트 원문을 함께 살펴보면 맥락을 이해하는 데 도움이 된다
 
 ```{r R.options=list(tibble.print_max = 10, tibble.print_min = 10, tibble.width = 50)}
 news_comment %>%
@@ -470,4 +480,9 @@ news_comment %>%
 
 `r fontawesome("lightbulb")` `tidygraph` 패키지의 연결 중심성 지표, 커뮤니티 탐지 알고리즘: [tidygraph.data-imaginist.com](https://tidygraph.data-imaginist.com)
 
+
+
+```{r, echo=F}
+save(comment, file = "05-2.rdata")
+```
 
