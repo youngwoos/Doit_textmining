@@ -1,5 +1,4 @@
-Quiz Part 5
-===========
+# Quiz Part 5
 
 #### `"news_comment_BTS.csv"`에는 2020년 9월 21일 방탄소년단이 ‘빌보드 핫 100 차트’ 1위에 오른 소식을 다룬 기사에 달린 댓글이 들어있습니다. `"news_comment_BTS.csv"`를 이용해 문제를 해결해 보세요.
 
@@ -32,11 +31,11 @@ glimpse(raw_news_comment)
 
     ## Rows: 1,200
     ## Columns: 5
-    ## $ reg_time <dttm> 2020-09-01 22:58:09, 2020-09-01 09:56:46, 2020-09-01 09:0...
-    ## $ reply    <chr> "국보소년단<U+0001F49C>", "아줌마가 들어도 좋더라", "팩트체크\r\n\r\n현재 빌보드 H...
-    ## $ press    <chr> "한국경제", "한국경제", "한국경제", "한국경제", "한국경제", "한국경제", "한국경제", "한...
-    ## $ title    <chr> "[속보]BTS '다이너마이트', 한국 가수 최초로 빌보드 싱글 1위", "[속보]BTS '다이너마이트'...
-    ## $ url      <chr> "https://news.naver.com/main/read.nhn?mode=LSD&mid=sec&sid...
+    ## $ reg_time <dttm> 2020-09-01 22:58:09, 2020-09-01 09:56:46, 2020-09-01 09:08:0…
+    ## $ reply    <chr> "국보소년단<U+0001F49C>", "아줌마가 들어도 좋더라", "팩트체크\n\n현재 빌보드 HOT 100\…
+    ## $ press    <chr> "한국경제", "한국경제", "한국경제", "한국경제", "한국경제", "한국경제", "한국경제", "한국경제…
+    ## $ title    <chr> "[속보]BTS '다이너마이트', 한국 가수 최초로 빌보드 싱글 1위", "[속보]BTS '다이너마이트', 한…
+    ## $ url      <chr> "https://news.naver.com/main/read.nhn?mode=LSD&mid=sec&sid1=1…
 
 ##### 전처리
 
@@ -62,11 +61,11 @@ news_comment %>%
     ##  4     4 방탄소년단이 한국사람이라 너무 자랑스러워요 우리오래오래 함께하자      
     ##  5     5 대단한 월드 클래스는 다르네 좋은 소식 응원해요                         
     ##  6     6 정국오빠 생일과 더불어 빌보드 위기사라니 축제구나                      
-    ##  7     7 정말 축하하고 응원하지만 집에서 여러 계정으로 스트리밍 돌리고 사재기하고 다른 팬덤 테러하는 애들은 개념보고 놀랐다 진짜~
+    ##  7     7 정말 축하하고 응원하지만 집에서 여러 계정으로 스트리밍 돌리고 사재기하고 다른 팬덤 테러하는 애들은 개념보고 놀랐다 진짜…
     ##  8     8 기자는 자고 일어났지만 팬들은 못자고 발표 기다림                       
     ##  9     9 자랑스럽다 축하합니다                                                  
     ## 10    10 늘 응원하고 사랑합니다                                                 
-    ## # ... with 1,190 more rows
+    ## # … with 1,190 more rows
 
 ------------------------------------------------------------------------
 
@@ -108,7 +107,7 @@ comment_pos %>%
     ##  8 더/ep       아줌마가 들어도 좋더라
     ##  9 어/ec       아줌마가 들어도 좋더라
     ## 10 라/nc       아줌마가 들어도 좋더라
-    ## # ... with 20,841 more rows
+    ## # … with 20,841 more rows
 
 ##### 명사, 동사, 형용사 추출
 
@@ -139,7 +138,7 @@ comment %>%
     ##  8 방탄소년단 방탄소년단이 한국사람이라 너무 자랑스러워요 우리오래오래 함께하자
     ##  9 한국사람   방탄소년단이 한국사람이라 너무 자랑스러워요 우리오래오래 함께하자
     ## 10 자랑       방탄소년단이 한국사람이라 너무 자랑스러워요 우리오래오래 함께하자
-    ## # ... with 7,529 more rows
+    ## # … with 7,529 more rows
 
 ------------------------------------------------------------------------
 
@@ -167,7 +166,7 @@ line_comment
 
     ## # A tibble: 1,155 x 2
     ##       id sentence                                                             
-    ##    <int> <chr>                                                                
+    ##  * <int> <chr>                                                                
     ##  1     1 국보소년                                                             
     ##  2     2 아줌마 들다 좋다                                                     
     ##  3     3 팩트체크 빌보드 자랑                                                 
@@ -178,7 +177,7 @@ line_comment
     ##  8     8 기자 자다 일어나다 패다 못자 발표                                    
     ##  9     9 자랑 축하                                                            
     ## 10    10 응원 사랑합                                                          
-    ## # ... with 1,145 more rows
+    ## # … with 1,145 more rows
 
 ------------------------------------------------------------------------
 
@@ -209,7 +208,7 @@ bigram_comment
     ##  8     4 자랑 우리오래오래    
     ##  9     4 우리오래오래 함께하다
     ## 10     5 대단 월드            
-    ## # ... with 6,531 more rows
+    ## # … with 6,531 more rows
 
 ##### 바이그램 단어쌍 분리
 
@@ -233,7 +232,7 @@ bigram_seprated
     ##  8     4 자랑         우리오래오래
     ##  9     4 우리오래오래 함께하다    
     ## 10     5 대단         월드        
-    ## # ... with 6,531 more rows
+    ## # … with 6,531 more rows
 
 ------------------------------------------------------------------------
 
@@ -268,7 +267,7 @@ pair_bigram
     ##  8 자랑   진짜     17
     ##  9 빌보드 축하     14
     ## 10 군대   면제     13
-    ## # ... with 5,445 more rows
+    ## # … with 5,445 more rows
 
 ##### 네트워크 그래프 데이터 만들기
 
@@ -297,7 +296,7 @@ graph_bigram
     ## 4 진짜           12 1    
     ## 5 빌보드         16 2    
     ## 6 군대            3 4    
-    ## # ... with 84 more rows
+    ## # … with 84 more rows
     ## #
     ## # Edge Data: 130 x 3
     ##    from    to     n
@@ -305,7 +304,7 @@ graph_bigram
     ## 1     1    61    43
     ## 2     1     2    40
     ## 3     2     2    38
-    ## # ... with 127 more rows
+    ## # … with 127 more rows
 
 ------------------------------------------------------------------------
 
@@ -341,13 +340,39 @@ ggraph(graph_bigram, layout = "fr") +
   theme_graph()
 ```
 
-![](img/Q5_6_1.png)
+![](Quiz_Part05_files/figure-markdown_github/unnamed-chunk-15-1.png)
+
+<!-- ```{r echo=F} -->
+<!-- library(ggraph) -->
+<!-- library(showtext) -->
+<!-- font_add_google(name = "Nanum Gothic", family = "nanumgothic") -->
+<!-- showtext_auto() -->
+<!-- showtext_opts(dpi = 96) -->
+<!-- set.seed(1234) -->
+<!-- p <- ggraph(graph_bigram, layout = "fr") + -->
+<!--   geom_edge_link() + -->
+<!--   geom_node_point(aes(size = centrality, -->
+<!--                       color = group), -->
+<!--                   show.legend = F) + -->
+<!--   geom_node_text(aes(label = name), -->
+<!--                  repel = T, -->
+<!--                  size = 4, -->
+<!--                  family = "nanumgothic") + -->
+<!--   theme_graph() + -->
+<!--   theme(plot.margin = margin(5, 5, 5, 5)) -->
+<!-- p %>%  -->
+<!--   ggsave( -->
+<!--     path = here("Quiz/img/"), -->
+<!--     file = "Q5_6_1.png", -->
+<!--     width = 7, -->
+<!--     height = 5, -->
+<!--     dpi = 140, type = "cairo-png", units = "in") -->
+<!-- ``` -->
+<!-- ![](img/Q5_6_1.png) -->
 
 ##### 그래프 꾸미기
 
 ``` r
-showtext_opts(dpi = 96)
-
 # 폰트 설정
 library(showtext)
 font_add_google(name = "Nanum Gothic", family = "nanumgothic")
@@ -371,4 +396,58 @@ ggraph(graph_bigram, layout = "fr") +         # 레이아웃
   theme_graph()                               # 배경 삭제
 ```
 
-![](img/Q5_6_2.png)
+![](Quiz_Part05_files/figure-markdown_github/unnamed-chunk-16-1.png)
+
+##### 그래프 꾸미기 300
+
+``` r
+# 폰트 설정
+library(showtext)
+font_add_google(name = "Nanum Gothic", family = "nanumgothic")
+
+set.seed(1234)
+ggraph(graph_bigram, layout = "fr") +         # 레이아웃
+
+  geom_edge_link(color = "gray50",            # 엣지 색깔
+                 alpha = 0.5) +               # 엣지 명암
+
+  geom_node_point(aes(size = centrality,      # 노드 크기
+                      color = group),         # 노드 색깔
+                  show.legend = F) +          # 범례 삭제
+  scale_size(range = c(4, 8)) +               # 노드 크기 범위
+
+  geom_node_text(aes(label = name),           # 텍스트 표시
+                 repel = T,                   # 노드밖 표시
+                 size = 5,                    # 텍스트 크기
+                 family = "nanumgothic") +    # 폰트
+
+  theme_graph()                               # 배경 삭제
+```
+
+![](Quiz_Part05_files/figure-markdown_github/unnamed-chunk-17-1.png)
+
+<!-- ```{r echo=F} -->
+<!-- # showtext_opts(dpi = 96) -->
+<!-- set.seed(1234) -->
+<!-- p <- ggraph(graph_bigram, layout = "fr") +         # 레이아웃 -->
+<!--   geom_edge_link(color = "gray50",            # 엣지 색깔 -->
+<!--                  alpha = 0.5) +               # 엣지 명암 -->
+<!--   geom_node_point(aes(size = centrality,      # 노드 크기 -->
+<!--                       color = group),         # 노드 색깔 -->
+<!--                   show.legend = F) +          # 범례 삭제 -->
+<!--   scale_size(range = c(2, 6)) +               # 노드 크기 범위 -->
+<!--   geom_node_text(aes(label = name),           # 텍스트 표시 -->
+<!--                  repel = T,                   # 노드밖 표시 -->
+<!--                  size = 4,                   # 텍스트 크기 -->
+<!--                  family = "nanumgothic") +    # 폰트 -->
+<!--   theme_graph() +                               # 배경 삭제 -->
+<!--   theme(plot.margin = margin(5, 5, 5, 5)) -->
+<!-- p %>%  -->
+<!--   ggsave( -->
+<!--     path = here("Quiz/img/"), -->
+<!--     file = "Q5_6_2.png", -->
+<!--     width = 7, -->
+<!--     height = 5, -->
+<!--     dpi = 140, type = "cairo-png", units = "in") -->
+<!-- ``` -->
+<!-- ![](img/Q5_6_2.png) -->
