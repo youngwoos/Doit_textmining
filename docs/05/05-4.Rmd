@@ -986,7 +986,6 @@ ggraph(graph_bigram, layout = "fr") +         # 레이아웃
 ```{r, echo=F, out.width="90%"}
 include_graphics("../../Quiz/Quiz_Part05_files/figure-markdown_github/unnamed-chunk-17-1.png")
 ```
-
 ---
 
 class: title0

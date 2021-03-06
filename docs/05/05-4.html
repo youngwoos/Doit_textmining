@@ -407,20 +407,20 @@ pair_bigram
 
 
 ```
-## # A tibble: 19,136 x 3
-##    word1      word2      n
-##    &lt;chr&gt;      &lt;chr&gt;  &lt;int&gt;
-##  1 봉준호     감독      83
-##  2 봉준호     감독님    68
-##  3 진심       축하      64
-##  4 대단       축하      42
-##  5 블랙리스트 올리다    40
-##  6 영화       만들다    31
-##  7 봉감독     축하      29
-##  8 축하       자랑      29
-##  9 대박       축하      26
-## 10 진짜       대단      25
-## # … with 19,126 more rows
+## # A tibble: 19,030 x 3
+##    word1      word2          n
+##    &lt;chr&gt;      &lt;chr&gt;      &lt;int&gt;
+##  1 봉준호     봉준호       155
+##  2 블랙리스트 올리다        64
+##  3 진심       축하          64
+##  4 봉준호     축하          57
+##  5 봉준호     송강호        34
+##  6 영화       만들다        31
+##  7 축하       봉준호        31
+##  8 대단       축하          27
+##  9 봉준호     블랙리스트    27
+## 10 대박       축하          26
+## # … with 19,020 more rows
 ```
 ]
 
@@ -467,20 +467,20 @@ pair_bigram
 ```
 
 ```
-## # A tibble: 107 x 3
+## # A tibble: 109 x 3
 ##    word1    word2      n
 ##    &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt;
 ##  1 대한민국 국민      21
-##  2 대한민국 자랑      17
+##  2 대한민국 자랑      15
 ##  3 대한민국 영화      11
 ##  4 대한민국 국격       8
 ##  5 대한민국 위상       7
 ##  6 대한민국 만세       6
-##  7 대한민국 문화       4
-##  8 대한민국 영광       4
-##  9 대한민국 기생충     3
-## 10 대한민국 대단       3
-## # … with 97 more rows
+##  7 대한민국 봉준호     5
+##  8 대한민국 문화       4
+##  9 대한민국 영광       4
+## 10 대한민국 기생충     3
+## # … with 99 more rows
 ```
 ]
 
@@ -1227,7 +1227,7 @@ ggraph(graph_bigram, layout = "fr") +
 
 ---
 
-&lt;img src="../../Quiz/Quiz_Part05_files/figure-markdown_github/unnamed-chunk-15-1.png" width="90%" /&gt;
+&lt;img src="/home/rstudio/Doit_textmining/Quiz/Quiz_Part05_files/figure-markdown_github/unnamed-chunk-15-1.png" width="90%" /&gt;
 
 ---
 
@@ -1260,7 +1260,6 @@ ggraph(graph_bigram, layout = "fr") +         # 레이아웃
 ---
 
 &lt;img src="../../Quiz/Quiz_Part05_files/figure-markdown_github/unnamed-chunk-17-1.png" width="90%" /&gt;
-
 ---
 
 class: title0
