@@ -483,6 +483,5 @@ news_comment %>%
 
 
 ```{r, echo=F}
-save(comment, file = "05-2.rdata")
+save(comment, pair, word_network, file = "05-2.rdata")
 ```
-
