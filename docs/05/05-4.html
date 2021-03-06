@@ -28,6 +28,782 @@ class: title1
 ---
 
 
+- 같은 단어도 함께 사용된 단어에 따라 의미가 달라짐
+- 어떤 단어는 다른 단어와 연결되어 새로운 의미를 만들어냄
+  - ex)
+      - '사과를 먹다', '사과를 하다'
+      - '감을 잡다', '귀가 얇다'
+
+--
+
+
+- 동시 출현 빈도와 파이 계수의 한계: 단어가 함께 사용된 횟수만 고려
+  - 단어가 연결될 때 생기는 의미 무시
+  - 이해하기 어려운 단어쌍 등장
+
+--
+
+
+&lt;br&gt;
+
+- 단어가 연결될 때 생기는 의미를 고려하려면 **'자주 연이어 사용된 단어'**를 살펴봐야 한다
+
+
+---
+
+#### 엔그램(n-gram)
+- 연이어 사용된 n개의 단어
+  - 두 단어 연속: 바이그램(bigram) 또는 2-gram
+  - 세 단어 연속: 트라이그램(trigram) 또는 3-gram
+
+.center[
+&lt;img src="../Image/etc/05_4_table1.png" width="70%" /&gt;
+]
+
+
+--
+
+
+- 텍스트를 엔그램으로 토큰화하면
+  - 단어 앞뒤에 연이어 사용된 단어를 함께 살펴봄: 얼마나 자주 '연이어' 사용된 단어쌍인가?
+  - 단어가 연결될 때 생기는 의미와 맥락을 이해할 수 있음
+  - 대다수의 텍스트에 사용된 평범한 단어쌍이 아니라 분명한 의미를 드러내는 단어쌍 발견
+
+---
+
+
+#### 엔그램으로 토큰화하기
+
+**샘플 텍스트로 엔그램 토큰화해보기**
+&lt;br-back-10&gt;
+- `tidytext::unnest_tokens()`
+  - `token = "ngrams"`
+  - `n`: 기준 단어 수
+
+
+```r
+text &lt;- tibble(value = "대한민국은 민주공화국이다. 대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다.")
+
+text
+```
+
+```
+## # A tibble: 1 x 1
+##   value                                                                                       
+##   &lt;chr&gt;                                                                                       
+## 1 대한민국은 민주공화국이다. 대한민국의 주권은 국민에게 있고, 모든 권력은 국민으로부터 나온다.
+```
+
+---
+
+.pull-left[
+
+
+
+```r
+# 바이그램 토큰화
+text %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+                token = "ngrams",
+*               n = 2)
+```
+
+```
+## # A tibble: 9 x 1
+##   word                     
+##   &lt;chr&gt;                    
+## 1 대한민국은 민주공화국이다
+## 2 민주공화국이다 대한민국의
+## 3 대한민국의 주권은        
+## 4 주권은 국민에게          
+## 5 국민에게 있고            
+## 6 있고 모든                
+## 7 모든 권력은              
+## 8 권력은 국민으로부터      
+## 9 국민으로부터 나온다
+```
+]
+
+.pull-right[
+
+
+
+```r
+# 트라이그램 토큰화
+text %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+                token = "ngrams",
+*               n = 3)
+```
+
+```
+## # A tibble: 8 x 1
+##   word                                
+##   &lt;chr&gt;                               
+## 1 대한민국은 민주공화국이다 대한민국의
+## 2 민주공화국이다 대한민국의 주권은    
+## 3 대한민국의 주권은 국민에게          
+## 4 주권은 국민에게 있고                
+## 5 국민에게 있고 모든                  
+## 6 있고 모든 권력은                    
+## 7 모든 권력은 국민으로부터            
+## 8 권력은 국민으로부터 나온다
+```
+]
+
+
+---
+
+- 단어 기준 토큰화 = 유니그램(unigram) 토큰화
+
+.pull-left[
+
+
+
+```r
+# 단어 기준 토큰화
+text %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+*               token = "words")
+```
+
+```
+## # A tibble: 10 x 1
+##    word          
+##    &lt;chr&gt;         
+##  1 대한민국은    
+##  2 민주공화국이다
+##  3 대한민국의    
+##  4 주권은        
+##  5 국민에게      
+##  6 있고          
+##  7 모든          
+##  8 권력은        
+##  9 국민으로부터  
+## 10 나온다
+```
+]
+
+.pull-right[
+
+```r
+# 유니그램 토큰화
+text %&gt;%
+  unnest_tokens(input = value,
+                output = word,
+*               token = "ngrams",
+*               n = 1)
+```
+
+```
+## # A tibble: 10 x 1
+##    word          
+##    &lt;chr&gt;         
+##  1 대한민국은    
+##  2 민주공화국이다
+##  3 대한민국의    
+##  4 주권은        
+##  5 국민에게      
+##  6 있고          
+##  7 모든          
+##  8 권력은        
+##  9 국민으로부터  
+## 10 나온다
+```
+]
+
+---
+
+#### 기사 댓글로 바이그램 만들기
+
+##### (1) 명사, 동사, 형용사 추출하기
+
+- `comment_pos` 이용: 댓글을 형태소로 토큰화 후 품사별로 행 분리
+- 명사, 동사, 형용사를 추출해 결합한 후 두 글자 이상만 남김
+
+
+```r
+comment_new &lt;- comment_pos %&gt;%
+  separate_rows(word, sep = "[+]") %&gt;%
+  filter(str_detect(word, "/n|/pv|/pa")) %&gt;%
+  mutate(word = ifelse(str_detect(word, "/pv|/pa"),
+                       str_replace(word, "/.*$", "다"),
+                       str_remove(word, "/.*$"))) %&gt;%
+  filter(str_count(word) &gt;= 2) %&gt;%
+  arrange(id)
+```
+
+---
+
+&lt;svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; **바이그램으로 토큰화할 때는 형태소 추출 먼저**
+
+- 텍스트 원문을 바이그램으로 토큰화하면 원형은 같지만 표현만 다른 단어들이 개별 단어로 취급됨
+  - ex) '하다', '했다', '하며', '하므로'
+- 표현이 아니라 의미 중심으로 분석해야 하므로 형태소를 먼저 추출한 다음 바이그램으로 토큰화해야 함
+
+---
+
+
+##### (2) 유의어 처리하기
+
+
+
+```r
+comment_new &lt;- comment_new %&gt;%
+  mutate(word = ifelse(str_detect(word, "감독") &amp;
+                      !str_detect(word, "감독상"), "봉준호", word),
+         word = ifelse(word  == "오르다", "올리다", word),
+         word = ifelse(str_detect(word, "축하"), "축하", word))
+```
+
+---
+
+
+##### (3) 한 댓글이 하나의 행이 되도록 결합하기
+
+
+
+```r
+comment_new %&gt;%
+  select(word)
+```
+
+```
+## # A tibble: 26,860 x 1
+##    word  
+##    &lt;chr&gt; 
+##  1 우리  
+##  2 좋다  
+##  3 생기다
+##  4 기쁘다
+##  5 행복한
+##  6 행복  
+##  7 축하  
+##  8 행복  
+##  9 기쁘다
+## 10 기쁘다
+## # … with 26,850 more rows
+```
+
+---
+
+##### (3) 한 댓글이 하나의 행이 되도록 결합하기
+
+
+```r
+line_comment &lt;- comment_new %&gt;%
+  group_by(id) %&gt;%
+  summarise(sentence = paste(word, collapse = " "))
+
+line_comment
+```
+
+```
+## # A tibble: 4,007 x 2
+##       id sentence                                                               
+##  * &lt;int&gt; &lt;chr&gt;                                                                  
+##  1     1 우리 좋다 생기다 기쁘다 행복한 행복 축하 행복 기쁘다                   
+##  2     2 기쁘다 시국 기쁘다 감사하다 축하 진심                                  
+##  3     3 우리나라 봉준호 불다 크다 영감 봉준호 공동각본쓴 한진 작가님 축하 축하 드리다…
+##  4     4 봉준호 봉준호 우리나라 대한민국 자랑 세계 어디 우리 한국인 힘내다 삽시 
+##  5     5 노벨상 탄느낌이네요 축하                                               
+##  6     6 기생충 받다 박수 치다 감독상 기대다 봉준호 봉준호                      
+##  7     7 대한민국 영화사 쓰다 계시다                                            
+##  8     8 아카데미상 받다 태극기 휘날리다 광해 명량 전부문 휩쓸어야겠            
+##  9     9 다시한번 보이다 영화관                                                 
+## 10    10 대한민국 봉준호 대단 한국의 문화 자긍심 가지                           
+## # … with 3,997 more rows
+```
+
+
+---
+
+##### (4) 바이그램으로 토큰화하기
+
+
+
+```r
+bigram_comment &lt;- line_comment %&gt;%
+  unnest_tokens(input = sentence,
+                output = bigram,
+                token = "ngrams",
+                n = 2)
+
+bigram_comment
+```
+
+```
+## # A tibble: 23,348 x 2
+##       id bigram       
+##    &lt;int&gt; &lt;chr&gt;        
+##  1     1 우리 좋다    
+##  2     1 좋다 생기다  
+##  3     1 생기다 기쁘다
+##  4     1 기쁘다 행복한
+##  5     1 행복한 행복  
+##  6     1 행복 축하    
+##  7     1 축하 행복    
+##  8     1 행복 기쁘다  
+##  9     2 기쁘다 시국  
+## 10     2 시국 기쁘다  
+## # … with 23,338 more rows
+```
+
+---
+
+
+#### 연이어 사용된 단어쌍 빈도 구하기
+
+
+##### 1. 바이그램 분리하기
+
+
+```r
+# 바이그램 분리하기
+bigram_seprated &lt;- bigram_comment %&gt;%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigram_seprated
+```
+
+```
+## # A tibble: 23,348 x 3
+##       id word1  word2 
+##    &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; 
+##  1     1 우리   좋다  
+##  2     1 좋다   생기다
+##  3     1 생기다 기쁘다
+##  4     1 기쁘다 행복한
+##  5     1 행복한 행복  
+##  6     1 행복   축하  
+##  7     1 축하   행복  
+##  8     1 행복   기쁘다
+##  9     2 기쁘다 시국  
+## 10     2 시국   기쁘다
+## # … with 23,338 more rows
+```
+
+---
+
+##### 2. 단어쌍 빈도 구하기
+
+.pull-left[
+
+
+```r
+# 단어쌍 빈도 구하기
+pair_bigram &lt;- bigram_seprated %&gt;%
+  count(word1, word2, sort = T) %&gt;%
+  na.omit()
+
+pair_bigram
+```
+
+]
+.pull-right[
+
+
+```
+## # A tibble: 19,136 x 3
+##    word1      word2      n
+##    &lt;chr&gt;      &lt;chr&gt;  &lt;int&gt;
+##  1 봉준호     감독      83
+##  2 봉준호     감독님    68
+##  3 진심       축하      64
+##  4 대단       축하      42
+##  5 블랙리스트 올리다    40
+##  6 영화       만들다    31
+##  7 봉감독     축하      29
+##  8 축하       자랑      29
+##  9 대박       축하      26
+## 10 진짜       대단      25
+## # … with 19,126 more rows
+```
+]
+
+&lt;br&gt;
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `na.omit()`: 결측치 행 제거: 한 단어로 된 문장은 바이그램으로 토큰화하면 `NA`가 됨 &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;ex) '축하합니다', '멋집니다'
+
+---
+
+##### 3. 단어쌍 살펴보기
+
+&lt;br10&gt;
+
+.pull-left[
+
+```r
+# 동시 출현 단어쌍
+*pair %&gt;%
+  filter(item1 == "대한민국")
+```
+
+```
+## # A tibble: 1,010 x 3
+##    item1    item2        n
+##    &lt;chr&gt;    &lt;chr&gt;    &lt;dbl&gt;
+##  1 대한민국 봉준호      70
+##  2 대한민국 축하        54
+##  3 대한민국 자랑        44
+##  4 대한민국 영화        30
+##  5 대한민국 기생충      27
+##  6 대한민국 국민        22
+##  7 대한민국 세계        16
+##  8 대한민국 아카데미    16
+##  9 대한민국 위상        15
+## 10 대한민국 좋다        14
+## # … with 1,000 more rows
+```
+]
+.pull-right[
+
+```r
+# 바이그램 단어쌍
+*pair_bigram %&gt;%
+  filter(word1 == "대한민국")
+```
+
+```
+## # A tibble: 107 x 3
+##    word1    word2      n
+##    &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt;
+##  1 대한민국 국민      21
+##  2 대한민국 자랑      17
+##  3 대한민국 영화      11
+##  4 대한민국 국격       8
+##  5 대한민국 위상       7
+##  6 대한민국 만세       6
+##  7 대한민국 문화       4
+##  8 대한민국 영광       4
+##  9 대한민국 기생충     3
+## 10 대한민국 대단       3
+## # … with 97 more rows
+```
+]
+
+---
+
+
+#### 엔그램으로 네트워크 그래프 만들기
+
+
+
+```r
+# 네트워크 그래프 데이터 만들기
+graph_bigram &lt;- pair_bigram %&gt;%
+  filter(n &gt;= 8) %&gt;%
+  as_tbl_graph()
+
+# 네트워크 그래프 만들기
+set.seed(1234)
+word_network(graph_bigram)
+```
+
+&lt;img src="../Image/05/05_4_1.png" width="40%" /&gt;
+
+---
+
+&lt;img src="../Image/05/05_4_1.png" width="80%" /&gt;
+
+
+---
+
+
+##### 유의어 통일하고 네트워크 그래프 다시 만들기
+
+- `bigram_seprated`의 유의어 통일, 같은 단어 연속 단어쌍 제거
+- 단어쌍 빈도 구하고 결측치 제거
+
+
+```r
+# 유의어 처리
+bigram_seprated &lt;- bigram_seprated %&gt;%
+  mutate(word1 = ifelse(str_detect(word1, "대단"), "대단", word1),
+         word2 = ifelse(str_detect(word2, "대단"), "대단", word2),
+
+         word1 = ifelse(str_detect(word1, "자랑"), "자랑", word1),
+         word2 = ifelse(str_detect(word2, "자랑"), "자랑", word2),
+
+         word1 = ifelse(str_detect(word1, "짝짝짝"), "짝짝짝", word1),
+         word2 = ifelse(str_detect(word2, "짝짝짝"), "짝짝짝", word2)) %&gt;%
+
+  # 같은 단어 연속 제거
+  filter(word1 != word2)
+
+# 단어쌍 빈도 구하기
+pair_bigram &lt;- bigram_seprated %&gt;%
+  count(word1, word2, sort = T) %&gt;%
+  na.omit()
+```
+
+
+---
+
+
+```r
+# 네트워크 그래프 데이터 만들기
+set.seed(1234)
+graph_bigram &lt;- pair_bigram %&gt;%
+  filter(n &gt;= 8) %&gt;%
+  as_tbl_graph(directed = F) %&gt;%
+  mutate(centrality = centrality_degree(),    # 중심성
+         group = as.factor(group_infomap()))  # 커뮤니티
+```
+
+---
+
+
+```r
+# 네트워크 그래프 만들기
+set.seed(1234)
+ggraph(graph_bigram, layout = "fr") +         # 레이아웃
+
+  geom_edge_link(color = "gray50",            # 엣지 색깔
+                 alpha = 0.5) +               # 엣지 명암
+
+  geom_node_point(aes(size = centrality,      # 노드 크기
+                      color = group),         # 노드 색깔
+                  show.legend = F) +          # 범례 삭제
+  scale_size(range = c(4, 8)) +               # 노드 크기 범위
+
+  geom_node_text(aes(label = name),           # 텍스트 표시
+                 repel = T,                   # 노드밖 표시
+                 size = 5,                    # 텍스트 크기
+                 family = "nanumgothic") +    # 폰트
+
+  theme_graph()                               # 배경 삭제
+```
+
+---
+
+&lt;img src="../Image/05/05_4_2.png" width="80%" /&gt;
+
+---
+- 자주 연이어 사용된 단어쌍 중심으로 네트워크 형성
+- 단어의 맥락과 의미를 구체적으로 이해할 수 있음
+- 개별 단어의 빈도는 낮지만 자주 연이어 사용되고 함께 사용할 때 분명한 의미 지니는 단어쌍 발견
+  - ex) '이미경-부회장', '조국-가족'
+
+&lt;img src="../Image/05/05_4_2.png" width="60%" /&gt;
+
+---
+
+##### 파이 계수, 바이그램 네트워크 그래프의 차이점
+
+&lt;br10&gt;
+
+- **파이 계수**를 이용한 네트워크 그래프
+  - 관련성이 큰 단어쌍 중심으로 네트워크 형성
+  - 빈도가 낮아도 관련성이 큰 단어 주로 표현
+  - 관련성이 작은 노드들이 연결되지 않음
+      - 단어 군집이 명확하게 드러남 but 단어들의 전반적인 관계를 파악하기 어려움
+
+
+--
+
+&lt;br10&gt;
+
+- **바이그램**을 이용한 네트워크 그래프
+  - 연이어 자주 사용된 단어쌍 중심으로 표현
+  - 관련성이 큰 동시에 자주 사용된 단어 주로 표현
+  - 노드가 대부분 연결됨
+    - 단어 군집이 덜 명확 but 단어들의 전반적인 관계 파악할 수 있음
+
+---
+
+##### 파이 계수, 바이그램 네트워크 그래프의 차이점
+
+&lt;br10&gt;
+
+- **파이 계수**를 이용한 네트워크 그래프
+  - .orange[**관련성이 큰 단어쌍**] 중심으로 네트워크 형성
+  - 빈도가 낮아도 관련성이 큰 단어 주로 표현
+  - 관련성이 작은 노드들이 연결되지 않음
+      - 단어 군집이 명확하게 드러남 but 단어들의 전반적인 관계를 파악하기 어려움
+
+&lt;br10&gt;
+
+- **바이그램**을 이용한 네트워크 그래프
+  - .orange[**연이어 자주 사용된 단어쌍**] 중심으로 표현
+  - 관련성이 큰 동시에 자주 사용된 단어 주로 표현
+  - 노드가 대부분 연결됨
+    - 단어 군집이 덜 명확 but 단어들의 전반적인 관계 파악할 수 있음
+
+---
+
+##### 어떤 방법으로 네트워크 그래프를 만드는 게 좋을까
+&lt;br10&gt;
+- 각 방법의 특징 다르므로 분석 목적에 맞게 선택
+- 세 가지 방법 모두 사용해 분석 결과 비교하면 텍스트를 다각도로 이해할 수 있음
+
+&lt;br&gt;
+
+&lt;img src="../Image/05/05_2_6.png" height="30%" width="35%"/&gt;
+&lt;img src="../Image/05/05_3_2.png" height="30%" width="30%"/&gt;
+&lt;img src="../Image/05/05_4_2.png" height="30%" width="30%"/&gt;
+
+---
+
+- **동시 출현 빈도**: 자주 사용된 단어 중심으로 단어들의 관계 표현
+&lt;br10&gt;
+
+&lt;img src="../Image/05/05_2_6.png" width="75%" /&gt;
+
+---
+
+- **파이 계수**
+  - 관련성이 큰 단어쌍 중심으로 표현
+  - 단어 군집을 잘 드러내고 싶을 때
+
+&lt;img src="../Image/05/05_3_2.png" width="70%" /&gt;
+
+---
+
+- **엔그램**
+  - 연이어 사용될 때 의미를 지니는 단어쌍 중심으로 표현
+  - 단어들이 전반적으로 어떤 관계를 형성하고 있는지 표현할 때
+
+&lt;img src="../Image/05/05_4_2.png" width="70%" /&gt;
+
+---
+
+class: title1
+
+정리하기
+
+---
+
+### 정리하기
+
+##### 1. 동시 출현 단어 분석 - Co-occurrence analysis
+
+
+```r
+# 품사 기준 토큰화
+comment_pos &lt;- news_comment %&gt;%
+  unnest_tokens(input = reply,
+                output = word,
+                token = SimplePos22,
+                drop = F)
+
+# 명사, 동사, 형용사 추출
+comment &lt;- comment_pos %&gt;%
+  separate_rows(word, sep = "[+]") %&gt;%
+  filter(str_detect(word, "/n|/pv|/pa")) %&gt;%
+  mutate(word = ifelse(str_detect(word, "/pv|/pa"),
+                       str_replace(word, "/.*$", "다"),
+                       str_remove(word, "/.*$"))) %&gt;%
+  filter(str_count(word) &gt;= 2) %&gt;%
+  arrange(id)
+```
+
+---
+
+### 정리하기
+
+##### 1. 동시 출현 단어 분석 - Co-occurrence analysis
+
+
+
+```r
+# 단어 동시 출현 빈도 구하기
+pair &lt;- comment %&gt;%
+  pairwise_count(item = word,
+                 feature = id,
+                 sort = T)
+```
+
+
+---
+
+### 정리하기
+
+##### 2. 단어 간 상관 분석 - Phi coefficient
+
+
+```r
+# 파이 계수 구하기
+word_cors &lt;- comment %&gt;%
+  add_count(word) %&gt;%
+  filter(n &gt;= 20) %&gt;%
+  pairwise_cor(item = word,
+               feature = id,
+               sort = T)
+```
+
+
+---
+
+### 정리하기
+
+
+##### 3. 연이어 사용된 단어쌍 분석 - n-gram
+
+
+```r
+# 텍스트를 한 행으로 구성
+line_comment &lt;- comment %&gt;%
+  group_by(id) %&gt;%
+  summarise(sentence = paste(word, collapse = " "))
+
+# 바이그램 토큰화
+bigram_comment &lt;- line_comment %&gt;%
+  unnest_tokens(input = sentence,
+                output = bigram,
+                token = "ngrams",
+                n = 2)
+
+# 바이그램 분리
+bigram_seprated &lt;- bigram_comment %&gt;%
+  separate(bigram, c("word1", "word2"), sep = " ")
+```
+
+---
+
+### 정리하기
+
+
+##### 3. 연이어 사용된 단어쌍 분석 - n-gram
+
+
+
+```r
+# 단어쌍 빈도 구하기
+pair_bigram &lt;- bigram_seprated %&gt;%
+  count(word1, word2, sort = T) %&gt;%
+  na.omit()
+```
+
+---
+
+### 정리하기
+
+##### 4. 네트워크 그래프 만들기
+
+
+```r
+# 네트워크 그래프 데이터 만들기
+set.seed(1234)
+graph_comment &lt;- pair_bigram %&gt;%
+  filter(n &gt;= 8) %&gt;%
+  as_tbl_graph(directed = F) %&gt;%
+  mutate(centrality = centrality_degree(),
+         group = as.factor(group_infomap()))
+
+# 네트워크 그래프 만들기
+set.seed(1234)
+ggraph(graph_comment) +
+  geom_edge_link() +
+  geom_node_point(aes(size = centrality,
+                      color = group)) +
+  geom_node_text(aes(label = name))
+```
+
+---
+
 ### 분석 도전
 
 **`"news_comment_BTS.csv"`에는 2020년 9월 21일 방탄소년단이 '빌보드 핫 100 차트' 1위에 오른 소식을 다룬 기사에 달린 댓글이 들어있습니다. `"news_comment_BTS.csv"`를 이용해 문제를 해결해 보세요.**
@@ -59,13 +835,14 @@ comment &lt;- comment %&gt;%
 
 - Q4. 댓글을 바이그램으로 토큰화한 다음 바이그램 단어쌍을 분리하세요.
 
+&lt;br10&gt;
 
 - Q5. 단어쌍 빈도를 구한 다음 네트워크 그래프 데이터를 만드세요.
   - 난수를 고정한 다음 네트워크 그래프 데이터를 만드세요.
   - 빈도가 3 이상인 단어쌍만 사용하세요.
   - 연결 중심성과 커뮤니티를 나타낸 변수를 추가하세요.
 
-
+&lt;br10&gt;
 
 - Q6. 바이그램을 이용해 네트워크 그래프를 만드세요.
   - 난수를 고정한 다음 네트워크 그래프를 만드세요.
@@ -76,7 +853,7 @@ comment &lt;- comment %&gt;%
 
 ---
 
-- Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 전처리하세요.
+Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게&lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; 전처리하세요.
 
 
 ```r
@@ -137,7 +914,7 @@ news_comment %&gt;%
 
 ---
 
-- Q2. 댓글에서 명사, 동사, 형용사를 추출하고 '/로 시작하는 모든 문자'를 '다'로 바꾸세요.
+Q2. 댓글에서 명사, 동사, 형용사를 추출하고 '/로 시작하는 모든 문자'를 '다'로 바꾸세요.
 
 
 
@@ -167,20 +944,20 @@ comment_pos %&gt;%
 ```
 
 ```
-## # A tibble: 70,553 x 2
-##    word    reply                                  
-##    &lt;chr&gt;   &lt;chr&gt;                                  
-##  1 정말/ma 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  2 우리/np 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  3 집/nc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  4 에/jc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  5 좋/pa   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  6 은/et   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  7 일/nc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  8 이/jc   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-##  9 생기/pv 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-## 10 어/ec   정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 양 …
-## # … with 70,543 more rows
+## # A tibble: 20,851 x 2
+##    word        reply                 
+##    &lt;chr&gt;       &lt;chr&gt;                 
+##  1 국보소년/nc 국보소년단            
+##  2 단/ma       국보소년단            
+##  3 아줌마/nc   아줌마가 들어도 좋더라
+##  4 가/jc       아줌마가 들어도 좋더라
+##  5 들/pv       아줌마가 들어도 좋더라
+##  6 어도/ec     아줌마가 들어도 좋더라
+##  7 좋/pa       아줌마가 들어도 좋더라
+##  8 더/ep       아줌마가 들어도 좋더라
+##  9 어/ec       아줌마가 들어도 좋더라
+## 10 라/nc       아줌마가 들어도 좋더라
+## # … with 20,841 more rows
 ```
 
 
@@ -210,26 +987,26 @@ comment %&gt;%
 ```
 
 ```
-## # A tibble: 26,860 x 2
+## # A tibble: 7,539 x 2
 ##    word      reply                                
 ##    &lt;chr&gt;     &lt;chr&gt;                                
-##  1 우리      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  2 좋다      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  3 생기다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  4 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  5 행복한    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  6 행복      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  7 축하드리다… 정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  8 행복      정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-##  9 기쁘다    정말 우리 집에 좋은 일이 생겨 기쁘고 행복한 것처럼 나의 일인 …
-## 10 기쁘다    와 너무 기쁘다 이 시국에 정말 내 일같이 기쁘고 감사하다 축하드…
-## # … with 26,850 more rows
+##  1 국보소년  국보소년단                           
+##  2 아줌마    아줌마가 들어도 좋더라               
+##  3 들다      아줌마가 들어도 좋더라               
+##  4 좋다      아줌마가 들어도 좋더라               
+##  5 팩트체크  팩트체크 현재 빌보드 위 방탄소년단 위 위 위 위 위 위 위 위 …
+##  6 빌보드    팩트체크 현재 빌보드 위 방탄소년단 위 위 위 위 위 위 위 위 …
+##  7 방탄소년단… 팩트체크 현재 빌보드 위 방탄소년단 위 위 위 위 위 위 위 위 …
+##  8 방탄소년단… 방탄소년단이 한국사람이라 너무 자랑스러워요 우리오래오래 함께하자…
+##  9 한국사람  방탄소년단이 한국사람이라 너무 자랑스러워요 우리오래오래 함께하자…
+## 10 자랑      방탄소년단이 한국사람이라 너무 자랑스러워요 우리오래오래 함께하자…
+## # … with 7,529 more rows
 ```
 
 
 ---
 
-- Q3. 다음 코드를 이용해 유의어를 통일한 다음 한 댓글이 하나의 행이 되도록 단어를 결합하세요.
+Q3. 다음 코드를 이용해 유의어를 통일한 다음 한 댓글이 하나의 행이 되도록 단어를 결합하세요.
 
 
 ```r
@@ -256,25 +1033,25 @@ line_comment
 ```
 
 ```
-## # A tibble: 4,007 x 2
+## # A tibble: 1,155 x 2
 ##       id sentence                                 
 ##  * &lt;int&gt; &lt;chr&gt;                                    
-##  1     1 우리 좋다 생기다 기쁘다 행복한 행복 축하 행복 기쁘다…
-##  2     2 기쁘다 시국 기쁘다 감사하다 축하 진심    
-##  3     3 우리나라 영화감독분 불다 크다 영감 봉감독 공동각본쓴 한진 작가님 축하 …
-##  4     4 봉준호 감독 우리나라 대한민국 자랑 세계 어디 우리 한국인 힘내다 삽시…
-##  5     5 노벨상 탄느낌이네요 축하                 
-##  6     6 기생충 받다 박수 치다 감독상 기대다 봉준호 감독…
-##  7     7 대한민국 영화사 쓰다 계시다              
-##  8     8 아카데미상 받다 태극기 휘날리다 광해 명량 전부문 휩쓸어야겠…
-##  9     9 다시한번 보이다 영화관                   
-## 10    10 대한민국 봉준호감독 대단 한국의 문화 자긍심 가지…
-## # … with 3,997 more rows
+##  1     1 국보소년                                 
+##  2     2 아줌마 들다 좋다                         
+##  3     3 팩트체크 빌보드 자랑                     
+##  4     4 자랑 한국사람 자랑 우리오래오래 함께하다 
+##  5     5 대단 월드 클래스 다르다 좋다 소식 응원해 
+##  6     6 정국오빠 생일 더불다 빌보드 위기사 축제구
+##  7     7 축하 응원하지 계정 스트리밍 돌리다 사재기 팬덤 테러하 개념보고 놀라다…
+##  8     8 기자 자다 일어나다 패다 못자 발표        
+##  9     9 자랑 축하                                
+## 10    10 응원 사랑합                              
+## # … with 1,145 more rows
 ```
 
 ---
 
-- Q4. 댓글을 바이그램으로 토큰화한 다음 바이그램 단어쌍을 분리하세요.
+Q4. 댓글을 바이그램으로 토큰화한 다음 바이그램 단어쌍을 분리하세요.
 
 
 
@@ -290,20 +1067,20 @@ bigram_comment
 ```
 
 ```
-## # A tibble: 23,348 x 2
-##       id bigram       
-##    &lt;int&gt; &lt;chr&gt;        
-##  1     1 우리 좋다    
-##  2     1 좋다 생기다  
-##  3     1 생기다 기쁘다
-##  4     1 기쁘다 행복한
-##  5     1 행복한 행복  
-##  6     1 행복 축하    
-##  7     1 축하 행복    
-##  8     1 행복 기쁘다  
-##  9     2 기쁘다 시국  
-## 10     2 시국 기쁘다  
-## # … with 23,338 more rows
+## # A tibble: 6,541 x 2
+##       id bigram               
+##    &lt;int&gt; &lt;chr&gt;                
+##  1     1 &lt;NA&gt;                 
+##  2     2 아줌마 들다          
+##  3     2 들다 좋다            
+##  4     3 팩트체크 빌보드      
+##  5     3 빌보드 자랑          
+##  6     4 자랑 한국사람        
+##  7     4 한국사람 자랑        
+##  8     4 자랑 우리오래오래    
+##  9     4 우리오래오래 함께하다
+## 10     5 대단 월드            
+## # … with 6,531 more rows
 ```
 
 ---
@@ -318,20 +1095,20 @@ bigram_seprated
 ```
 
 ```
-## # A tibble: 23,348 x 3
-##       id word1  word2 
-##    &lt;int&gt; &lt;chr&gt;  &lt;chr&gt; 
-##  1     1 우리   좋다  
-##  2     1 좋다   생기다
-##  3     1 생기다 기쁘다
-##  4     1 기쁘다 행복한
-##  5     1 행복한 행복  
-##  6     1 행복   축하  
-##  7     1 축하   행복  
-##  8     1 행복   기쁘다
-##  9     2 기쁘다 시국  
-## 10     2 시국   기쁘다
-## # … with 23,338 more rows
+## # A tibble: 6,541 x 3
+##       id word1        word2       
+##    &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;       
+##  1     1 &lt;NA&gt;         &lt;NA&gt;        
+##  2     2 아줌마       들다        
+##  3     2 들다         좋다        
+##  4     3 팩트체크     빌보드      
+##  5     3 빌보드       자랑        
+##  6     4 자랑         한국사람    
+##  7     4 한국사람     자랑        
+##  8     4 자랑         우리오래오래
+##  9     4 우리오래오래 함께하다    
+## 10     5 대단         월드        
+## # … with 6,531 more rows
 ```
 
 
@@ -359,20 +1136,20 @@ pair_bigram
 .pull-right[
 
 ```
-## # A tibble: 19,136 x 3
-##    word1      word2      n
-##    &lt;chr&gt;      &lt;chr&gt;  &lt;int&gt;
-##  1 봉준호     감독      83
-##  2 봉준호     감독님    68
-##  3 진심       축하      64
-##  4 대단       축하      42
-##  5 블랙리스트 올리다    40
-##  6 영화       만들다    31
-##  7 봉감독     축하      29
-##  8 축하       자랑      29
-##  9 대박       축하      26
-## 10 진짜       대단      25
-## # … with 19,126 more rows
+## # A tibble: 5,455 x 3
+##    word1  word2     n
+##    &lt;chr&gt;  &lt;chr&gt; &lt;int&gt;
+##  1 축하   하다     43
+##  2 자랑   축하     40
+##  3 자랑   자랑     38
+##  4 축하   자랑     35
+##  5 대단   자랑     24
+##  6 진짜   자랑     24
+##  7 진짜   대단     23
+##  8 자랑   진짜     17
+##  9 빌보드 축하     14
+## 10 군대   면제     13
+## # … with 5,445 more rows
 ```
 ]
 
@@ -393,28 +1170,28 @@ graph_bigram
 ```
 
 ```
-## # A tbl_graph: 336 nodes and 625 edges
+## # A tbl_graph: 90 nodes and 130 edges
 ## #
-## # An undirected multigraph with 18 components
+## # An undirected multigraph with 6 components
 ## #
-## # Node Data: 336 x 3 (active)
-##   name       centrality group
-##   &lt;chr&gt;           &lt;dbl&gt; &lt;fct&gt;
-## 1 봉준호             34 3    
-## 2 진심               10 25   
-## 3 대단               32 3    
-## 4 블랙리스트         22 2    
-## 5 영화               50 5    
-## 6 봉감독             16 25   
-## # … with 330 more rows
+## # Node Data: 90 x 3 (active)
+##   name   centrality group
+##   &lt;chr&gt;       &lt;dbl&gt; &lt;fct&gt;
+## 1 축하           18 1    
+## 2 자랑           45 1    
+## 3 대단            9 1    
+## 4 진짜           12 1    
+## 5 빌보드         16 2    
+## 6 군대            3 4    
+## # … with 84 more rows
 ## #
-## # Edge Data: 625 x 3
+## # Edge Data: 130 x 3
 ##    from    to     n
 ##   &lt;int&gt; &lt;int&gt; &lt;int&gt;
-## 1     1    22    83
-## 2     1    23    68
-## 3     2     7    64
-## # … with 622 more rows
+## 1     1    61    43
+## 2     1     2    40
+## 3     2     2    38
+## # … with 127 more rows
 ```
 
 
@@ -426,6 +1203,8 @@ graph_bigram
   - 연결 중심성에 따라 노드 크기를 정하고, 커뮤니티별로 노드 색깔이 다르게 설정하세요.
   - 노드의 범례를 삭제하세요.
   - 텍스트가 노드 밖에 표시되게 설정하고, 텍스트의 크기를 5로 설정하세요.
+
+
 
 
 ```r
@@ -448,28 +1227,14 @@ ggraph(graph_bigram, layout = "fr") +
 
 ---
 
-
-![](05-4_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
-
+&lt;img src="../../Quiz/Quiz_Part05_files/figure-markdown_github/unnamed-chunk-15-1.png" width="90%" /&gt;
 
 ---
-
-![](05-4_files/figure-html/unnamed-chunk-20-1.png)&lt;!-- --&gt;
-
-
----
-
-&lt;img src="../../Quiz/img/Q5_6_1.png" width="80%" height="80%" /&gt;
-
----
-
 
 
 
 ```r
 # 그래프 꾸미기
-
-# 폰트 설정
 library(showtext)
 font_add_google(name = "Nanum Gothic", family = "nanumgothic")
 
@@ -492,22 +1257,15 @@ ggraph(graph_bigram, layout = "fr") +         # 레이아웃
   theme_graph()                               # 배경 삭제
 ```
 
-
-
-![](img/Q5_6_2.png)
-
-
-
 ---
 
+&lt;img src="../../Quiz/Quiz_Part05_files/figure-markdown_github/unnamed-chunk-17-1.png" width="90%" /&gt;
+
+---
 
 class: title0
 
 끝
-
-
-
-
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="../libs/remark-latest.min.js"></script>

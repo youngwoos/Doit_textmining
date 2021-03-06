@@ -159,7 +159,8 @@ include_graphics("../Image/05/05_4_2.png")
 name: 05-1
 class: title1
 
-05-1 동시 출현 단어 분석 - Co-occurrence analysis
+05-1 동시 출현 단어 분석:  
+Co-occurrence analysis
 
 ---
 
@@ -169,11 +170,11 @@ class: title1
 - '손-장갑', '머리-모자' 처럼 관계가 있는 단어 파악
 - 단어의 관계를 표현한 의미망(semantic network) 만드는데 활용
 
---
+
+---
 
 #### 기본적인 전처리
 
----
 
 ```{r eval=F}
 # 기생충 기사 댓글 불러오기
@@ -307,7 +308,7 @@ noun %>%
 - 단어 뒤에 태그 대신 '다'를 붙여 이해하기 편하게 수정하기
   - ex) "받" → "받다", "멋지" → "멋지다"
 
-```{r pvpa, R.options=list(tibble.width = 50)}
+```{r pvpa, R.options=list(tibble.width = 50), eval=F}
 # 동사, 형용사 추출하기
 pvpa <- comment_pos %>%
   filter(str_detect(word, "/pv|/pa")) %>%         # "/pv", "/pa" 추출

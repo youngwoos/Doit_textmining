@@ -21,11 +21,18 @@ editor_options:
 ```{r child="05-1.Rmd"}
 ```
 
+---
+
 ```{r child="05-2.Rmd"}
 ```
 
+---
+
 ```{r child="05-3.Rmd"}
 ```
+
+---
+
 
 ```{r child="05-4.Rmd"}
 ```
