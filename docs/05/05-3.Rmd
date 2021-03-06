@@ -257,7 +257,7 @@ graph_cors <- word_cors %>%
 
 ##### 2. 네트워크 그래프 만들기
 
-```{r p-graph_cors, fig.show='hide'}
+```{r eval=F}
 set.seed(1234)
 ggraph(graph_cors, layout = "fr") +
 
@@ -282,7 +282,9 @@ ggraph(graph_cors, layout = "fr") +
 
 ---
 
-```{r ref.label="p-graph_cors", echo=F}
+
+```{r, echo=F, out.width="80%"}
+include_graphics("../Image/05/05_3_2.png")
 ```
 
 ---

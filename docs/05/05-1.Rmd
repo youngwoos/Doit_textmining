@@ -145,13 +145,13 @@ include_graphics("../Image/05/05_4_2.png")
 
 .large2[.font-jua[목차]]
 
-.large[.font-jua[05-1 동시 출현 단어 분석 - Co-occurrence analysis]]([link](#05-1))
+.large[.font-jua[05-1 동시 출현 단어 분석: Co-occurrence analysis]]([link](#05-1))
 
-.large[.font-jua[05-2 동시 출현 네트워크 - Co-occurrence network]]([link](#05-2))
+.large[.font-jua[05-2 동시 출현 네트워크: Co-occurrence network]]([link](#05-2))
 
-.large[.font-jua[05-3 단어 간 상관 분석 - Phi coefficient]]([link](#05-3))
+.large[.font-jua[05-3 단어 간 상관 분석: Phi coefficient]]([link](#05-3))
 
-.large[.font-jua[05-4 연이어 사용된 단어쌍 분석 - n-gram]]([link](#05-4))
+.large[.font-jua[05-4 연이어 사용된 단어쌍 분석: n-gram]]([link](#05-4))
 
 
 ---
