@@ -6,10 +6,8 @@
 [02-morphologicalAnalysis.html](https://youngwoos.github.io/Doit_textmining/02-morphologicalAnalysis.html)| 02 형태소 분석기를 이용한 단어 빈도 분석
 [03-comparing.html](https://youngwoos.github.io/Doit_textmining/03-comparing.html)| 03 비교 분석
 [04-sentimentAnalysis.html](https://youngwoos.github.io/Doit_textmining/04-sentimentAnalysis.html)| 04 감정 분석
-[05]()| 05 의미망 분석
+[05-co-occurrenceAnalysis](https://youngwoos.github.io/Doit_textmining/05/05-co-occurrenceAnalysis.html)| 05 의미망 분석
 [06]()| 06 토픽 모델링
-[07]()| 07 텍스트 마이닝 프로젝트:  타다 금지법 기사 댓글 분석
-[08]()| 08 텍스트 마이닝 프로젝트: 차기 대선 주자 SNS 여론 분석
 
 ---
 
