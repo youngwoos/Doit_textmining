@@ -237,10 +237,11 @@ ggraph(graph_bigram, layout = "fr") +
   
 ```
 
-```{r echo=F}
+```{r echo=F, dpi = 300}
 library(showtext)
 font_add_google(name = "Nanum Gothic", family = "nanumgothic")
 showtext_auto()
+showtext_opts(dpi = 200)
 
 library(ggraph)
 set.seed(1234)
@@ -262,48 +263,8 @@ ggraph(graph_bigram, layout = "fr") +
 ```
 
 
-<!-- ```{r echo=F} -->
-<!-- library(ggraph) -->
-<!-- library(showtext) -->
-<!-- font_add_google(name = "Nanum Gothic", family = "nanumgothic") -->
-<!-- showtext_auto() -->
-<!-- showtext_opts(dpi = 96) -->
-
-<!-- set.seed(1234) -->
-<!-- p <- ggraph(graph_bigram, layout = "fr") + -->
-
-<!--   geom_edge_link() + -->
-
-<!--   geom_node_point(aes(size = centrality, -->
-<!--                       color = group), -->
-<!--                   show.legend = F) + -->
-
-<!--   geom_node_text(aes(label = name), -->
-<!--                  repel = T, -->
-<!--                  size = 4, -->
-<!--                  family = "nanumgothic") + -->
-
-<!--   theme_graph() + -->
-<!--   theme(plot.margin = margin(5, 5, 5, 5)) -->
-
-<!-- p %>%  -->
-<!--   ggsave( -->
-<!--     path = here("Quiz/img/"), -->
-<!--     file = "Q5_6_1.png", -->
-
-<!--     width = 7, -->
-<!--     height = 5, -->
-<!--     dpi = 140, type = "cairo-png", units = "in") -->
-
-<!-- ``` -->
-
-
-<!-- ![](img/Q5_6_1.png) -->
-
-##### 그래프 꾸미기
-
-```{r}
-# 폰트 설정
+```{r eval=FALSE}
+# 그래프 꾸미기
 library(showtext)
 font_add_google(name = "Nanum Gothic", family = "nanumgothic")
 
@@ -326,12 +287,9 @@ ggraph(graph_bigram, layout = "fr") +         # 레이아웃
   theme_graph()                               # 배경 삭제
 ```
 
-##### 그래프 꾸미기 300
-
-```{r, dpi=300}
+```{r, dpi=300, echo=F}
 # 폰트 설정
-library(showtext)
-font_add_google(name = "Nanum Gothic", family = "nanumgothic")
+showtext_opts(dpi = 200)
 
 set.seed(1234)
 ggraph(graph_bigram, layout = "fr") +         # 레이아웃
@@ -351,39 +309,3 @@ ggraph(graph_bigram, layout = "fr") +         # 레이아웃
 
   theme_graph()                               # 배경 삭제
 ```
-
-
-<!-- ```{r echo=F} -->
-<!-- # showtext_opts(dpi = 96) -->
-
-<!-- set.seed(1234) -->
-<!-- p <- ggraph(graph_bigram, layout = "fr") +         # 레이아웃 -->
-
-<!--   geom_edge_link(color = "gray50",            # 엣지 색깔 -->
-<!--                  alpha = 0.5) +               # 엣지 명암 -->
-
-<!--   geom_node_point(aes(size = centrality,      # 노드 크기 -->
-<!--                       color = group),         # 노드 색깔 -->
-<!--                   show.legend = F) +          # 범례 삭제 -->
-<!--   scale_size(range = c(2, 6)) +               # 노드 크기 범위 -->
-
-<!--   geom_node_text(aes(label = name),           # 텍스트 표시 -->
-<!--                  repel = T,                   # 노드밖 표시 -->
-<!--                  size = 4,                   # 텍스트 크기 -->
-<!--                  family = "nanumgothic") +    # 폰트 -->
-
-<!--   theme_graph() +                               # 배경 삭제 -->
-<!--   theme(plot.margin = margin(5, 5, 5, 5)) -->
-
-<!-- p %>%  -->
-<!--   ggsave( -->
-<!--     path = here("Quiz/img/"), -->
-<!--     file = "Q5_6_2.png", -->
-
-<!--     width = 7, -->
-<!--     height = 5, -->
-<!--     dpi = 140, type = "cairo-png", units = "in") -->
-<!-- ``` -->
-
-<!-- ![](img/Q5_6_2.png) -->
-
