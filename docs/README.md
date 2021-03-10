@@ -8,7 +8,6 @@
 [04-sentimentAnalysis.html](https://youngwoos.github.io/Doit_textmining/04-sentimentAnalysis.html)| 04 감정 분석
 [05-co-occurrenceAnalysis](https://youngwoos.github.io/Doit_textmining/05/05-co-occurrenceAnalysis.html)| 05 의미망 분석
 [06]()| 06 토픽 모델링
-
 ---
 
 - 슬라이드는 크롬에 최적화되어있습니다. 
