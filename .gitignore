@@ -28,3 +28,4 @@ vignettes/*.pdf
 # R Environment Variables
 .Renviron
 backup.Rmd
+rmd_tools.rmd

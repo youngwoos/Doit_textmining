@@ -455,3 +455,25 @@ br-back-50 {
    display: block;
    margin: -50px 0;
 }
+
+
+
+.pull-left-70 {
+  float: left;
+  width: 70%;
+}
+
+.pull-right-30 {
+  float: right;
+  width: 29%;
+}
+
+.pull-left-60 {
+  float: left;
+  width: 60%;
+}
+
+.pull-right-40 {
+  float: right;
+  width: 39%;
+}
