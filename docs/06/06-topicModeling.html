@@ -6,7 +6,7 @@
     <meta name="author" content="김영우" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
-    <link rel="stylesheet" href="../css/custom.css" type="text/css" />
+    <link rel="stylesheet" href="../css/custom_06.css" type="text/css" />
   </head>
   <body>
     <textarea id="source">
@@ -203,6 +203,387 @@ class: title1
 &lt;br&gt;
 
 &lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; LDA 모델이 만들어지는 과정을 자세히 알고 싶다면 - Topic Modeling, LDA: [bit.ly/easytext_61](https://bit.ly/easytext_61)
+
+
+---
+
+name: 06-2
+class: title1
+
+6.2 LDA 모델 만들기
+
+
+---
+
+#### 전처리하기
+
+##### 1. 기본적인 전처리
+
+- **중복 문서 제거하기**: `dplyr::distinct()`
+  - 중복 문서가 있으면 계산량 늘어나 모델 만드는 시간 오래 걸림
+  - 한 토픽에 내용이 똑같은 문서가 여러 개 들어 있는 문제 생김
+
+
+- **짧은 문서 제거하기**:
+  - 토픽 모델은 여러 문서에 공통으로 사용된 단어를 이용해 만듦
+  - 짧은 문서는 다른 문서와 공통으로 사용된 단어가 적어 모델 만드는 데 적합하지 않음
+
+---
+
+
+```r
+# 기생충 기사 댓글 불러오기
+library(readr)
+library(dplyr)
+
+raw_news_comment &lt;- read_csv("news_comment_parasite.csv") %&gt;%
+  mutate(id = row_number())
+
+library(stringr)
+library(textclean)
+
+# 기본적인 전처리
+news_comment &lt;- raw_news_comment %&gt;%
+  mutate(reply = str_replace_all(reply, "[^가-힣]", " "),
+         reply = str_squish(reply)) %&gt;%
+
+  # 중복 댓글 제거
+  distinct(reply, .keep_all = T) %&gt;%
+
+  # 짧은 문서 제거 - 3 단어 이상 추출
+  filter(str_count(reply, boundary("word") &gt;= 3))
+```
+
+
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `row_number()`: 문서를 토픽별로 분류하는 작업을 할 때 문서 구분 기준이 필요하므로 댓글 고유 번호 부여
+
+---
+
+##### 2. 명사 추출하기
+
+- 문서의 주제는 명사로 결정되므로 명사 추출해 모델 만드는 경우가 많음
+- 댓글에 중복 사용된 단어 제거: 문서에 같은 단어 여러 번 사용되면 내용 관계없이 사용 빈도 때문에 특정 토픽으로 분류될 가능성 높음
+
+
+```r
+library(tidytext)
+library(KoNLP)
+
+# 명사 추출
+comment &lt;- news_comment %&gt;%
+  unnest_tokens(input = reply,
+                output = word,
+                token = extractNoun,
+                drop = F) %&gt;%
+  filter(str_count(word) &gt; 1) %&gt;%
+
+  # 댓글 내 중복 단어 제거
+  group_by(id) %&gt;%
+  distinct(word, .keep_all = T) %&gt;%
+  ungroup() %&gt;%
+  select(id, word)
+```
+
+---
+
+
+```r
+comment
+```
+
+```
+## # A tibble: 21,457 x 2
+##       id word    
+##    &lt;int&gt; &lt;chr&gt;   
+##  1     1 우리    
+##  2     1 행복    
+##  3     2 시국    
+##  4     2 감사    
+##  5     2 하다    
+##  6     2 진심    
+##  7     3 우리나라
+##  8     3 영화감독
+##  9     3 영감    
+## 10     3 봉감    
+## # … with 21,447 more rows
+```
+
+---
+
+##### 3. 빈도 높은 단어 제거하기
+
+- '영화', '기생충' 등은 거의 모든 댓글에 들어 있음
+- 빈도가 매우 높은 단어가 포함된 상태로 토픽 모델을 만들면 대부분의 토픽에 똑같은 단어가 주요 단어로 등장해 토픽의 특징을 파악하기 어려우므로 제거
+
+
+```r
+count_word &lt;- comment %&gt;%
+  add_count(word) %&gt;%
+  filter(n &lt;= 200) %&gt;%
+  select(-n)
+```
+
+---
+
+##### 4. 불용어 제거하기, 유의어 처리하기
+
+&lt;br10&gt;
+
+##### 4.1 불용어, 유의어 확인하기
+- 불용어(Stop word): 분석에서 제외할 단어
+  - `"들이"`, `"하다"`, `"하게"`처럼 의미를 알 수 없는 단어
+  - 텍스트 해석에 도움이 되지 않으므로 제거해야 함
+  
+
+&lt;br&gt;
+
+- 빈도 높은 단어 추출해 불용어 확인, 표현은 다르지만 의미가 비슷한 유의어가 있는지 확인
+
+
+```r
+# 불용어, 유의어 확인하기
+count_word %&gt;%
+  count(word, sort = T) %&gt;%
+  print(n = 200)
+```
+
+---
+
+
+```
+## # A tibble: 6,022 x 2
+##    word           n
+##    &lt;chr&gt;      &lt;int&gt;
+##  1 작품상       200
+##  2 자랑         193
+##  3 블랙리스트   173
+##  4 조국         170
+##  5 한국         165
+##  6 대박         148
+##  7 세계         140
+##  8 수상         135
+##  9 미국         128
+## 10 들이         123
+## 11 정치         108
+## 12 역사         102
+## 13 오스카       101
+## 14 우리나라      96
+## 15 감독상        93
+## 16 진심          93
+## 17 좌파          90
+## 18 작품          87
+## 19 한국영화      87
+## 20 사람          86
+## # … with 6,002 more rows
+```
+
+
+---
+
+##### 4.2 불용어 목록 만들기
+
+
+```r
+# 불용어 목록 만들기
+stopword &lt;- c("들이", "하다", "하게", "하면", "해서", "이번", "하네",
+              "해요", "이것", "니들", "하기", "하지", "한거", "해주",
+              "그것", "어디", "여기", "까지", "이거", "하신", "만큼")
+```
+
+---
+
+
+##### 4.3 불용어 제거하고 유의어 수정하기
+
+
+```r
+# 불용어, 유의어 처리하기
+count_word &lt;- count_word %&gt;%
+  filter(!word %in% stopword) %&gt;%
+  mutate(word = recode(word,
+                       "자랑스럽습니" = "자랑",
+                       "자랑스럽" = "자랑",
+                       "자한" = "자유한국당",
+                       "문재" = "문재인",
+                       "한국의" = "한국",
+                       "그네" = "박근혜",
+                       "추카" = "축하",
+                       "정경" = "정경심",
+                       "방탄" = "방탄소년단"))
+```
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `dplyr::recode()`: 특정 값을 다른 값으로 수정
+
+---
+
+
+.box[
+&lt;br-back-20&gt;
+.info[&lt;svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt; 불용어 목록을 파일로 만들어 활용하기]
+
+&lt;br10&gt;
+
+
+```r
+# tibble 구조로 불용어 목록 만들기
+stopword &lt;- tibble(word = c("들이", "하다", "하게", "하면", "해서", "이번", "하네",
+                            "해요", "이것", "니들", "하기", "하지", "한거", "해주",
+                            "그것", "어디", "여기", "까지", "이거", "하신", "만큼")
+
+# 불용어 목록 저장하기
+library(readr)
+write_csv(stopword, "stopword.csv")
+
+# 불용어 목록 불러오기
+stopword &lt;- read_csv("stopword.csv")
+```
+
+
+
+```r
+# 불용어 제거하기 - filter()
+count_word &lt;- count_word %&gt;%
+  filter(!word %in% stopword$word)
+
+# 불용어 제거하기 - dplyr::anti_join()
+count_word &lt;- count_word %&gt;%
+  anti_join(stopword, by = "word")
+```
+
+]
+
+
+---
+
+
+&lt;!-- ### 6.2.2 LDA 모델 만들기 --&gt;
+
+&lt;!-- #### 1. Document-Term Matrix 만들기 --&gt;
+
+&lt;!-- LDA 모델은 **DTM(Document-Term Matrix, 문서 단어 행렬)**을 이용해 만듭니다. DTM은 행은 각 문서, 열은 각 단어로 구성해 빈도를 나타낸 행렬 자료입니다. --&gt;
+
+&lt;!-- #### (1) 문서별 단어 빈도 구하기 --&gt;
+
+&lt;!-- DTM은 문서별 단어 빈도를 이용해 만듭니다. `count_word`를 이용해 문서별 단어 빈도를 구하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 문서별 단어 빈도 구하기 --&gt;
+&lt;!-- count_word_doc &lt;- count_word %&gt;% --&gt;
+&lt;!--   count(id, word, sort = T) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- count_word_doc --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- count_word_doc %&gt;% --&gt;
+&lt;!--   print(n = 5) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### (2) DTM 만들기 - `cast_dtm()` --&gt;
+
+&lt;!-- `tidytext` 패키지의 `cast_dtm()`에 문서별 단어 빈도를 적용하면 DTM을 만들 수 있습니다. `cast_dtm()`에는 아래 세 가지 파라미터를 입력합니다. --&gt;
+
+&lt;!-- - `document` : 문서를 구분하는 기준이 되는 변수 --&gt;
+&lt;!-- - `term` : 단어가 들어있는 변수 --&gt;
+&lt;!-- - `value` : 단어 빈도가 들어 있는 변수 --&gt;
+
+
+&lt;!-- `cast_dtm()`을 이용하려면 `tm`패키지가 설치되어 있어야 합니다. `tm`패키지를 설치한 다음 `cast_dtm()`을 이용해 `count_word_doc`을 이용해 DTM을 만들겠습니다. 출력 결과의 `(documents: 3203, terms: 5995)`를 보면, `dtm_comment`가 '3,203 문서 × 5,995 단어'로 구성됨을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- install.packages("tm") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # DTM 만들기 --&gt;
+&lt;!-- dtm_comment &lt;- count_word_doc %&gt;% --&gt;
+&lt;!--   cast_dtm(document = id, term = word, value = n) --&gt;
+
+&lt;!-- dtm_comment --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 박스로 강조 표시 (documents: 3203, terms: 5995) --&gt;
+
+&lt;!-- &lt;br&gt; --&gt;
+
+&lt;!-- &gt; [참고] `as.matrix()`를 이용하면 DTM의 내용을 확인할 수 있습니다. 출력 결과에서 `Docs`는 문서 번호, `Terms`는 단어, 숫자는 문서에 단어가 등장한 빈도를 의미합니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- as.matrix(dtm_comment)[1:8, 1:8] --&gt;
+&lt;!-- ``` --&gt;
+
+
+
+
+
+&lt;!-- #### 2. LDA 모델 만들기 - `LDA()` --&gt;
+
+&lt;!-- `topicmodels` 패키지의 `LDA()`에 DTM을 적용하면 LDA 모델을 만들 수 있습니다. `LDA()`에는 아래 세 가지 파라미터를 입력합니다. --&gt;
+
+&lt;!-- - `k` : 토픽 수. 여기서는 8개의 토픽으로 모델을 만들도록 `8`을 입력하겠습니다. --&gt;
+
+&lt;!-- - `method` : 샘플링 방법. 토픽 모델링은 샘플링을 반복하며 토픽과 단어의 분포를 추정하는 과정을 거칩니다. 여기서는 가장 일반적으로 사용되는 깁스 샘플링을 이용하도록 `"Gibbs"`를 입력하겠습니다. --&gt;
+
+&lt;!-- - `control = list(seed = 1234))` : 반복 실행해도 동일한 결과를 만들도록 난수를 고정합니다. --&gt;
+
+&lt;!-- 다음 코드를 실행하면 LDA 모델이 만들어 집니다. `glimpse()`를 이용하면 LDA 모델의 내용을 확인할 수 있습니다. --&gt;
+
+&lt;!-- &gt; [참고] 토픽 수에는 정해진 정답이 없기 때문에 `k`값을 바꿔가며 여러 모델을 만든 다음 결과를 비교해 결정하게 됩니다. 토픽 수를 정하는 방법은 `6.6`에서 자세히 다룹니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- install.packages("topicmodels") --&gt;
+&lt;!-- library(topicmodels) --&gt;
+
+&lt;!-- # 토픽 모델 만들기 --&gt;
+&lt;!-- lda_model &lt;- LDA(dtm_comment, --&gt;
+&lt;!--                  k = 8, --&gt;
+&lt;!--                  method = "Gibbs", --&gt;
+&lt;!--                  control = list(seed = 1234)) --&gt;
+&lt;!-- lda_model --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- ```{r echo=F, output.lines = 12} --&gt;
+&lt;!-- # install.packages("topicmodels") --&gt;
+&lt;!-- library(topicmodels) --&gt;
+
+&lt;!-- # 토픽 모델 만들기 --&gt;
+&lt;!-- lda_model &lt;- LDA(dtm_comment, --&gt;
+&lt;!--                  k = 8, --&gt;
+&lt;!--                  method = "Gibbs", --&gt;
+&lt;!--                  control = list(seed = 1234)) --&gt;
+&lt;!-- lda_model --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- # 모델 내용 확인 --&gt;
+&lt;!-- glimpse(lda_model) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F, output.lines = 12} --&gt;
+&lt;!-- # 모델 내용 확인 --&gt;
+&lt;!-- glimpse(lda_model, width = 50) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 출력 결과 행 박스 처리로 강조 ..@ beta  : num [1:8, 1:5995] ..@ gamma : num [1:3203, 1:8], 결과 생략 표시 --&gt;
+
+&lt;!-- `lda_model`은 '단어가 각 토픽에 등장할 확률 beta(β)'와 '문서가 각 토픽에 등장할 확률 gamma(γ)'를 지니고 있습니다. --&gt;
+
+&lt;!-- 5,995개 단어로 토픽 모델을 만들었기 때문에 출력 결과의 `@ beta : num [1:8, 1:5995]`를 보면 8개 토픽 각각에  5,995개 베타값이 있음을 알 수 있습니다. 또한 3,203개 문서로 토픽 모델을 만들었기 때문에 `@ gamma : num [1:3203, 1:8]`를 보면 8개 토픽 각각에 3,203개 감마값이 있음을 알 수 있습니다. --&gt;
+
+
+
+&lt;!-- &gt; [참고] 깁스 샘플링에 관해 자세히 알고 싶다면 아래 글을 읽어보세요. --&gt;
+
+&lt;!-- - Topic Modeling, LDA --&gt;
+
+&lt;!--   [ratsgo.github.io/from%20frequency%20to%20semantics/2017/06/01/LDA/](ratsgo.github.io/from%20frequency%20to%20semantics/2017/06/01/LDA/) --&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="../libs/remark-latest.min.js"></script>
