@@ -13,9 +13,9 @@ library(here)
 
 # Quiz Part 5
 
-#### `"news_comment_BTS.csv"`에는 2020년 9월 21일 방탄소년단이 '빌보드 핫 100 차트' 1위에 오른 소식을 다룬 기사에 달린 댓글이 들어있습니다. `"news_comment_BTS.csv"`를 이용해 문제를 해결해 보세요.
+#### `news_comment_BTS.csv`에는 2020년 9월 21일 방탄소년단이 '빌보드 핫 100 차트' 1위에 오른 소식을 다룬 기사에 달린 댓글이 들어있습니다. `news_comment_BTS.csv`를 이용해 문제를 해결해 보세요.
 
-[Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 전처리하세요.](#Q1)
+[Q1. `news_comment_BTS.csv`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 전처리하세요.](#Q1)
 
 [Q2. 댓글에서 명사, 동사, 형용사를 추출하고 ‘/로 시작하는 모든 문자’를 ‘다’로 바꾸세요.](#Q2)
 
@@ -30,13 +30,13 @@ library(here)
 
 ---
 
-#### Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 전처리하세요.<a name="Q1"></a>
+#### Q1. `news_comment_BTS.csv`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 전처리하세요.<a name="Q1"></a>
 
 
 ```{r eval=F}
 library(readr)
 library(dplyr)
-raw_news_comment <- read_csv("news_comment_BTS.csv")
+raw_news_comment <- read_csv(news_comment_BTS.csv)
 glimpse(raw_news_comment)
 ```
 
