@@ -35,9 +35,9 @@ options(htmltools.dir.version = FALSE,
 
 knitr::opts_chunk$set(cache = T, warning = F, message = F, 
                       dpi = 300, fig.height = 4)
-                      # out.width = "100%"
+                      # cache.lazy = FALSE # 대용량 object cache
 
-# xaringanExtra::use_tile_view()
+xaringanExtra::use_tile_view()
 
 library(knitr)
 library(icon)
@@ -51,8 +51,8 @@ rm(list = ls())
 library(showtext)
 font_add_google(name = "Nanum Gothic", family = "nanumgothic")
 showtext_auto()
-showtext_opts(dpi = 96)
-# showtext_opts(dpi = 300) # opts_chunk$set(dpi=300)
+# showtext_opts(dpi = 96)
+showtext_opts(dpi = 300) # opts_chunk$set(dpi=300)
 
 # code highlighting
 hook_source <- knitr::knit_hooks$get('source')
@@ -182,8 +182,8 @@ class: title1
 ---
 
 #### 토픽 모델링(topic modeling)
-  - 텍스트의 핵심 주제를 찾아 비슷한 내용끼리 분류하는 분석 방법
-  - 분석할 텍스트가 많을 때 유용
+- 텍스트의 핵심 주제를 찾아 비슷한 내용끼리 분류하는 분석 방법
+- 다량의 텍스트를 분석할 때 유용
   
 ```{r echo=FALSE, out.width = '70%'}
 knitr::include_graphics("../Image/06/06_3_1.png")
@@ -518,7 +518,7 @@ count_word <- count_word %>%
 
 ##### 1.1 문서별 단어 빈도 구하기
 
-```{r eval = F}
+```{r results='hide'}
 # 문서별 단어 빈도 구하기
 count_word_doc <- count_word %>%
   count(id, word, sort = T)
@@ -578,8 +578,19 @@ dtm_comment
   - `method` : 샘플링 방법. 일반적으로 깁스 샘플링(`"Gibbs"`) 가장 많이 사용
   - `control = list(seed = 1234))` : 난수 고정
 
-```{r}
+```{r eval=F}
 install.packages("topicmodels")
+library(topicmodels)
+
+# 토픽 모델 만들기
+lda_model <- LDA(dtm_comment,
+                 k = 8,
+                 method = "Gibbs",
+                 control = list(seed = 1234))
+```
+
+```{r echo=F}
+# install.packages("topicmodels")
 library(topicmodels)
 
 # 토픽 모델 만들기
@@ -628,7 +639,7 @@ class: title1
 ##### 6.3.1 토픽별 단어 확률, beta 추출하기
 
 - 베타(beta, β): 단어가 각 토픽에 등장할 확률
-  - 베타를 보면 각 토픽에 등장할 가능성이 높은 주요 단어를 알 수 있다
+- 베타를 보면 각 토픽에 등장할 가능성이 높은 주요 단어를 알 수 있다
 
 
 ##### beta 추출하기
@@ -787,13 +798,9 @@ ggplot(top_term_topic,
 
 ---
 
-```{r ref.label="p_top_term_topic", echo=F, out.width='95%'}
+```{r ref.label="p_top_term_topic", echo=F, out.width='95%', fig.width=8, fig.height=5}
 
 ```
-
-
----
-
 
 ---
 
@@ -807,8 +814,8 @@ class: title1
 #### 문서별 토픽 확률 gamma 추출하기
 
 - 감마(gamma, γ): 문서가 각 토픽에 등장할 확률
-  - 감마를 이용하면 토픽별로 분류할 수 있다
-  - 문서를 토픽별로 분류하고 주요 단어와 원문을 함께 살펴보면 토픽의 특징을 이해할 수 있다
+  - 감마를 이용하면 문서를 토픽별로 분류할 수 있다
+  - 토픽의 주요 단어와 원문을 함께 살펴보면 토픽의 특징을 이해할 수 있다
 
 
 
@@ -1188,11 +1195,10 @@ class: title1
   - (1) 주요 단어가 토픽을 잘 대표하는가?
   - (2) 문서가 비슷한 내용끼리 잘 분류되었는가?
   - (3) 모델이 텍스트를 해석하는 데 도움이 되는가?
-  
 
 
-  - (-) 일일이 모델의 내용을 확인해야 하므로 시간이 많이 소요됨
-  - (-) 텍스트의 내용에 관한 전문 지식이 없으면 모델이 타당한지 판단하기 어려움
+- (-) 일일이 모델의 내용을 확인해야 하므로 시간이 많이 소요됨
+- (-) 텍스트의 내용에 관한 전문 지식이 없으면 모델이 타당한지 판단하기 어려움
 
 
 --
@@ -1413,6 +1419,12 @@ Q3. 연설문 내 중복 단어를 제거하고 빈도가 100회 이하인 단�
 
 Q4. 추출한 단어에서 다음의 불용어를 제거하세요.
 
+```{r eval=F}
+stopword <- c("들이", "하다", "하게", "하면", "해서", "이번", "하네",
+              "해요", "이것", "니들", "하기", "하지", "한거", "해주",
+              "그것", "어디", "여기", "까지", "이거", "하신", "만큼")
+```
+
 Q5. 연설문별 단어 빈도를 구한 다음 DTM을 만드세요.
 
 Q6. 토픽 수를 2~20개로 바꿔가며 LDA 모델을 만든 다음 최적 토픽 수를 구하세요.
@@ -1455,256 +1467,215 @@ speeches <- speeches_raw %>%
                 drop = F)
 ```
 
-```{r echo=F}
-library(readr)
+```{r echo=FALSE}
 speeches_raw <- read_csv("../../Data/speeches_roh.csv")
-
-# 문장 기준 토큰화
-library(dplyr)
-library(tidytext)
-speeches <- speeches_raw %>%
-  unnest_tokens(input = content,
-                output = sentence,
-                token = "sentences",
-                drop = F)
 ```
 
 `r fontawesome("lightbulb")` `KoNLP` 패키지의 함수는 토큰화할 텍스트가 너무 길면 오류 발생함. <br>&nbsp;&nbsp;&nbsp;&nbsp;텍스트를 문장 기준으로 토큰화하고 나서 다시 명사 기준으로 토큰화하면 이런 문제를 피할 수 있음.
 
 ---
-<!-- Q2. 문장을 분석에 적합하게 전처리한 다음 명사를 추출하세요. -->
+Q2. 문장을 분석에 적합하게 전처리한 다음 명사를 추출하세요.
 
-<!-- ```{r} -->
-<!-- # 전처리 -->
-<!-- library(stringr) -->
-<!-- speeches <- speeches %>% -->
-<!--   mutate(sentence = str_replace_all(sentence, "[^가-힣]", " "), -->
-<!--          sentence = str_squish(sentence)) -->
-<!-- ``` -->
+```{r eval=F}
+# 전처리
+library(stringr)
+speeches <- speeches %>%
+  mutate(sentence = str_replace_all(sentence, "[^가-힣]", " "),
+         sentence = str_squish(sentence))
 
+# 명사 추출
+library(tidytext)
+library(KoNLP)
+library(stringr)
+nouns_speeches <- speeches %>%
+  unnest_tokens(input = sentence,
+                output = word,
+                token = extractNoun,
+                drop = F) %>%
+  filter(str_count(word) > 1)
+```
 
-<!-- ```{r} -->
-<!-- # 명사 추출 -->
-<!-- library(tidytext) -->
-<!-- library(KoNLP) -->
-<!-- library(stringr) -->
-<!-- nouns_speeches <- speeches %>% -->
-<!--   unnest_tokens(input = sentence, -->
-<!--                 output = word, -->
-<!--                 token = extractNoun, -->
-<!--                 drop = F) %>% -->
-<!--   filter(str_count(word) > 1) -->
-<!-- ``` -->
+`r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` 컴퓨터 성능에 따라 명사 추출하는 데 시간이 오래 걸릴 수 있음
 
-<!-- `r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` 컴퓨터 성능에 따라 명사 추출하는 데 시간이 오래 걸릴 수 있음 -->
+```{r echo=F}
+library(tidytext)
+library(KoNLP)
+library(stringr)
+# saveRDS(nouns_speeches, here::here("Quiz/files_etc/nouns_speeches_roh.rds"), compress = F)
 
+# nouns_speeches <- readRDS(here::here("Quiz/files_etc/nouns_speeches_roh.rds"))
+```
 
-<!-- ```{r echo=F} -->
-<!-- # library(tidytext) -->
-<!-- # library(KoNLP) -->
-<!-- # library(stringr) -->
-<!-- # # saveRDS(nouns_speeches, here("files_etc/nouns_speeches_roh.rds"), compress = F) -->
-<!-- #  -->
-<!-- # # set path -->
-<!-- # source(here("Quiz/path.r")) -->
-<!-- #  -->
-<!-- # nouns_speeches <- readRDS(paste0(path, "nouns_speeches_roh.rds")) -->
-<!-- ``` -->
+---
 
-<!-- --- -->
+Q3. 연설문 내 중복 단어를 제거하고 빈도가 100회 이하인 단어를 추출하세요.
 
-<!-- Q3. 연설문 내 중복 단어를 제거하고 빈도가 100회 이하인 단어를 추출하세요. -->
+```{r eval=F}
+# 연설문 내 중복 단어 제거
+nouns_speeches <- nouns_speeches %>%
+  group_by(id) %>%
+  distinct(word, .keep_all = T) %>%
+  ungroup()
 
-<!-- ```{r} -->
-<!-- # 연설문 내 중복 단어 제거 -->
-<!-- nouns_speeches <- nouns_speeches %>% -->
-<!--   group_by(id) %>% -->
-<!--   distinct(word, .keep_all = T) %>% -->
-<!--   ungroup() -->
-
-<!-- # 단어 빈도 100회 이하 단어 추출 -->
-<!-- nouns_speeches <- nouns_speeches %>% -->
-<!--   add_count(word) %>% -->
-<!--   filter(n <= 100) %>% -->
-<!--   select(-n) -->
-<!-- ``` -->
+# 단어 빈도 100회 이하 단어 추출
+nouns_speeches <- nouns_speeches %>%
+  add_count(word) %>%
+  filter(n <= 100) %>%
+  select(-n)
+```
 
 
-<!-- --- -->
+---
 
-<!-- Q4. 추출한 단어에서 다음의 불용어를 제거하세요. -->
+Q4. 추출한 단어에서 다음의 불용어를 제거하세요.
 
-<!-- ```{r} -->
-<!-- stopword <- c("들이", "하다", "하게", "하면", "해서", "이번", "하네", -->
-<!--               "해요", "이것", "니들", "하기", "하지", "한거", "해주", -->
-<!--               "그것", "어디", "여기", "까지", "이거", "하신", "만큼") -->
+```{r eval=F}
+stopword <- c("들이", "하다", "하게", "하면", "해서", "이번", "하네",
+              "해요", "이것", "니들", "하기", "하지", "한거", "해주",
+              "그것", "어디", "여기", "까지", "이거", "하신", "만큼")
 
-<!-- # 불용어 제거 -->
-<!-- nouns_speeches <- nouns_speeches %>% -->
-<!--   filter(!word %in% stopword) -->
-<!-- ``` -->
-
-
-<!-- --- -->
-
-<!-- Q5. 연설문별 단어 빈도를 구한 다음 DTM을 만드세요. -->
+# 불용어 제거
+nouns_speeches <- nouns_speeches %>%
+  filter(!word %in% stopword)
+```
 
 
-<!-- ```{r } -->
-<!-- # 연설문별 단어 빈도 구하기 -->
-<!-- count_word_doc <- nouns_speeches %>% -->
-<!--   count(id, word, sort = T) -->
+---
 
-<!-- # DTM 만들기 -->
-<!-- dtm_comment <- count_word_doc %>% -->
-<!--   cast_dtm(document = id, term = word, value = n) -->
-<!-- ``` -->
+Q5. 연설문별 단어 빈도를 구한 다음 DTM을 만드세요.
 
 
-<!-- --- -->
+```{r eval=F}
+# 연설문별 단어 빈도 구하기
+count_word_doc <- nouns_speeches %>%
+  count(id, word, sort = T)
 
-<!-- Q6. 토픽 수를 2~20개로 바꿔가며 LDA 모델을 만든 다음 최적 토픽 수를 구하세요. -->
+# DTM 만들기
+dtm_comment <- count_word_doc %>%
+  cast_dtm(document = id, term = word, value = n)
+```
 
+---
 
-<!-- ```{r} -->
-<!-- # 토픽 수 바꿔가며 LDA 모델 만들기 -->
-<!-- library(ldatuning) -->
-<!-- models <- FindTopicsNumber(dtm = dtm_comment, -->
-<!--                            topics = 2:20, -->
-<!--                            return_models = T, -->
-<!--                            control = list(seed = 1234)) -->
-<!-- ``` -->
+Q6. 토픽 수를 2~20개로 바꿔가며 LDA 모델을 만든 다음 최적 토픽 수를 구하세요.
 
+```{r eval=F}
+# 토픽 수 바꿔가며 LDA 모델 만들기
+library(ldatuning)
+models <- FindTopicsNumber(dtm = dtm_comment,
+                           topics = 2:20,
+                           return_models = T,
+                           control = list(seed = 1234))
 
-<!-- ```{r echo=F} -->
-<!-- # library(ldatuning) -->
-<!-- # # saveRDS(models, here("files_etc/models_roh.rds"), compress = F) -->
-<!-- #  -->
-<!-- # # set path -->
-<!-- # source("path.r") -->
-<!-- #  -->
-<!-- # models <- readRDS(paste0(path, "models_roh.rds")) -->
-<!-- ``` -->
+# 최적 토픽 수 구하기
+FindTopicsNumber_plot(models)
+```
 
-<!-- ```{r} -->
-<!-- # 최적 토픽 수 구하기 -->
-<!-- FindTopicsNumber_plot(models) -->
-<!-- ``` -->
+```{r echo=FALSE}
+models <- readRDS(here::here("Quiz/files_etc/lda_model_speeches.rds"))
+```
 
-<!-- --- -->
+---
 
-<!-- Q7. 토픽 수가 9개인 LDA 모델을 추출하세요. -->
-<!-- ```{r} -->
-<!-- lda_model <- models %>% -->
-<!--   filter (topics == 9) %>% -->
-<!--   pull(LDA_model) %>% -->
-<!--  .[[1]] -->
-<!-- ``` -->
+Q7. 토픽 수가 9개인 LDA 모델을 추출하세요.
+```{r}
+lda_model <- models %>%
+  filter (topics == 9) %>%
+  pull(LDA_model) %>%
+ .[[1]]
+```
 
-
-<!-- --- -->
-
-
-<!-- Q8. LDA 모델의 beta를 이용해 각 토픽에 등장할 확률이 높은 상위 10개 단어를 추출한 다음 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;토픽별 주요 단어를 나타낸 막대 그래프를 만드세요. -->
-<!-- ```{r} -->
-<!-- # beta 추출 -->
-<!-- term_topic <- tidy(lda_model, matrix = "beta") -->
-<!-- ``` -->
+---
 
 
-<!-- --- -->
+Q8. LDA 모델의 beta를 이용해 각 토픽에 등장할 확률이 높은 상위 10개 단어를 추출한 다음 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;토픽별 주요 단어를 나타낸 막대 그래프를 만드세요.
+```{r eval=F}
+# beta 추출
+term_topic <- tidy(lda_model, matrix = "beta")
 
-<!-- ```{r} -->
-<!-- # 토픽별 beta 상위 단어 추출 -->
-<!-- top_term_topic <- term_topic %>% -->
-<!--   group_by(topic) %>% -->
-<!--   slice_max(beta, n = 10) -->
-<!-- ``` -->
+# 토픽별 beta 상위 단어 추출
+top_term_topic <- term_topic %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 10)
 
-<!-- --- -->
+top_term_topic
+```
 
+---
 
-<!-- ```{r} -->
-<!-- # 막대 그래프 만들기 -->
-<!-- library(ggplot2) -->
-<!-- ggplot(top_term_topic, -->
-<!--        aes(x = reorder_within(term, beta, topic), -->
-<!--            y = beta, -->
-<!--            fill = factor(topic))) + -->
-<!--   geom_col(show.legend = F) + -->
-<!--   facet_wrap(~ topic, scales = "free", ncol = 3) + -->
-<!--   coord_flip () + -->
-<!--   scale_x_reordered() + -->
-<!--   labs(x = NULL) -->
-<!-- ``` -->
+```{r echo=F}
+# beta 추출
+term_topic <- tidy(lda_model, matrix = "beta")
 
-<!-- ```{r echo=F} -->
-<!-- # library(ggplot2) -->
-<!-- # library(showtext) -->
-<!-- # font_add_google(name = "Nanum Gothic", family = "nanumgothic") -->
-<!-- # showtext_opts(dpi = 100) -->
-<!-- #  -->
-<!-- # p <- ggplot(top_term_topic, -->
-<!-- #        aes(x = reorder_within(term, beta, topic), -->
-<!-- #            y = beta, -->
-<!-- #            fill = factor(topic))) + -->
-<!-- #   geom_col(show.legend = F) + -->
-<!-- #   facet_wrap(~ topic, scales = "free", ncol = 3) + -->
-<!-- #   coord_flip () + -->
-<!-- #   scale_x_reordered() + -->
-<!-- #   labs(x = NULL) + -->
-<!-- #   theme(text = element_text(family = "nanumgothic")) -->
-<!-- #  -->
-<!-- # p %>%  -->
-<!-- #   ggsave( -->
-<!-- #     path = "quiz/img", -->
-<!-- #     file = "Q6_8.png", -->
-<!-- #      -->
-<!-- #     width = 8, -->
-<!-- #     height = 8, -->
-<!-- #     dpi = 100, type = "cairo-png", units = "in") -->
-<!-- ``` -->
+# 토픽별 beta 상위 단어 추출
+top_term_topic <- term_topic %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 10)
 
-<!-- <!-- ![](img/Q6_8.png) --> -->
+top_term_topic
+```
 
-<!-- --- -->
+---
 
-<!-- Q9. LDA 모델의 gamma를 이용해 연설문 원문을 확률이 가장 높은 토픽으로 분류하세요. -->
+```{r p_quiz_top_term_topic, fig.show='hide'}
+# 막대 그래프 만들기
+library(ggplot2)
+ggplot(top_term_topic,
+       aes(x = reorder_within(term, beta, topic),
+           y = beta,
+           fill = factor(topic))) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ topic, scales = "free", ncol = 3) +
+  coord_flip () +
+  scale_x_reordered() +
+  labs(x = NULL)
+```
 
-<!-- ```{r} -->
-<!-- # gamma 추출 -->
-<!-- doc_topic <- tidy(lda_model, matrix = "gamma") -->
+---
+<br-back-20>
 
-<!-- # 문서별로 확률이 가장 높은 토픽 추출 -->
-<!-- doc_class <- doc_topic %>% -->
-<!--   group_by(document) %>% -->
-<!--   slice_max(gamma, n = 1) -->
+```{r ref.label="p_quiz_top_term_topic", echo=F, fig.width=8, fig.height=8, out.width='65%'}
 
-<!-- # 변수 타입 통일 -->
-<!-- doc_class$document <- as.integer(doc_class$document) -->
+```
 
-<!-- # 연설문 원문에 확률이 가장 높은 토픽 번호 부여 -->
-<!-- speeches_topic <- speeches_raw %>% -->
-<!--   left_join(doc_class, by = c("id" = "document")) -->
-<!-- ``` -->
+---
 
-<!-- --- -->
+Q9. LDA 모델의 gamma를 이용해 연설문 원문을 확률이 가장 높은 토픽으로 분류하세요.
 
-<!-- Q10. 토픽별 문서 수를 출력하세요. -->
-<!-- ```{r} -->
-<!-- speeches_topic %>% -->
-<!--   count(topic) -->
-<!-- ``` -->
+```{r}
+# gamma 추출
+doc_topic <- tidy(lda_model, matrix = "gamma")
+
+# 문서별로 확률이 가장 높은 토픽 추출
+doc_class <- doc_topic %>%
+  group_by(document) %>%
+  slice_max(gamma, n = 1)
+
+# 변수 타입 통일
+doc_class$document <- as.integer(doc_class$document)
+
+# 연설문 원문에 확률이 가장 높은 토픽 번호 부여
+speeches_topic <- speeches_raw %>%
+  left_join(doc_class, by = c("id" = "document"))
+```
+
+---
+
+Q10. 토픽별 문서 수를 출력하세요.
+```{r}
+speeches_topic %>%
+  count(topic)
+```
 
 
-<!-- --- -->
+---
 
-<!-- Q11. 문서가 가장 많은 토픽의 연설문을 gamma가 높은 순으로 출력하고 내용이 비슷한지 살펴보세요. -->
+Q11. 문서가 가장 많은 토픽의 연설문을 gamma가 높은 순으로 출력하고 내용이 비슷한지 살펴보세요.
 
-<!-- ```{r} -->
-<!-- speeches_topic %>% -->
-<!--   filter(topic == 9) %>% -->
-<!--   arrange(-gamma) %>% -->
-<!--   select(content) -->
-<!-- ``` -->
+```{r R.options=list(tibble.width = 50)}
+speeches_topic %>%
+  filter(topic == 9) %>%
+  arrange(-gamma) %>%
+  select(content)
+```
 

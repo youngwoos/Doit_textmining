@@ -7,7 +7,7 @@
 [03-comparing.html](https://youngwoos.github.io/Doit_textmining/03-comparing.html)| 03 비교 분석
 [04-sentimentAnalysis.html](https://youngwoos.github.io/Doit_textmining/04-sentimentAnalysis.html)| 04 감정 분석
 [05-co-occurrenceAnalysis](https://youngwoos.github.io/Doit_textmining/05/05-co-occurrenceAnalysis.html)| 05 의미망 분석
-[06]()| 06 토픽 모델링
+[06-topicModeling.html](https://youngwoos.github.io/Doit_textmining/06/06-topicModeling.html)| 06 토픽 모델링
 ---
 
 - 슬라이드는 크롬에 최적화되어있습니다. 
@@ -15,4 +15,3 @@
 - [Ctrl]+[P]로 인쇄하면 PDF로 저장할 수 있습니다.
 - [o]를 누르면 전체 슬라이드를 한눈에 볼 수 있습니다.
 - 자유롭게 수정하고 배포하셔도 됩니다.
-
