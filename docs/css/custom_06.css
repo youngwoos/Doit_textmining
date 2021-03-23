@@ -484,6 +484,11 @@ br-back-50 {
   width: 60%;
 }
 
+.pull-left-50 {
+  float: left;
+  width: 55%;
+}
+
 .pull-right-40 {
   float: right;
   width: 39%;
