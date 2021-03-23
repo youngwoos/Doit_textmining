@@ -1,0 +1,103 @@
+---
+author: "Yihui Xie"
+institute: "RStudio, PBC"
+date: "2016/12/12 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r echo = FALSE, message=F}
+library(dplyr)
+
+# rmarkdown crayon setup
+options(crayon.enabled = TRUE)
+knitr::knit_hooks$set(message = function(x, options){
+  paste0(
+    "<pre class=\"r-output\"><code>",
+    fansi::sgr_to_html(x = x, warn = FALSE),
+    "</code></pre>"
+  )
+})
+
+# crayon colour setup
+num_colors <- function(forget=TRUE) 256
+library(crayon)
+assignInNamespace("num_colors", num_colors, pos="package:crayon") 
+
+```
+
+```{r echo=F, message=F}
+# 스타일 함수 만들기
+library(crayon)
+font <- combine_styles(make_style("ivory"),
+                       make_style("#ff00af", bg = TRUE),
+                       make_style("bold"))
+library(stringr)
+```
+
+
+
+```{r}
+df <- data.frame(reply = c("가나다", "라나다","가나다", "라나다","가나다", "라나다"))
+# df
+
+keyword <- "다"
+
+df
+
+```
+
+
+```{r eval=F, echo=F}
+df %>%
+  slice(1:3) %>%
+  mutate(reply = paste0(reply, "<br>##<br>## ")) %>%
+  mutate(reply = paste0(str_replace_all(reply,
+                                        keyword,
+                                        font(keyword)))) %>%  # 스타일 적용
+  pull(reply) %>%                                             # reply 추출
+  # cat(sep = "\n\n") %>%
+  message()
+```
+
+
+```{r echo=F}
+find_word <- function(df, x, keyword, n = 6) {
+
+  # 스타일 함수 설정
+  font <- combine_styles(make_style("ivory"),
+                         make_style("deeppink", bg = TRUE),
+                         make_style("bold"))
+
+  # 키워드 추출해 스타일 적용
+  df %>%
+    filter(str_detect({{x}}, keyword)) %>%                  # 키워드 추출
+    slice(1:n) %>%                                             # n행 추출
+    
+    mutate(x = paste0("[", row_number(), "] ", {{x}}),      # 행번호 삽입
+           x = paste0({{x}}, "<br>##<br>## "),              # 줄바꿈 삽입
+           x = paste0(str_replace_all(x,
+                                      keyword,
+                                      font(keyword)))) %>%  # 스타일 적용
+    pull(x) %>%                                             # 텍스트 추출
+    message()
+}
+```
+
+
+---
+
+
+```{r}
+find_word(df, x = reply, keyword = "다", n = 3)
+```
+
+
