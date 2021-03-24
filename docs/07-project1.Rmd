@@ -644,18 +644,19 @@ find_word <- function(df, x, keyword, n = 6) {
                          make_style("deeppink", bg = TRUE),
                          make_style("bold"))
 
-  # 키워드 추출해 스타일 적용
+  # 키워드 추출
   df %>%
-    filter(str_detect({{x}}, keyword)) %>%                  # 키워드 추출
-    slice(1:n) %>%                                             # n행 추출
+    filter(str_detect({{x}}, keyword)) %>%              # 키워드 추출
+    slice(1:n) %>%                                      # n행 추출
     
-    mutate(x = paste0("[", row_number(), "] ", {{x}}),      # 행번호 삽입
-           x = paste0({{x}}, "<br>##<br>## "),              # 줄바꿈 삽입
-           x = paste0(str_replace_all(x,
-                                      keyword,
-                                      font(keyword)))) %>%  # 스타일 적용
-    pull(x) %>%                                             # 텍스트 추출
-    message()                                            # rmarkdown crayon output
+    mutate(x = paste0("[", row_number(), "] ", {{x}}),  # 행번호 삽입
+           x = paste0(x, "<br>##<br>## "))  %>%         # 줄바꿈 삽입
+    
+    pull(x) %>%                                           # 텍스트 추출
+    paste(., collapse = "") %>%                           # 합치기
+    str_remove_all(., "<br>##<br>## $") %>%               # 마지막 ## 제거
+    str_replace_all(., keyword, font(keyword)) %>%        # 스타일 적용
+    message()                                           # rmarkdown crayon output
 }
 ```
 
@@ -672,30 +673,20 @@ tada %>% find_word(x = reply_raw, keyword = "조합", n = 2)
 
 ---
 
-##### 파라미터명 입력하지 않고 활용
+- `find_word()`: 파라미터명 입력하지 않고 활용
 
 ```{r}
 tada %>% find_word(reply_raw, "조합", 2)
 ```
 
-`r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` `find_word()`를 사용하려면 `dplyr`, `stringr`, `crayon` 패키지 로드 필요.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`find_word()`의 출력 결과에는 `dplyr` 함수 추가 적용 불가.
+<br10>
+
+`r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` `dplyr`, `stringr`, `crayon` 패키지 로드 필요.`find_word()`의 출력 결과에는 `dplyr` 함수 추가 적용 불가.
 
 ---
 
 
-<!-- > [참고] `find_word()`를 사용하려면 `dplyr`, `stringr`, `crayon` 패키지를 로드해야 합니다. -->
-
-<!-- <br> -->
-
-<!-- > [참고] `find_word()`의 출력 결과에는 다른 함수를 추가로 적용할 수 없습니다. -->
-
-
-<!-- <br> -->
-
-<!-- > [편집] 폰트 적용 수정 - "조합", 결과 생략 표시 -->
-
-
-<!-- #### 3. 공감, 비공감 댓글 원문 추출하기 -->
+##### 3.2 공감, 비공감 댓글 원문 추출하기
 
 
 <!-- #### (1) `tada`와 `word_sympathy` 결합하고 중복 댓글 제거하기 -->

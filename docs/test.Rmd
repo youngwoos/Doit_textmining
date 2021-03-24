@@ -77,27 +77,44 @@ find_word <- function(df, x, keyword, n = 6) {
                          make_style("deeppink", bg = TRUE),
                          make_style("bold"))
 
-  # 키워드 추출해 스타일 적용
+  # 키워드 추출
   df %>%
-    filter(str_detect({{x}}, keyword)) %>%                  # 키워드 추출
-    slice(1:n) %>%                                             # n행 추출
+    filter(str_detect({{x}}, keyword)) %>%              # 키워드 추출
+    slice(1:n) %>%                                      # n행 추출
     
-    mutate(x = paste0("[", row_number(), "] ", {{x}}),      # 행번호 삽입
-           x = paste0({{x}}, "<br>##<br>## "),              # 줄바꿈 삽입
-           x = paste0(str_replace_all(x,
-                                      keyword,
-                                      font(keyword)))) %>%  # 스타일 적용
-    pull(x) %>%                                             # 텍스트 추출
-    message()
+    mutate(x = paste0("[", row_number(), "] ", {{x}}),   # 행번호 삽입
+           x = paste0(x, "<br>##<br>## "))  %>%         # 줄바꿈 삽입
+
+  pull(x) %>%                                           # 텍스트 추출
+  
+  paste(., collapse = "") %>%                           # 합치기
+  str_remove_all(., "<br>##<br>## $") %>%               # 마지막 ## 제거
+  str_replace_all(., keyword, font(keyword)) %>%        # 스타일 적용
+    message()                                           # rmarkdown crayon output
 }
 ```
 
 
----
-
-
-```{r}
+```{r echo=F}
 find_word(df, x = reply, keyword = "다", n = 3)
+
 ```
 
+
+
+<!-- ```{r} -->
+<!-- # 마지막 ## 지우기: <br>##<br>## -->
+<!-- x <- "가나다<br>##<br>## 라나다<br>##<br>## 가나다<br>##<br>##" -->
+<!-- x -->
+
+<!-- str_remove_all(x, "<br>##<br>##$") -->
+
+<!-- str_remove_all(k, "<br>##<br>##$") -->
+<!-- k[3] -->
+
+<!-- paste(k, collapse = "") %>% str_remove_all("<br>##<br>## $")  -->
+
+<!-- k -->
+
+<!-- ``` -->
 

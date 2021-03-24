@@ -46,17 +46,26 @@ df
 
 
 
----
-
-
-
-```r
-find_word(df, x = reply, keyword = "다", n = 3)
-```
-
-&lt;pre class="r-output"&gt;&lt;code&gt;## 가나&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;## 라나&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;## 가나&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;##
+&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 가나&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;## [2] 라나&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;## [3] 가나&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
+
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 마지막 ## 지우기: &lt;br&gt;##&lt;br&gt;## --&gt;
+&lt;!-- x &lt;- "가나다&lt;br&gt;##&lt;br&gt;## 라나다&lt;br&gt;##&lt;br&gt;## 가나다&lt;br&gt;##&lt;br&gt;##" --&gt;
+&lt;!-- x --&gt;
+
+&lt;!-- str_remove_all(x, "&lt;br&gt;##&lt;br&gt;##$") --&gt;
+
+&lt;!-- str_remove_all(k, "&lt;br&gt;##&lt;br&gt;##$") --&gt;
+&lt;!-- k[3] --&gt;
+
+&lt;!-- paste(k, collapse = "") %&gt;% str_remove_all("&lt;br&gt;##&lt;br&gt;## $")  --&gt;
+
+&lt;!-- k --&gt;
+
+&lt;!-- ``` --&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
