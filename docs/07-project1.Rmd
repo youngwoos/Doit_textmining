@@ -66,7 +66,7 @@ knitr::knit_hooks$set(source = function(x, options) {
 # rmarkdown crayon setup ####
 # options(crayon.enabled = T) # tibble과 출동. 개별 청크에서 설정
 # message = T
-# moon_reader시 충돌 -> knit
+# xaringan::moon_reader 충돌 -> knit
 # ubuntu에서 불가. windows에서 knit
 knitr::knit_hooks$set(message = function(x, options){
   paste0(
@@ -120,7 +120,7 @@ include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/ma
 
 class: title0
 
-07 텍스트 마이닝 프로젝트:
+07 텍스트 마이닝 프로젝트:  
 타다 금지법 기사 댓글 분석
 
 ---
@@ -214,8 +214,6 @@ raw_tada <- read_csv("news_comment_tada.csv") %>%
 glimpse(raw_tada)
 ```
 
----
-
 ```{r echo=F, R.options=list(tibble.width = 60)}
 library(readr)
 library(dplyr)
@@ -247,9 +245,9 @@ tada <- raw_tada %>%
 
 ---
 
-### 7.1.2 주요 단어 분석하기
+#### 주요 단어 분석하기
 
-#### 1. 주요 단어 추출하기
+##### 1. 주요 단어 추출하기
 
 - 명사를 추출해 빈도를 구한 다음 상위 30개 단어 출력
 
@@ -284,7 +282,7 @@ frequency %>%
 
 ---
 
-#### 2. 불용어 제거하기
+##### 2. 불용어 제거하기
 
 - 불용어 제거 후 빈도 높은 상위 20개 단어 추출
 
@@ -308,7 +306,7 @@ top20_noun
 
 ---
 
-#### 3. 막대 그래프 만들기
+##### 3. 막대 그래프 만들기
 
 ```{r p_top20_noun, eval=F}
 library(scales)
@@ -366,10 +364,10 @@ class: title1
 ---
 
 
-#### 분석 절차
- - 1.공감 여부별 단어 빈도를 구한 다음, 데이터를 wide form으로 변형해 로그 오즈비를 구합니다.
- - 2.공감과 비공감 카테고리에서 상대적으로 중요한 단어를 추출해 막대 그래프를 만듭니다.
- - 3.주요 단어를 언급한 댓글 원문을 살펴봅니다.
+##### 분석 절차
+- 1.공감 여부별 단어 빈도를 구한 다음, 데이터를 wide form으로 변형해 로그 오즈비를 구합니다.
+- 2.공감과 비공감 카테고리에서 상대적으로 중요한 단어를 추출해 막대 그래프를 만듭니다.
+- 3.주요 단어를 언급한 댓글 원문을 살펴봅니다.
 
 ---
 
@@ -522,7 +520,7 @@ ggplot(top10_odds, aes(x = reorder(word, log_odds_ratio),
 
 ---
 
-```{r ref.label="p_top10_odds", fig.width=7, fig.height=6, out.width="80%", echo=F}
+```{r ref.label="p_top10_odds", fig.width=7, fig.height=6, out.width="70%", echo=F}
 
 ```
 
@@ -592,7 +590,7 @@ tada %>%
   mutate(reply = paste0(str_replace_all(reply,
                                         keyword,
                                         font(keyword)))) %>%  # 스타일 적용
-  pull(reply) %>%                                             # reply 추출
+  pull(reply) %>%                                              # reply 추출
   cat(sep = "\n\n")                                           # 줄바꿈 출력
 ```
 
@@ -1569,443 +1567,449 @@ line_tada %>%
   find_word(x = reply_raw, keyword = "사서", n = 3)
 ```
 
-`r fontawesome("lightbulb")`"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"` 언급 댓글  추출
+`r fontawesome("lightbulb")` `"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"` 언급 댓글  추출
+
+---
+name: 07-5
+class: title1
+
+07-5 토픽 모델링
+---
+
+##### 분석 절차
+- 1.댓글 이용해 LDA 모델을 만듭니다.
+- 2.토픽별 주요 단어로 막대 그래프를 만듭니다.
+- 3.댓글을 토픽별로 분류하고 토픽별 댓글 수와 주요 단어를 나타낸 막대 그래프를 만듭니다.
+- 4.토픽별 주요 문서의 내용을 살펴보고 토픽 이름을 짓습니다.
+
+---
+
+#### 토픽 모델링을 위한 전처리
+
+- 중복 댓글과 짧은 문서 제거 후 명사 추출
+- 댓글 내 중복 단어와 빈도 높은 단어 제거
+
+```{r}
+# 명사 추출
+noun_tada <- tada %>%
+  distinct(reply, .keep_all = T) %>%                   # 중복 댓글 제거
+  filter(str_count(reply, boundary("word")) >= 3) %>%  # 짧은 댓글 제거
+  unnest_tokens(input = reply,                         # 명사 추출
+                output = word,
+                token = extractNoun,
+                drop = F) %>%
+  filter(str_count(word) > 1)
+```
+
+---
+
+```{r unique_noun_tada, results='hide'}
+# 중복, 고빈도 단어 제거
+unique_noun_tada <- noun_tada %>%
+  group_by(id) %>%                                     # 중복 단어 제거
+  distinct(word, .keep_all = T) %>%
+  ungroup() %>%
+  add_count(word) %>%                                  # 고빈도 단어 제거
+  filter(n <= 200) %>%
+  select(id, word)
+
+unique_noun_tada
+```
+
+
+---
+```{r ref.label="unique_noun_tada", echo=F}
+```
+---
+
+
+#### 모델 만들기
+
+
+##### 1. 문서별 단어 빈도를 이용해 DTM 만들기
+
+```{r}
+# 문서별 단어 빈도 구하기
+count_word <- unique_noun_tada %>%
+  count(id, word, sort = T)
+
+# DTM 만들기
+dtm_tada <- count_word %>%
+  cast_dtm(document = id, term = word, value = n)
+
+dtm_tada
+```
+
+---
+
+##### 2. 하이퍼파라미터 튜닝으로 토픽 수 정하기
+
+- 토픽 수를 2~20까지 바꾸어 가며 성능 지표 비교
+
+
+`r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` 19개의 LDA 모델을 만들므로 컴퓨터 성능에 따라 실행하는 데 시간이 오래 걸릴 수 있음
+
+```{r models_tada, fig.height=3, fig.width=6, out.width="50%"}
+library(ldatuning)
+models_tada <- FindTopicsNumber(dtm = dtm_tada,
+                                topics = 2:20,
+                                return_models = T,
+                                control = list(seed = 1234))
+# 성능 지표 그래프
+FindTopicsNumber_plot(models_tada)
+```
+
+
+---
+
+```{r ref.label="models_tada", echo=F}
+```
+
+---
+
+```{r}
+# 토픽 수가 9개인 모델 추출
+lda_model <- models_tada %>%  
+  filter(topics == 9) %>%
+  pull(LDA_model) %>%         # 모델 추출
+  .[[1]]                      # list 추출
+
+lda_model
+```
+
+---
+
+#### 토픽별 주요 단어 살펴보기
+
+##### 1. 주요 단어 추출하기
+
+- 토픽별 단어 확률을 나타낸 `beta` 추출
+
+```{r term_topic, results='hide'}
+# 토픽별 단어 확률 beta 추출
+term_topic <- tidy(lda_model, matrix = "beta")
+
+# 토픽별 beta 상위 단어 추출
+term_topic %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 15)
+```
+---
+```{r ref.label="term_topic", echo=F}
+```
+---
+
+
+##### 2. 불용어 제외하고 상위 10개 단어 추출하기
+
+```{r top_term_topic, results='hide'}
+# 불용어 목록 생성
+stopword_lda <- c("하게", "하다", "하려", "해라", "그것", "하면", "하네",
+                  "하기", "하나", "해서", "하면", "하지", "한거", "니들")
+
+# 불용어 제외 후 상위 10개 단어 추출
+top_term_topic <- term_topic %>%
+  filter(!term %in% stopword_lda) %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 10)
+
+top_term_topic
+```
+
+---
+```{r ref.label="top_term_topic", echo=F}
+```
 
 ---
 
 
-<!-- ## 7.5 토픽 모델링 -->
+##### 3. 막대 그래프 만들기
 
-<!-- > [편집] '분석 절차' 요약 표 삽입 -->
+```{r p_top_term_topic, fig.show='hide'}
+ggplot(top_term_topic, aes(x = reorder_within(term, beta, topic),
+                           y = beta,
+                           fill = factor(topic))) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ topic, scales = "free", ncol = 3) +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
 
-<!-- 토픽 모델을 이용해 댓글이 어떤 주제들로 구성되는지 살펴보겠습니다. -->
 
+---
+```{r ref.label="p_top_term_topic", echo=F, fig.height=8, fig.width=8, out.width="65%"}
+```
+---
 
-<!-- ### 7.5.1 토픽 모델링을 위한 전처리 -->
+#### 토픽별로 댓글 분류하기
 
-<!-- 먼저 토픽 모델을 만드는데 적합하게 `tada`를 전처리하겠습니다. 중복 댓글과 짧은 문서를 제거한 후 명사를 추출하겠습니다. 그런 다음 댓글 내 중복 단어와 빈도가 높은 단어를 제거하겠습니다. -->
+- `lda_model`에서 문서별 토픽 확률을 나타낸 `gamma` 추출하기
+- 문서별로 `gamma`가 가장 높은 토픽을 남기기
+- 댓글 원문에 결합해 토픽 변호 부여하기
+ 
+```{r doc_class, results='hide'}
+# 문서별 토픽 확률 gamma 추출하기
+doc_topic <- tidy(lda_model, matrix = "gamma")
 
-<!-- ```{r eval=F} -->
-<!-- # 명사 추출 -->
-<!-- noun_tada <- tada %>% -->
-<!--   distinct(reply, .keep_all = T) %>%                   # 중복 댓글 제거 -->
-<!--   filter(str_count(reply, boundary("word")) >= 3) %>%  # 짧은 댓글 제거 -->
-<!--   unnest_tokens(input = reply,                         # 명사 추출 -->
-<!--                 output = word, -->
-<!--                 token = extractNoun, -->
-<!--                 drop = F) %>% -->
-<!--   filter(str_count(word) > 1) -->
+# 문서별로 확률이 가장 높은 토픽 추출
+doc_class <- doc_topic %>%
+  group_by(document) %>%
+  slice_max(gamma, n = 1)
 
-<!-- # 중복, 고빈도 단어 제거 -->
-<!-- unique_noun_tada <- noun_tada %>% -->
-<!--   group_by(id) %>%                                     # 중복 단어 제거 -->
-<!--   distinct(word, .keep_all = T) %>% -->
-<!--   ungroup() %>% -->
-<!--   add_count(word) %>%                                  # 고빈도 단어 제거 -->
-<!--   filter(n <= 200) %>% -->
-<!--   select(id, word) -->
-<!-- ``` -->
+doc_class
+```
 
-<!-- ```{r echo=F} -->
-<!-- # saveRDS(unique_noun_tada, "unique_noun_tada.rds") -->
-<!-- unique_noun_tada <- readRDS(here::here("preprocessing/news_coments/tada/unique_noun_tada.rds")) -->
-<!-- ``` -->
+---
+```{r ref.label="doc_class", echo=F}
+```
 
+---
 
-<!-- ```{r eval=F} -->
-<!-- unique_noun_tada -->
-<!-- ``` -->
+```{r}
+# integer로 변환
+doc_class$document <- as.integer(doc_class$document)
 
+# 원문에 토픽 번호 부여
+tada_topic <- tada %>%
+  left_join(doc_class, by = c("id" = "document"))
+```
 
-<!-- ```{r echo=F} -->
-<!-- unique_noun_tada %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
 
+---
 
-<!-- ### 7.5.2 LDA 모델 만들기 -->
+#### 토픽별 댓글 수와 단어 시각화하기
 
-<!-- `unique_noun_tada`를 이용해 LDA 모델을 만들겠습니다. -->
 
+##### 1. 토픽별 주요 단어 목록 만들기
 
-<!-- #### 1. 문서별 단어 빈도를 이용해 DTM 만들기 -->
+```{r}
+top_terms <- term_topic %>%
+  filter(!term %in% stopword_lda) %>%
+  group_by(topic) %>%
+  slice_max(beta, n = 6, with_ties = F) %>%
+  summarise(term = paste(term, collapse = ", "))
 
-<!-- 먼저 문서별 단어 빈도를 구한 다음 DTM 을 만들겠습니다. -->
+top_terms
+```
 
-<!-- ```{r} -->
-<!-- # 문서별 단어 빈도 구하기 -->
-<!-- count_word <- unique_noun_tada %>% -->
-<!--   count(id, word, sort = T) -->
+---
 
-<!-- # DTM 만들기 -->
-<!-- dtm_tada <- count_word %>% -->
-<!--   cast_dtm(document = id, term = word, value = n) -->
+##### 2. 토픽별 문서 빈도 구하기
 
-<!-- dtm_tada -->
-<!-- ``` -->
+```{r}
+count_topic <- tada_topic %>%
+  count(topic) %>%
+  na.omit()
 
-<!-- #### 2. 하이퍼파라미터 튜닝으로 토픽 수 정하기 -->
+count_topic
+```
 
-<!-- 토픽 수를 2에서 20까지 바꿔가며 모델을 만든 다음 성능 지표를 보고 최종 모델을 선정하겠습니다. -->
+---
 
-<!-- > [참고] 다음 코드는 19개의 LDA 모델을 만듭니다. 컴퓨터 성능에 따라 실행하는 데 오래 걸릴 수 있습니다. -->
+##### 3. 문서 빈도에 주요 단어 결합하기
 
-<!-- ```{r eval=F} -->
-<!-- library(ldatuning) -->
-<!-- models_tada <- FindTopicsNumber(dtm = dtm_tada, -->
-<!--                                 topics = 2:20, -->
-<!--                                 return_models = T, -->
-<!--                                 control = list(seed = 1234)) -->
-<!-- ``` -->
+```{r}
+count_topic_word <- count_topic %>%
+  left_join(top_terms, by = "topic") %>%
+  mutate(topic_name = paste("Topic", topic))
 
-<!-- ```{r fig.height=3, fig.width=6, echo=F} -->
-<!-- library(ldatuning) -->
-<!-- # saveRDS(models_tada, "models_tada.rds") -->
-<!-- models_tada <- readRDS(here::here("preprocessing/news_coments/tada/models_tada.rds")) -->
-<!-- ``` -->
+count_topic_word
+```
 
-<!-- ```{r fig.height=3, fig.width=6} -->
-<!-- # 성능 지표 그래프 -->
-<!-- FindTopicsNumber_plot(models_tada) -->
-<!-- ``` -->
+---
 
-<!-- 그래프를 보면 토픽 수가 9개일 때까지는 성능 지표가 점진적으로 증가하다가 그 이후로 등락을 반복합니다. 최종 토픽 수를 9개로 정하고 `models_tada`에서 토픽 수가 9개인 모델을 추출해 분석에 활용하겠습니다. -->
+##### 4. 막대 그래프 만들기
 
-<!-- ```{r} -->
-<!-- # 토픽 수가 9개인 모델 추출 -->
-<!-- lda_model <- models_tada %>% -->
-<!--   filter(topics == 9) %>% -->
-<!--   pull(LDA_model) %>%              # 모델 추출 -->
-<!--   .[[1]]                           # list 추출 -->
 
-<!-- lda_model -->
-<!-- ``` -->
+```{r eval=F}
+library(scales)
+ggplot(count_topic_word,
+       aes(x = reorder(topic_name, n),
+           y = n,
+           fill = topic_name)) +
+  geom_col(show.legend = F) +
+  coord_flip() +
+
+  geom_text(aes(label = comma(n, accuracy = 1)),  # 문서 빈도 표시
+            hjust = -0.2) +
+
+  geom_text(aes(label = term),                    # 주요 단어 표시
+            hjust = 1.03,
+            col = "white",
+            fontface = "bold",
+            family = "nanumgothic") +
+
+  scale_y_continuous(expand = c(0, 0),            # y축-막대 간격 줄이기
+                     limits = c(0, 1100)) +       # y축 범위
+```
+
+---
+
+##### 4. 막대 그래프 만들기
+
+```{r eval=F}
+labs(title = "타다 금지법 기사 댓글 토픽",
+       subtitle = "토픽별 주요 단어 및 댓글 빈도",
+       x = NULL, y = NULL) +
+
+  theme_minimal() +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12))
+```
 
-<!-- ### 7.5.3 토픽별 주요 단어 살펴보기 -->
+`r fontawesome("lightbulb")` `geom_text()`에는 `theme()`으로 설정한 폰트가 적용되지 않기 때문에 별도로 폰트 지정
+
+```{r echo = F, p_count_topic_word, fig.show='hide'}
+library(scales)
+ggplot(count_topic_word,
+       aes(x = reorder(topic_name, n),
+           y = n,
+           fill = topic_name)) +
+  geom_col(show.legend = F) +
+  coord_flip() +
+
+  geom_text(aes(label = comma(n, accuracy = 1)),  # 문서 빈도 표시
+            hjust = -0.2) +
+
+  geom_text(aes(label = term),                    # 주요 단어 표시
+            hjust = 1.03,
+            col = "white",
+            fontface = "bold",
+            family = "nanumgothic") +
+
+  scale_y_continuous(expand = c(0, 0),            # y축-막대 간격 줄이기
+                     limits = c(0, 1100)) +       # y축 범위
+
+  labs(title = "타다 금지법 기사 댓글 토픽",
+       subtitle = "토픽별 주요 단어 및 댓글 빈도",
+       x = NULL, y = NULL) +
 
-<!-- 각 토픽에 등장할 확률이 높은 주요 단어를 살펴보겠습니다. -->
-
-<!-- #### 1. 주요 단어 추출하기 -->
-
-<!-- 먼저 `lda_model`에서 토픽별 단어 확률을 나타낸 `beta`를 추출하겠습니다. 그런 다음 `beta`가 높은 상위 15개 단어를 추출해 내용을 살펴보겠습니다. -->
-
-<!-- ```{r } -->
-<!-- # 토픽별 단어 확률 beta 추출 -->
-<!-- term_topic <- tidy(lda_model, matrix = "beta") -->
-<!-- ``` -->
-
-<!-- ```{r eval=F} -->
-<!-- # 토픽별 beta 상위 단어 추출 -->
-<!-- term_topic %>% -->
-<!--   group_by(topic) %>% -->
-<!--   slice_max(beta, n = 15) %>% -->
-<!--   print(n = Inf) -->
-<!-- ``` -->
-
-<!-- ```{r echo=F} -->
-<!-- # 토픽별 beta 상위 단어 추출 -->
-<!-- term_topic %>% -->
-<!--   group_by(topic) %>% -->
-<!--   slice_max(beta, n = 15) %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
-
-<!-- #### 2. 불용어 제외하고 상위 10개 단어 추출하기 -->
-
-<!-- 출력 결과를 보면 `"하게"`, `"하다"`와 같이 의미를 알 수 없는 단어가 포함되어 있습니다. 이런 단어를 불용어 목록으로 만들어 제외하고 `bata`가 높은 상위 10개 단어를 추출하겠습니다. -->
-
-<!-- ```{r} -->
-<!-- # 불용어 목록 생성 -->
-<!-- stopword_lda <- c("하게", "하다", "하려", "해라", "그것", "하면", "하네", -->
-<!--                   "하기", "하나", "해서", "하면", "하지", "한거", "니들") -->
-
-<!-- # 불용어 제외 후 상위 10개 단어 추출 -->
-<!-- top_term_topic <- term_topic %>% -->
-<!--   filter(!term %in% stopword_lda) %>% -->
-<!--   group_by(topic) %>% -->
-<!--   slice_max(beta, n = 10) -->
-<!-- ``` -->
-
-<!-- ```{r eval=F} -->
-<!-- top_term_topic -->
-<!-- ``` -->
-
-<!-- ```{r echo=F} -->
-<!-- top_term_topic %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
-
-
-<!-- #### 3. 막대 그래프 만들기 -->
-
-<!-- `top_term_topic`으로 막대 그래프를 만들겠습니다. 출력된 그래프에서 각 토픽의 단어 구성을 보면 토픽이 서로 다른 주제로 잘 분류된 것을 알 수 있습니다. -->
-
-<!-- ```{r fig.height=8, fig.width=8} -->
-<!-- ggplot(top_term_topic, aes(x = reorder_within(term, beta, topic), -->
-<!--                            y = beta, -->
-<!--                            fill = factor(topic))) + -->
-<!--   geom_col(show.legend = F) + -->
-<!--   facet_wrap(~ topic, scales = "free", ncol = 3) + -->
-<!--   coord_flip() + -->
-<!--   scale_x_reordered() + -->
-<!--   labs(x = NULL) + -->
-<!--   theme(text = element_text(family = "nanumgothic")) -->
-<!-- ``` -->
-
-
-<!-- ### 7.5.4 토픽별로 문서 분류하기 -->
-
-<!-- 댓글을 확률이 높은 토픽으로 분류한 다음 토픽별로 내용을 살펴보겠습니다. 먼저 `lda_model`에서 문서별 토픽 확률을 나타낸 `gamma`를 추출한 다음, 문서별로 `gamma`가 가장 높은 토픽을 남기겠습니다. 그런 다음 댓글 원문에 결합해 토픽 변호를 부여하겠습니다. -->
-
-<!-- ```{r} -->
-<!-- # 문서별 토픽 확률 gamma 추출하기 -->
-<!-- doc_topic <- tidy(lda_model, matrix = "gamma") -->
-
-<!-- # 문서별로 확률이 가장 높은 토픽 추출 -->
-<!-- doc_class <- doc_topic %>% -->
-<!--   group_by(document) %>% -->
-<!--   slice_max(gamma, n = 1) -->
-<!-- ``` -->
-
-
-<!-- ```{r eval=F} -->
-<!-- doc_class -->
-<!-- ``` -->
-
-<!-- ```{r echo=F} -->
-<!-- doc_class %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
-
-
-<!-- ```{r} -->
-<!-- # integer로 변환 -->
-<!-- doc_class$document <- as.integer(doc_class$document) -->
-
-<!-- # 원문에 토픽 번호 부여 -->
-<!-- tada_topic <- tada %>% -->
-<!--   left_join(doc_class, by = c("id" = "document")) -->
-<!-- ``` -->
-
-
-<!-- ### 7.5.5 토픽별 문서 수와 단어 시각화하기 -->
-
-<!-- 토픽별 문서 수와 주요 단어를 이용해 막대 그래프를 만들겠습니다. -->
-
-<!-- #### 1. 토픽별 주요 단어 목록 만들기 -->
-
-<!-- 먼저 토픽별 단어 확률 `beta`를 담고 있는 `term_topic`에서 불용어를 제거하고, 토픽별로 `beta`가 가장 높은 단어를 6개씩 추출한 다음 한 행으로 결합하겠습니다. -->
-
-<!-- ```{r} -->
-<!-- top_terms <- term_topic %>% -->
-<!--   filter(!term %in% stopword_lda) %>% -->
-<!--   group_by(topic) %>% -->
-<!--   slice_max(beta, n = 6, with_ties = F) %>% -->
-<!--   summarise(term = paste(term, collapse = ", ")) -->
-
-<!-- top_terms -->
-<!-- ``` -->
-
-<!-- #### 2. 토픽별 문서 빈도 구하기 -->
-
-<!-- 원문과 토픽 번호가 들어있는 `tada_topic`을 이용해 토픽별 문서 빈도를 구하겠습니다. -->
-<!-- ```{r} -->
-<!-- count_topic <- tada_topic %>% -->
-<!--   count(topic) %>% -->
-<!--   na.omit() -->
-<!-- ``` -->
-
-<!-- ```{r eval=F} -->
-<!-- count_topic -->
-<!-- ``` -->
-
-<!-- ```{r echo=F} -->
-<!-- count_topic %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
-
-
-<!-- #### 3. 문서 빈도에 주요 단어 결합하기 -->
-
-<!-- `count_topic`과 `top_terms`을 결합하고, 막대 그래프의 x축에 토픽 번호를 표시하기 위해 `topic_name`을 추가하겠습니다. -->
-
-<!-- ```{r} -->
-<!-- count_topic_word <- count_topic %>% -->
-<!--   left_join(top_terms, by = "topic") %>% -->
-<!--   mutate(topic_name = paste("Topic", topic)) -->
-
-<!-- count_topic_word -->
-<!-- ``` -->
-
-<!-- > [편집] 출력 줄맞춤 -->
-
-<!-- #### 4. 막대 그래프 만들기 -->
-
-<!-- `count_topic_word`를 이용해 막대 그래프를 만들겠습니다. 출력된 그래프를 보면 토픽의 특징과 댓글의 양을 한 눈에 알 수 있습니다. -->
-
-<!-- ```{r} -->
-<!-- library(scales) -->
-<!-- ggplot(count_topic_word, -->
-<!--        aes(x = reorder(topic_name, n), -->
-<!--            y = n, -->
-<!--            fill = topic_name)) + -->
-<!--   geom_col(show.legend = F) + -->
-<!--   coord_flip() + -->
-
-<!--   geom_text(aes(label = comma(n, accuracy = 1)),  # 문서 빈도 표시 -->
-<!--             hjust = -0.2) + -->
-
-<!--   geom_text(aes(label = term),                    # 주요 단어 표시 -->
-<!--             hjust = 1.03, -->
-<!--             col = "white", -->
-<!--             fontface = "bold", -->
-<!--             family = "nanumgothic") + -->
-
-<!--   scale_y_continuous(expand = c(0, 0),            # y축-막대 간격 줄이기 -->
-<!--                      limits = c(0, 1100)) +       # y축 범위 -->
-
-<!--   labs(title = "타다 금지법 기사 댓글 토픽", -->
-<!--        subtitle = "토픽별 주요 단어 및 댓글 빈도", -->
-<!--        x = NULL, y = NULL) + -->
-
-<!--   theme_minimal() + -->
-<!--   theme(text = element_text(family = "nanumgothic"), -->
-<!--         plot.title = element_text(size = 14, face = "bold"), -->
-<!--         plot.subtitle = element_text(size = 12)) -->
-<!-- ``` -->
-
-<!-- > [참고] `geom_text()`에는 `theme()`으로 설정한 폰트가 적용되지 않기 때문에 별도로 설정해야 합니다. -->
-
-<!-- ### 7.5.6 토픽 이름 짓기 -->
-
-<!-- 토픽의 특징을 잘 드러낼 수 있도록 토픽 이름을 지어 그래프에 표현하겠습니다. -->
-
-<!-- #### 1. 토픽별 주요 문서 추출하기 -->
-
-<!-- 토픽별로 `gamma`가 높은 주요 댓글을 100개씩 추출해 내용을 살펴보겠습니다. -->
-
-<!-- ```{r} -->
-<!-- # 토픽별 주요 문서 추출 -->
-<!-- reply_topic <- tada_topic %>% -->
-<!--   group_by(topic) %>% -->
-<!--   slice_max(gamma, n = 100) -->
-<!-- ``` -->
-
-<!-- <br> -->
-
-<!-- **토픽 1** : 토픽 1의 댓글을 보면 국회가 산업 발전을 가로막는다는 비판이 많다는 것을 알 수 있습니다. -->
-
-<!-- ```{r eval=F} -->
-<!-- # 토픽 1 내용 살펴보기 -->
-<!-- reply_topic %>% -->
-<!--   filter(topic == 1) %>% -->
-<!--   pull(reply_raw) -->
-<!-- ``` -->
-
-<!-- ```{r echo=F} -->
-<!-- # 토픽 1 내용 살펴보기 -->
-<!-- reply_topic %>% -->
-<!--   filter(topic == 1) %>% -->
-<!--   head(1) %>% -->
-<!--   pull(reply_raw) -->
-<!-- ``` -->
-
-<!-- > [편집] 출력 결과 생략 표시 삽입, 빈 줄 삭제 -->
-
-<!-- <br> -->
-
-<!-- **토픽 2** : 토픽 2의 댓글을 보면 법안이 시대 흐름에 역행한다는 비판이 많다는 것을 알 수 있습니다. -->
-
-<!-- ```{r eval=F} -->
-<!-- # 토픽 2 내용 살펴보기 -->
-<!-- reply_topic %>% -->
-<!--   filter(topic == 2) %>% -->
-<!--   pull(reply_raw) -->
-<!-- ``` -->
-
-
-<!-- ```{r} -->
-<!-- # 토픽 2 내용 살펴보기 -->
-<!-- reply_topic %>% -->
-<!--   filter(topic == 2) %>% -->
-<!--   head(1) %>% -->
-<!--   pull(reply_raw) -->
-<!-- ``` -->
-
-<!-- > [편집] 출력 결과 생략 표시 삽입, 빈 줄 삭제 -->
-
-<!-- <br> -->
-
-<!-- > [참고] 토픽 3~8도 직접 출력해 댓글 내용을 확인해보세요. -->
-
-
-<!-- #### 2. 토픽 이름 목록 만들기 -->
-
-<!-- 토픽별 주요 댓글의 내용을 토대로 토픽 이름 목록을 만들겠습니다. -->
-
-<!-- ```{r} -->
-<!-- # 토픽 이름 목록 만들기 -->
-<!-- name_topic <- tibble(topic = 1:9, -->
-<!--                      name = c("1. 신사업 가로막는 국회", -->
-<!--                               "2. 시대 흐름 역행하는 법안", -->
-<!--                               "3. 택시 업계 보호, 국민 무시", -->
-<!--                               "4. 자유 시장경제 반하는 결정", -->
-<!--                               "5. 불만족스러운 택시 서비스", -->
-<!--                               "6. 국가 발전 가로막는 정부", -->
-<!--                               "7. 기존 업계 밥그릇 지키는 정치인", -->
-<!--                               "8. 총선만 신경 쓰는 국회의원", -->
-<!--                               "9. 타다는 렌트카, 무면허 택시 안된다")) -->
-<!-- ``` -->
-
-
-<!-- #### 3. 토픽 이름과 주요 단어 시각화하기 -->
-
-<!-- 토픽별 주요 단어가 들어있는 `top_term_topic`에 `name_topic`을 결합해 토픽 이름을 부여한 다음 막대 그래프를 만들겠습니다. 출력한 그래프를 보면 토픽 이름과 주요 단어가 함께 표현되어 특징을 쉽게 이해할 수 있습니다. -->
-
-<!-- ```{r} -->
-<!-- # 토픽 이름 결합하기 -->
-<!-- top_term_topic_name <- top_term_topic %>% -->
-<!--   left_join(name_topic, name_topic, by = "topic") -->
-<!-- ``` -->
-
-
-<!-- ```{r eval=F} -->
-<!-- top_term_topic_name -->
-<!-- ``` -->
-
-
-<!-- ```{r echo=F} -->
-<!-- top_term_topic_name %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
-
-<!-- ```{r fig.height=8, fig.width=8} -->
-<!-- # 막대 그래프 만들기 -->
-<!-- ggplot(top_term_topic_name, -->
-<!--        aes(x = reorder_within(term, beta, name), -->
-<!--            y = beta, -->
-<!--            fill = factor(topic))) + -->
-<!--   geom_col(show.legend = F) + -->
-<!--   facet_wrap(~ name, scales = "free", ncol = 3) + -->
-<!--   coord_flip() + -->
-<!--   scale_x_reordered() + -->
-
-<!--   labs(title = "타다 금지법 기사 댓글 토픽", -->
-<!--        subtitle = "토픽별 주요 단어 Top 10", -->
-<!--        x = NULL, y = NULL) + -->
-
-<!--   theme_minimal() + -->
-<!--   theme(text = element_text(family = "nanumgothic"), -->
-<!--         plot.title = element_text(size = 14, face = "bold"), -->
-<!--         plot.subtitle = element_text(size = 12), -->
-<!--         axis.text.x = element_blank(),   # x축 이름 삭제 -->
-<!--         axis.ticks.x = element_blank())  # x축 눈금 삭제 -->
-<!-- ``` -->
-
-
-<!-- #### 다양한 방법을 이용해 텍스트 분석하기 -->
-
-<!-- 책에서 익힌 여러 가지 분석 방법을 이용해 '타다 금지법' 기사 댓글을 분석해봤습니다. 자주 언급한 단어를 알아보고, 로그 오즈비와 TF-IDF를 이용해 주요 단어를 비교했습니다. 파이 계수와 바이그램을 이용해 단어의 관계를 살펴보고, 토픽 모델을 만들어 댓글의 주제를 살펴보기도 했습니다. -->
-
-<!-- 텍스트는 한 가지 방법만 적용하기 보다는 여러 가지 분석 방법을 적용해 분석해야만 깊이 있게 이해할 수 있습니다. 불용어나 유의어 처럼 분석 과정에서 알게 된 특징을 반영해 다시 분석하는 과정도 여러 번 거쳐야 합니다. 이처럼 다각도로 접근해 분석하면서 텍스트를 입체적으로 이해하게 되는 것입니다. -->
+  theme_minimal() +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12))
+```
+
+
+---
+```{r ref.label="p_count_topic_word", echo=F, out.width="70%", fig.width=7, fig.height=6}
+```
+---
+
+
+#### 토픽 이름 짓기
+
+##### 1. 토픽별 주요 문서 추출하기
+
+- 토픽별로 `gamma`가 높은 주요 댓글 추출해 내용 살펴보기
+
+```{r}
+# 토픽별 주요 문서 추출
+reply_topic <- tada_topic %>%
+  group_by(topic) %>%
+  slice_max(gamma, n = 100)
+```
+
+---
+
+- **토픽 1** : 국회가 산업 발전을 가로막는다는 비판
+
+```{r eval=F}
+# 토픽 1 내용 살펴보기
+reply_topic %>%
+  filter(topic == 1) %>%
+  pull(reply_raw)
+```
+
+```{r echo=F}
+# 토픽 1 내용 살펴보기
+reply_topic %>%
+  filter(topic == 1) %>%
+  head(3) %>%
+  pull(reply_raw)
+```
+
+---
+
+- **토픽 2** : 법안이 시대 흐름에 역행한다는 비판
+
+```{r eval=F}
+# 토픽 2 내용 살펴보기
+reply_topic %>%
+  filter(topic == 2) %>%
+  pull(reply_raw)
+```
+
+
+```{r echo=F}
+# 토픽 2 내용 살펴보기
+reply_topic %>%
+  filter(topic == 2) %>%
+  head(3) %>%
+  pull(reply_raw)
+```
+
+---
+
+
+##### 2. 토픽 이름 목록 만들기
+
+```{r}
+# 토픽 이름 목록 만들기
+name_topic <- tibble(topic = 1:9,
+                     name = c("1. 신사업 가로막는 국회",
+                              "2. 시대 흐름 역행하는 법안",
+                              "3. 택시 업계 보호, 국민 무시",
+                              "4. 자유 시장경제 반하는 결정",
+                              "5. 불만족스러운 택시 서비스",
+                              "6. 국가 발전 가로막는 정부",
+                              "7. 기존 업계 밥그릇 지키는 정치인",
+                              "8. 총선만 신경 쓰는 국회의원",
+                              "9. 타다는 렌트카, 무면허 택시 안된다"))
+```
+
+
+---
+
+##### 3. 토픽 이름과 주요 단어 시각화하기
+
+```{r}
+# 토픽 이름 결합하기
+top_term_topic_name <- top_term_topic %>%
+  left_join(name_topic, name_topic, by = "topic")
+
+top_term_topic_name
+```
+
+---
+
+```{r p_top_term_topic_name, fig.show='hide'}
+# 막대 그래프 만들기
+ggplot(top_term_topic_name,
+       aes(x = reorder_within(term, beta, name),
+           y = beta,
+           fill = factor(topic))) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ name, scales = "free", ncol = 3) +
+  coord_flip() +
+  scale_x_reordered() +
+
+  labs(title = "타다 금지법 기사 댓글 토픽",
+       subtitle = "토픽별 주요 단어 Top 10",
+       x = NULL, y = NULL) +
+
+  theme_minimal() +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        axis.text.x = element_blank(),   # x축 이름 삭제
+        axis.ticks.x = element_blank())  # x축 눈금 삭제
+```
+
+---
+```{r ref.label="p_top_term_topic_name", echo=F, fig.height=8, fig.width=8, out.width='60%'}
+```
 

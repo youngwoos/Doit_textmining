@@ -54,7 +54,7 @@ class: no-page-num
 
 class: title0
 
-07 텍스트 마이닝 프로젝트:
+07 텍스트 마이닝 프로젝트:  
 타다 금지법 기사 댓글 분석
 
 ---
@@ -143,14 +143,12 @@ raw_tada &lt;- read_csv("news_comment_tada.csv") %&gt;%
 glimpse(raw_tada)
 ```
 
----
-
 
 ```
 ## Rows: 5,270
 ## Columns: 8
 ## $ reg_time       &lt;dttm&gt; 2019-12-05 20:29:54, 2019-12-05...
-## $ reply          &lt;chr&gt; "祝[RHG::분단韓백년]결론:진정성!!&lt;U+2714&gt;결과...
+## $ reply          &lt;chr&gt; "\u795d[RHG::분단\u97d3백년]결론:진정성!!...
 ## $ press          &lt;chr&gt; "연합뉴스", "연합뉴스", "연합뉴스", "연합뉴스", ...
 ## $ title          &lt;chr&gt; "'타다 금지법', 국토위 법안소위 통과", "'타다 금지...
 ## $ url            &lt;chr&gt; "https://news.naver.com/main/rea...
@@ -181,9 +179,9 @@ tada &lt;- raw_tada %&gt;%
 
 ---
 
-### 7.1.2 주요 단어 분석하기
+#### 주요 단어 분석하기
 
-#### 1. 주요 단어 추출하기
+##### 1. 주요 단어 추출하기
 
 - 명사를 추출해 빈도를 구한 다음 상위 30개 단어 출력
 
@@ -255,7 +253,7 @@ frequency %&gt;%
 
 ---
 
-#### 2. 불용어 제거하기
+##### 2. 불용어 제거하기
 
 - 불용어 제거 후 빈도 높은 상위 20개 단어 추출
 
@@ -303,7 +301,7 @@ top20_noun
 
 ---
 
-#### 3. 막대 그래프 만들기
+##### 3. 막대 그래프 만들기
 
 
 ```r
@@ -358,10 +356,10 @@ class: title1
 ---
 
 
-#### 분석 절차
- - 1.공감 여부별 단어 빈도를 구한 다음, 데이터를 wide form으로 변형해 로그 오즈비를 구합니다.
- - 2.공감과 비공감 카테고리에서 상대적으로 중요한 단어를 추출해 막대 그래프를 만듭니다.
- - 3.주요 단어를 언급한 댓글 원문을 살펴봅니다.
+##### 분석 절차
+- 1.공감 여부별 단어 빈도를 구한 다음, 데이터를 wide form으로 변형해 로그 오즈비를 구합니다.
+- 2.공감과 비공감 카테고리에서 상대적으로 중요한 단어를 추출해 막대 그래프를 만듭니다.
+- 3.주요 단어를 언급한 댓글 원문을 살펴봅니다.
 
 ---
 
@@ -572,7 +570,7 @@ ggplot(top10_odds, aes(x = reorder(word, log_odds_ratio),
 
 ---
 
-&lt;img src="07-project1_files/figure-html/unnamed-chunk-21-1.png" width="80%" /&gt;
+&lt;img src="07-project1_files/figure-html/unnamed-chunk-21-1.png" width="70%" /&gt;
 
 ---
 
@@ -637,7 +635,7 @@ tada %&gt;%
   mutate(reply = paste0(str_replace_all(reply,
                                         keyword,
                                         font(keyword)))) %&gt;%  # 스타일 적용
-  pull(reply) %&gt;%                                             # reply 추출
+  pull(reply) %&gt;%                                              # reply 추출
   cat(sep = "\n\n")                                           # 줄바꿈 출력
 ```
 
@@ -1781,445 +1779,577 @@ line_tada %&gt;%
 &lt;pre class="r-output"&gt;&lt;code&gt;## [1] 택시 면허를 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 영업을 해야지...면허도 없이 권리도 없이 택시와 유사 행위를 하는게 맞냐??&lt;br&gt;##&lt;br&gt;## [2] 타다가 무슨 혁신기업이라고 봐줘야 되냐. 기존 점보택시랑 다할게 없는데. 정식으로 택시 면허 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 하면 누가 뭐라 하냐. 꼼수로 면허 돈 주고 안&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 한다니 문제지.&lt;br&gt;##&lt;br&gt;## [3] 이건 타다가 잘못한거. 면허 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 하겠다더니 정부와 합의 꺠고 렌터카로만 1만대 돌리겠다고 발표하면 어쩌라는겨. 국토부에서 불법화 검토하겠다고 한 후에도 바로잡지 않고 버티면서 타다 금지법 어쩌구 언플만하는데. 나라시 콜밴에 어플 붙여서 혁신이라고 우기는데. 우버나 그랩 케이스를 봐도 그렇고 결국 대중교통 택시시장 진입하고 접수하기 위한 방편이라는 혐의에서 자유롭지 않아 보이기도 하고.
 &lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
-&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt;"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"` 언급 댓글  추출
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"` 언급 댓글  추출
+
+---
+name: 07-5
+class: title1
+
+07-5 토픽 모델링
+---
+
+##### 분석 절차
+- 1.댓글 이용해 LDA 모델을 만듭니다.
+- 2.토픽별 주요 단어로 막대 그래프를 만듭니다.
+- 3.댓글을 토픽별로 분류하고 토픽별 댓글 수와 주요 단어를 나타낸 막대 그래프를 만듭니다.
+- 4.토픽별 주요 문서의 내용을 살펴보고 토픽 이름을 짓습니다.
+
+---
+
+#### 토픽 모델링을 위한 전처리
+
+- 중복 댓글과 짧은 문서 제거 후 명사 추출
+- 댓글 내 중복 단어와 빈도 높은 단어 제거
+
+
+```r
+# 명사 추출
+noun_tada &lt;- tada %&gt;%
+  distinct(reply, .keep_all = T) %&gt;%                   # 중복 댓글 제거
+  filter(str_count(reply, boundary("word")) &gt;= 3) %&gt;%  # 짧은 댓글 제거
+  unnest_tokens(input = reply,                         # 명사 추출
+                output = word,
+                token = extractNoun,
+                drop = F) %&gt;%
+  filter(str_count(word) &gt; 1)
+```
 
 ---
 
 
-&lt;!-- ## 7.5 토픽 모델링 --&gt;
+```r
+# 중복, 고빈도 단어 제거
+unique_noun_tada &lt;- noun_tada %&gt;%
+  group_by(id) %&gt;%                                     # 중복 단어 제거
+  distinct(word, .keep_all = T) %&gt;%
+  ungroup() %&gt;%
+  add_count(word) %&gt;%                                  # 고빈도 단어 제거
+  filter(n &lt;= 200) %&gt;%
+  select(id, word)
 
-&lt;!-- &gt; [편집] '분석 절차' 요약 표 삽입 --&gt;
+unique_noun_tada
+```
 
-&lt;!-- 토픽 모델을 이용해 댓글이 어떤 주제들로 구성되는지 살펴보겠습니다. --&gt;
 
+---
 
-&lt;!-- ### 7.5.1 토픽 모델링을 위한 전처리 --&gt;
+```
+## # A tibble: 36,972 x 2
+##       id word    
+##    &lt;int&gt; &lt;chr&gt;   
+##  1     1 분단    
+##  2     1 결론    
+##  3     1 진정    
+##  4     1 결과    
+##  5     1 업계    
+##  6     1 헌법위반
+##  7     1 드론    
+##  8     1 택배    
+##  9     1 현재    
+## 10     1 국기    
+## # ... with 36,962 more rows
+```
+---
 
-&lt;!-- 먼저 토픽 모델을 만드는데 적합하게 `tada`를 전처리하겠습니다. 중복 댓글과 짧은 문서를 제거한 후 명사를 추출하겠습니다. 그런 다음 댓글 내 중복 단어와 빈도가 높은 단어를 제거하겠습니다. --&gt;
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- # 명사 추출 --&gt;
-&lt;!-- noun_tada &lt;- tada %&gt;% --&gt;
-&lt;!--   distinct(reply, .keep_all = T) %&gt;%                   # 중복 댓글 제거 --&gt;
-&lt;!--   filter(str_count(reply, boundary("word")) &gt;= 3) %&gt;%  # 짧은 댓글 제거 --&gt;
-&lt;!--   unnest_tokens(input = reply,                         # 명사 추출 --&gt;
-&lt;!--                 output = word, --&gt;
-&lt;!--                 token = extractNoun, --&gt;
-&lt;!--                 drop = F) %&gt;% --&gt;
-&lt;!--   filter(str_count(word) &gt; 1) --&gt;
+#### 모델 만들기
 
-&lt;!-- # 중복, 고빈도 단어 제거 --&gt;
-&lt;!-- unique_noun_tada &lt;- noun_tada %&gt;% --&gt;
-&lt;!--   group_by(id) %&gt;%                                     # 중복 단어 제거 --&gt;
-&lt;!--   distinct(word, .keep_all = T) %&gt;% --&gt;
-&lt;!--   ungroup() %&gt;% --&gt;
-&lt;!--   add_count(word) %&gt;%                                  # 고빈도 단어 제거 --&gt;
-&lt;!--   filter(n &lt;= 200) %&gt;% --&gt;
-&lt;!--   select(id, word) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- # saveRDS(unique_noun_tada, "unique_noun_tada.rds") --&gt;
-&lt;!-- unique_noun_tada &lt;- readRDS(here::here("preprocessing/news_coments/tada/unique_noun_tada.rds")) --&gt;
-&lt;!-- ``` --&gt;
+##### 1. 문서별 단어 빈도를 이용해 DTM 만들기
 
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- unique_noun_tada --&gt;
-&lt;!-- ``` --&gt;
+```r
+# 문서별 단어 빈도 구하기
+count_word &lt;- unique_noun_tada %&gt;%
+  count(id, word, sort = T)
 
+# DTM 만들기
+dtm_tada &lt;- count_word %&gt;%
+  cast_dtm(document = id, term = word, value = n)
 
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- unique_noun_tada %&gt;% --&gt;
-&lt;!--   print(n = 5) --&gt;
-&lt;!-- ``` --&gt;
+dtm_tada
+```
 
+```
+## &lt;&lt;DocumentTermMatrix (documents: 4745, terms: 11025)&gt;&gt;
+## Non-/sparse entries: 36972/52276653
+## Sparsity           : 100%
+## Maximal term length: 41
+## Weighting          : term frequency (tf)
+```
 
-&lt;!-- ### 7.5.2 LDA 모델 만들기 --&gt;
+---
 
-&lt;!-- `unique_noun_tada`를 이용해 LDA 모델을 만들겠습니다. --&gt;
+##### 2. 하이퍼파라미터 튜닝으로 토픽 수 정하기
 
+- 토픽 수를 2~20까지 바꾸어 가며 성능 지표 비교
 
-&lt;!-- #### 1. 문서별 단어 빈도를 이용해 DTM 만들기 --&gt;
 
-&lt;!-- 먼저 문서별 단어 빈도를 구한 다음 DTM 을 만들겠습니다. --&gt;
+&lt;svg viewBox="0 0 576 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"&gt;&lt;/path&gt;&lt;/svg&gt; 19개의 LDA 모델을 만들므로 컴퓨터 성능에 따라 실행하는 데 시간이 오래 걸릴 수 있음
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 문서별 단어 빈도 구하기 --&gt;
-&lt;!-- count_word &lt;- unique_noun_tada %&gt;% --&gt;
-&lt;!--   count(id, word, sort = T) --&gt;
 
-&lt;!-- # DTM 만들기 --&gt;
-&lt;!-- dtm_tada &lt;- count_word %&gt;% --&gt;
-&lt;!--   cast_dtm(document = id, term = word, value = n) --&gt;
+```r
+library(ldatuning)
+models_tada &lt;- FindTopicsNumber(dtm = dtm_tada,
+                                topics = 2:20,
+                                return_models = T,
+                                control = list(seed = 1234))
+# 성능 지표 그래프
+FindTopicsNumber_plot(models_tada)
+```
 
-&lt;!-- dtm_tada --&gt;
-&lt;!-- ``` --&gt;
+&lt;img src="07-project1_files/figure-html/models_tada-1.png" width="50%" /&gt;
 
-&lt;!-- #### 2. 하이퍼파라미터 튜닝으로 토픽 수 정하기 --&gt;
 
-&lt;!-- 토픽 수를 2에서 20까지 바꿔가며 모델을 만든 다음 성능 지표를 보고 최종 모델을 선정하겠습니다. --&gt;
+---
 
-&lt;!-- &gt; [참고] 다음 코드는 19개의 LDA 모델을 만듭니다. 컴퓨터 성능에 따라 실행하는 데 오래 걸릴 수 있습니다. --&gt;
+![](07-project1_files/figure-html/unnamed-chunk-95-1.png)&lt;!-- --&gt;
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- library(ldatuning) --&gt;
-&lt;!-- models_tada &lt;- FindTopicsNumber(dtm = dtm_tada, --&gt;
-&lt;!--                                 topics = 2:20, --&gt;
-&lt;!--                                 return_models = T, --&gt;
-&lt;!--                                 control = list(seed = 1234)) --&gt;
-&lt;!-- ``` --&gt;
+---
 
-&lt;!-- ```{r fig.height=3, fig.width=6, echo=F} --&gt;
-&lt;!-- library(ldatuning) --&gt;
-&lt;!-- # saveRDS(models_tada, "models_tada.rds") --&gt;
-&lt;!-- models_tada &lt;- readRDS(here::here("preprocessing/news_coments/tada/models_tada.rds")) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- ```{r fig.height=3, fig.width=6} --&gt;
-&lt;!-- # 성능 지표 그래프 --&gt;
-&lt;!-- FindTopicsNumber_plot(models_tada) --&gt;
-&lt;!-- ``` --&gt;
+```r
+# 토픽 수가 9개인 모델 추출
+lda_model &lt;- models_tada %&gt;%  
+  filter(topics == 9) %&gt;%
+  pull(LDA_model) %&gt;%         # 모델 추출
+  .[[1]]                      # list 추출
 
-&lt;!-- 그래프를 보면 토픽 수가 9개일 때까지는 성능 지표가 점진적으로 증가하다가 그 이후로 등락을 반복합니다. 최종 토픽 수를 9개로 정하고 `models_tada`에서 토픽 수가 9개인 모델을 추출해 분석에 활용하겠습니다. --&gt;
+lda_model
+```
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 토픽 수가 9개인 모델 추출 --&gt;
-&lt;!-- lda_model &lt;- models_tada %&gt;% --&gt;
-&lt;!--   filter(topics == 9) %&gt;% --&gt;
-&lt;!--   pull(LDA_model) %&gt;%              # 모델 추출 --&gt;
-&lt;!--   .[[1]]                           # list 추출 --&gt;
+```
+## A LDA_Gibbs topic model with 9 topics.
+```
+
+---
+
+#### 토픽별 주요 단어 살펴보기
+
+##### 1. 주요 단어 추출하기
+
+- 토픽별 단어 확률을 나타낸 `beta` 추출
+
+
+```r
+# 토픽별 단어 확률 beta 추출
+term_topic &lt;- tidy(lda_model, matrix = "beta")
+
+# 토픽별 beta 상위 단어 추출
+term_topic %&gt;%
+  group_by(topic) %&gt;%
+  slice_max(beta, n = 15)
+```
+---
+
+```
+## # A tibble: 136 x 3
+## # Groups:   topic [9]
+##    topic term     beta
+##    &lt;int&gt; &lt;chr&gt;   &lt;dbl&gt;
+##  1     1 하게  0.0182 
+##  2     1 금지  0.0176 
+##  3     1 하다  0.0166 
+##  4     1 기존  0.0166 
+##  5     1 때문  0.0139 
+##  6     1 하려  0.0108 
+##  7     1 해라  0.0108 
+##  8     1 이상  0.0103 
+##  9     1 반대  0.00948
+## 10     1 공유  0.00948
+## # ... with 126 more rows
+```
+---
+
+
+##### 2. 불용어 제외하고 상위 10개 단어 추출하기
+
+
+```r
+# 불용어 목록 생성
+stopword_lda &lt;- c("하게", "하다", "하려", "해라", "그것", "하면", "하네",
+                  "하기", "하나", "해서", "하면", "하지", "한거", "니들")
+
+# 불용어 제외 후 상위 10개 단어 추출
+top_term_topic &lt;- term_topic %&gt;%
+  filter(!term %in% stopword_lda) %&gt;%
+  group_by(topic) %&gt;%
+  slice_max(beta, n = 10)
+
+top_term_topic
+```
+
+---
+
+```
+## # A tibble: 93 x 3
+## # Groups:   topic [9]
+##    topic term        beta
+##    &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt;
+##  1     1 금지     0.0176 
+##  2     1 기존     0.0166 
+##  3     1 때문     0.0139 
+##  4     1 이상     0.0103 
+##  5     1 반대     0.00948
+##  6     1 공유     0.00948
+##  7     1 개인     0.00929
+##  8     1 신사업   0.00600
+##  9     1 국회의원 0.00581
+## 10     1 정책     0.00581
+## # ... with 83 more rows
+```
+
+---
+
+
+##### 3. 막대 그래프 만들기
+
+
+```r
+ggplot(top_term_topic, aes(x = reorder_within(term, beta, topic),
+                           y = beta,
+                           fill = factor(topic))) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ topic, scales = "free", ncol = 3) +
+  coord_flip() +
+  scale_x_reordered() +
+  labs(x = NULL) +
+  theme(text = element_text(family = "nanumgothic"))
+```
+
+
+---
+&lt;img src="07-project1_files/figure-html/unnamed-chunk-99-1.png" width="65%" /&gt;
+---
+
+#### 토픽별로 댓글 분류하기
+
+- `lda_model`에서 문서별 토픽 확률을 나타낸 `gamma` 추출하기
+- 문서별로 `gamma`가 가장 높은 토픽을 남기기
+- 댓글 원문에 결합해 토픽 변호 부여하기
+ 
+
+```r
+# 문서별 토픽 확률 gamma 추출하기
+doc_topic &lt;- tidy(lda_model, matrix = "gamma")
+
+# 문서별로 확률이 가장 높은 토픽 추출
+doc_class &lt;- doc_topic %&gt;%
+  group_by(document) %&gt;%
+  slice_max(gamma, n = 1)
+
+doc_class
+```
+
+---
+
+```
+## # A tibble: 8,134 x 3
+## # Groups:   document [4,745]
+##    document topic gamma
+##    &lt;chr&gt;    &lt;int&gt; &lt;dbl&gt;
+##  1 1            3 0.529
+##  2 10           1 0.165
+##  3 100          2 0.126
+##  4 100          6 0.126
+##  5 1000         6 0.140
+##  6 1001         4 0.129
+##  7 1002         3 0.140
+##  8 1003         6 0.124
+##  9 1003         8 0.124
+## 10 1003         9 0.124
+## # ... with 8,124 more rows
+```
+
+---
+
+
+```r
+# integer로 변환
+doc_class$document &lt;- as.integer(doc_class$document)
+
+# 원문에 토픽 번호 부여
+tada_topic &lt;- tada %&gt;%
+  left_join(doc_class, by = c("id" = "document"))
+```
+
+
+---
+
+#### 토픽별 댓글 수와 단어 시각화하기
+
+
+##### 1. 토픽별 주요 단어 목록 만들기
+
+
+```r
+top_terms &lt;- term_topic %&gt;%
+  filter(!term %in% stopword_lda) %&gt;%
+  group_by(topic) %&gt;%
+  slice_max(beta, n = 6, with_ties = F) %&gt;%
+  summarise(term = paste(term, collapse = ", "))
+
+top_terms
+```
+
+```
+## # A tibble: 9 x 2
+##   topic term                                    
+##   &lt;int&gt; &lt;chr&gt;                                   
+## 1     1 금지, 기존, 때문, 이상, 반대, 공유      
+## 2     2 시대, 자율, 주행, 한국, 법안, 정치      
+## 3     3 무시, 업계, 이유, 보호, 공유경제, 교통  
+## 4     4 경제, 경쟁, 요금, 사회, 시장, 변화      
+## 5     5 이용, 승차거부, 운전, 불친절, 손님, 냄새
+## 6     6 정부, 필요, 규제, 국가, 우리나라, 발전  
+## 7     7 문제, 밥그릇, 정치, 불편, 개선, 안타    
+## 8     8 국회의원, 국회, 총선, 통과, 민주당, 선거
+## 9     9 면허, 카카오, 회사, 렌트카, 운행, 버스
+```
+
+---
+
+##### 2. 토픽별 문서 빈도 구하기
+
+
+```r
+count_topic &lt;- tada_topic %&gt;%
+  count(topic) %&gt;%
+  na.omit()
 
-&lt;!-- lda_model --&gt;
-&lt;!-- ``` --&gt;
+count_topic
+```
 
-&lt;!-- ### 7.5.3 토픽별 주요 단어 살펴보기 --&gt;
+```
+## # A tibble: 9 x 2
+##   topic     n
+##   &lt;int&gt; &lt;int&gt;
+## 1     1   897
+## 2     2   920
+## 3     3   809
+## 4     4   898
+## 5     5   866
+## 6     6   991
+## 7     7   852
+## 8     8  1002
+## 9     9   899
+```
 
-&lt;!-- 각 토픽에 등장할 확률이 높은 주요 단어를 살펴보겠습니다. --&gt;
+---
 
-&lt;!-- #### 1. 주요 단어 추출하기 --&gt;
+##### 3. 문서 빈도에 주요 단어 결합하기
 
-&lt;!-- 먼저 `lda_model`에서 토픽별 단어 확률을 나타낸 `beta`를 추출하겠습니다. 그런 다음 `beta`가 높은 상위 15개 단어를 추출해 내용을 살펴보겠습니다. --&gt;
 
-&lt;!-- ```{r } --&gt;
-&lt;!-- # 토픽별 단어 확률 beta 추출 --&gt;
-&lt;!-- term_topic &lt;- tidy(lda_model, matrix = "beta") --&gt;
-&lt;!-- ``` --&gt;
+```r
+count_topic_word &lt;- count_topic %&gt;%
+  left_join(top_terms, by = "topic") %&gt;%
+  mutate(topic_name = paste("Topic", topic))
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- # 토픽별 beta 상위 단어 추출 --&gt;
-&lt;!-- term_topic %&gt;% --&gt;
-&lt;!--   group_by(topic) %&gt;% --&gt;
-&lt;!--   slice_max(beta, n = 15) %&gt;% --&gt;
-&lt;!--   print(n = Inf) --&gt;
-&lt;!-- ``` --&gt;
+count_topic_word
+```
 
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- # 토픽별 beta 상위 단어 추출 --&gt;
-&lt;!-- term_topic %&gt;% --&gt;
-&lt;!--   group_by(topic) %&gt;% --&gt;
-&lt;!--   slice_max(beta, n = 15) %&gt;% --&gt;
-&lt;!--   print(n = 5) --&gt;
-&lt;!-- ``` --&gt;
+```
+## # A tibble: 9 x 4
+##   topic     n term                                     topic_name
+##   &lt;int&gt; &lt;int&gt; &lt;chr&gt;                                    &lt;chr&gt;     
+## 1     1   897 금지, 기존, 때문, 이상, 반대, 공유       Topic 1   
+## 2     2   920 시대, 자율, 주행, 한국, 법안, 정치       Topic 2   
+## 3     3   809 무시, 업계, 이유, 보호, 공유경제, 교통   Topic 3   
+## 4     4   898 경제, 경쟁, 요금, 사회, 시장, 변화       Topic 4   
+## 5     5   866 이용, 승차거부, 운전, 불친절, 손님, 냄새 Topic 5   
+## 6     6   991 정부, 필요, 규제, 국가, 우리나라, 발전   Topic 6   
+## 7     7   852 문제, 밥그릇, 정치, 불편, 개선, 안타     Topic 7   
+## 8     8  1002 국회의원, 국회, 총선, 통과, 민주당, 선거 Topic 8   
+## 9     9   899 면허, 카카오, 회사, 렌트카, 운행, 버스   Topic 9
+```
 
-&lt;!-- #### 2. 불용어 제외하고 상위 10개 단어 추출하기 --&gt;
+---
 
-&lt;!-- 출력 결과를 보면 `"하게"`, `"하다"`와 같이 의미를 알 수 없는 단어가 포함되어 있습니다. 이런 단어를 불용어 목록으로 만들어 제외하고 `bata`가 높은 상위 10개 단어를 추출하겠습니다. --&gt;
+##### 4. 막대 그래프 만들기
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 불용어 목록 생성 --&gt;
-&lt;!-- stopword_lda &lt;- c("하게", "하다", "하려", "해라", "그것", "하면", "하네", --&gt;
-&lt;!--                   "하기", "하나", "해서", "하면", "하지", "한거", "니들") --&gt;
 
-&lt;!-- # 불용어 제외 후 상위 10개 단어 추출 --&gt;
-&lt;!-- top_term_topic &lt;- term_topic %&gt;% --&gt;
-&lt;!--   filter(!term %in% stopword_lda) %&gt;% --&gt;
-&lt;!--   group_by(topic) %&gt;% --&gt;
-&lt;!--   slice_max(beta, n = 10) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- top_term_topic --&gt;
-&lt;!-- ``` --&gt;
+```r
+library(scales)
+ggplot(count_topic_word,
+       aes(x = reorder(topic_name, n),
+           y = n,
+           fill = topic_name)) +
+  geom_col(show.legend = F) +
+  coord_flip() +
 
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- top_term_topic %&gt;% --&gt;
-&lt;!--   print(n = 5) --&gt;
-&lt;!-- ``` --&gt;
+  geom_text(aes(label = comma(n, accuracy = 1)),  # 문서 빈도 표시
+            hjust = -0.2) +
 
+  geom_text(aes(label = term),                    # 주요 단어 표시
+            hjust = 1.03,
+            col = "white",
+            fontface = "bold",
+            family = "nanumgothic") +
 
-&lt;!-- #### 3. 막대 그래프 만들기 --&gt;
+  scale_y_continuous(expand = c(0, 0),            # y축-막대 간격 줄이기
+                     limits = c(0, 1100)) +       # y축 범위
+```
 
-&lt;!-- `top_term_topic`으로 막대 그래프를 만들겠습니다. 출력된 그래프에서 각 토픽의 단어 구성을 보면 토픽이 서로 다른 주제로 잘 분류된 것을 알 수 있습니다. --&gt;
+---
 
-&lt;!-- ```{r fig.height=8, fig.width=8} --&gt;
-&lt;!-- ggplot(top_term_topic, aes(x = reorder_within(term, beta, topic), --&gt;
-&lt;!--                            y = beta, --&gt;
-&lt;!--                            fill = factor(topic))) + --&gt;
-&lt;!--   geom_col(show.legend = F) + --&gt;
-&lt;!--   facet_wrap(~ topic, scales = "free", ncol = 3) + --&gt;
-&lt;!--   coord_flip() + --&gt;
-&lt;!--   scale_x_reordered() + --&gt;
-&lt;!--   labs(x = NULL) + --&gt;
-&lt;!--   theme(text = element_text(family = "nanumgothic")) --&gt;
-&lt;!-- ``` --&gt;
+##### 4. 막대 그래프 만들기
 
 
-&lt;!-- ### 7.5.4 토픽별로 문서 분류하기 --&gt;
+```r
+labs(title = "타다 금지법 기사 댓글 토픽",
+       subtitle = "토픽별 주요 단어 및 댓글 빈도",
+       x = NULL, y = NULL) +
 
-&lt;!-- 댓글을 확률이 높은 토픽으로 분류한 다음 토픽별로 내용을 살펴보겠습니다. 먼저 `lda_model`에서 문서별 토픽 확률을 나타낸 `gamma`를 추출한 다음, 문서별로 `gamma`가 가장 높은 토픽을 남기겠습니다. 그런 다음 댓글 원문에 결합해 토픽 변호를 부여하겠습니다. --&gt;
+  theme_minimal() +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12))
+```
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 문서별 토픽 확률 gamma 추출하기 --&gt;
-&lt;!-- doc_topic &lt;- tidy(lda_model, matrix = "gamma") --&gt;
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `geom_text()`에는 `theme()`으로 설정한 폰트가 적용되지 않기 때문에 별도로 폰트 지정
 
-&lt;!-- # 문서별로 확률이 가장 높은 토픽 추출 --&gt;
-&lt;!-- doc_class &lt;- doc_topic %&gt;% --&gt;
-&lt;!--   group_by(document) %&gt;% --&gt;
-&lt;!--   slice_max(gamma, n = 1) --&gt;
-&lt;!-- ``` --&gt;
 
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- doc_class --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- doc_class %&gt;% --&gt;
-&lt;!--   print(n = 5) --&gt;
-&lt;!-- ``` --&gt;
+---
+&lt;img src="07-project1_files/figure-html/unnamed-chunk-107-1.png" width="70%" /&gt;
+---
 
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # integer로 변환 --&gt;
-&lt;!-- doc_class$document &lt;- as.integer(doc_class$document) --&gt;
+#### 토픽 이름 짓기
 
-&lt;!-- # 원문에 토픽 번호 부여 --&gt;
-&lt;!-- tada_topic &lt;- tada %&gt;% --&gt;
-&lt;!--   left_join(doc_class, by = c("id" = "document")) --&gt;
-&lt;!-- ``` --&gt;
+##### 1. 토픽별 주요 문서 추출하기
 
+- 토픽별로 `gamma`가 높은 주요 댓글 추출해 내용 살펴보기
 
-&lt;!-- ### 7.5.5 토픽별 문서 수와 단어 시각화하기 --&gt;
 
-&lt;!-- 토픽별 문서 수와 주요 단어를 이용해 막대 그래프를 만들겠습니다. --&gt;
+```r
+# 토픽별 주요 문서 추출
+reply_topic &lt;- tada_topic %&gt;%
+  group_by(topic) %&gt;%
+  slice_max(gamma, n = 100)
+```
 
-&lt;!-- #### 1. 토픽별 주요 단어 목록 만들기 --&gt;
+---
 
-&lt;!-- 먼저 토픽별 단어 확률 `beta`를 담고 있는 `term_topic`에서 불용어를 제거하고, 토픽별로 `beta`가 가장 높은 단어를 6개씩 추출한 다음 한 행으로 결합하겠습니다. --&gt;
+- **토픽 1** : 국회가 산업 발전을 가로막는다는 비판
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- top_terms &lt;- term_topic %&gt;% --&gt;
-&lt;!--   filter(!term %in% stopword_lda) %&gt;% --&gt;
-&lt;!--   group_by(topic) %&gt;% --&gt;
-&lt;!--   slice_max(beta, n = 6, with_ties = F) %&gt;% --&gt;
-&lt;!--   summarise(term = paste(term, collapse = ", ")) --&gt;
 
-&lt;!-- top_terms --&gt;
-&lt;!-- ``` --&gt;
+```r
+# 토픽 1 내용 살펴보기
+reply_topic %&gt;%
+  filter(topic == 1) %&gt;%
+  pull(reply_raw)
+```
 
-&lt;!-- #### 2. 토픽별 문서 빈도 구하기 --&gt;
 
-&lt;!-- 원문과 토픽 번호가 들어있는 `tada_topic`을 이용해 토픽별 문서 빈도를 구하겠습니다. --&gt;
-&lt;!-- ```{r} --&gt;
-&lt;!-- count_topic &lt;- tada_topic %&gt;% --&gt;
-&lt;!--   count(topic) %&gt;% --&gt;
-&lt;!--   na.omit() --&gt;
-&lt;!-- ``` --&gt;
+```
+## [1] "택시 진짜 노답인데...급정거하고 앞차 답답하면 손님있던 없던 쌍욕 해대지 덥다고 에어콘 틀자면 춥다고 거절해 창문열면 시끄럽다고 닫으래 운전중에 당연하게 전화오면 듣던말던 시끄럽게 통화하고 공항서는 야매로 요금 더치고 오다 걸리면 묵비권행사하지 교회전도 하고 안믿는다니까 면전에대고 지옥간다지 않나 목적지 가까우면 내리라고 지랄해서 등록증 찍으면 그냥 출발해서 가는내내 욕하면서 안내려주고 목적지 가는짓도 적어도 적어도 택시가 하는 쓰레기 짓이 생기는데 이정도면 타다 불법으로 법통과할때 택시도 법으로 물갈아야 하지않겠냐?"                            
+## [2] "더불어민중당 것들은 이 나라 신성장 동력이라고 생각되면 다 사장시켜서 국가 경쟁력을 망가뜨리려 한다.. 미국가서 우버가 불법 콜택시라고 하면 뭐라고 하려나...."                                                                                                                                                                                                                                                                                                                                                                                                        
+## [3] "노동자는 경기가악화될수록 더 취약해져 안정적이고 위험하지않게 헌법으로 보장된 노조로 약자가않되게 노력하게되는거지 이젠 경제가 절정에 도달했기때문에 오직기업이 그만큼에 더 기술자질만이있어야 경제가 발전할수밖에 없는게 영원히 변하지않는 유일한법칙이다 않그럼 경제성장은 할수가없고 계속 기업은부실로 그대론데 근본적 조치도않되고 해결이 절대될수없고 경제와 상관도없는 노동개혁으로 노동자에게 부정적으로 여론조성해서 서민은 메말라가게 부당하고 나쁜 헌법으로도 보장된 노동법칙까지 위반하는 노동개악을 합의없이하는건 범법자가된다는건 분명은 명심하셔니다"
+```
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- count_topic --&gt;
-&lt;!-- ``` --&gt;
+---
 
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- count_topic %&gt;% --&gt;
-&lt;!--   print(n = 5) --&gt;
-&lt;!-- ``` --&gt;
+- **토픽 2** : 법안이 시대 흐름에 역행한다는 비판
 
 
-&lt;!-- #### 3. 문서 빈도에 주요 단어 결합하기 --&gt;
+```r
+# 토픽 2 내용 살펴보기
+reply_topic %&gt;%
+  filter(topic == 2) %&gt;%
+  pull(reply_raw)
+```
 
-&lt;!-- `count_topic`과 `top_terms`을 결합하고, 막대 그래프의 x축에 토픽 번호를 표시하기 위해 `topic_name`을 추가하겠습니다. --&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- count_topic_word &lt;- count_topic %&gt;% --&gt;
-&lt;!--   left_join(top_terms, by = "topic") %&gt;% --&gt;
-&lt;!--   mutate(topic_name = paste("Topic", topic)) --&gt;
 
-&lt;!-- count_topic_word --&gt;
-&lt;!-- ``` --&gt;
+```
+## [1] "타다는 확실히 서비스 품질의 표준을 상향시켰고, 승차거부에 시달리던 국민들이 차별 없이 이용할 수 있게 해줬다는 점에서 혁신이라는 것임. 이러한 점에서 국민의 편익을 향상시켰다는 점은 부정할 수 없다. 이러한 상황에서 시행령 개정에 만장일치로 처리한 국회의원들은 진정한 국민의 편익 보다는 당장 눈 앞에 보이는 표심에 눈이 멀어있다는 걸 단적으로 보여준다. 박홍근을 비롯한 만장일치한 국토교통위원회 교통법안심사소위원회는 반드시 다음 선거에 심판을 받길 바란다."
+## [2] "해외는 우버를 비롯해서 시대 흐름에 맞춰가는데 헬조선만 택시노조 후장빠느라 시대역행하는중"                                                                                                                                                                                                                                                                                                                                                                          
+## [3] "\u314b택시기사들과 가족들의 투표가 무섭더냐? 징징대는거 받아주면서 하늘을 나는 자동차 자율주행 자동차? \u314b웃기네~2030년에도 한국은 미터기 켜는 택시 타고 다닐꺼다 징징대는 기사들 때문에"
+```
 
-&lt;!-- &gt; [편집] 출력 줄맞춤 --&gt;
+---
 
-&lt;!-- #### 4. 막대 그래프 만들기 --&gt;
 
-&lt;!-- `count_topic_word`를 이용해 막대 그래프를 만들겠습니다. 출력된 그래프를 보면 토픽의 특징과 댓글의 양을 한 눈에 알 수 있습니다. --&gt;
+##### 2. 토픽 이름 목록 만들기
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- library(scales) --&gt;
-&lt;!-- ggplot(count_topic_word, --&gt;
-&lt;!--        aes(x = reorder(topic_name, n), --&gt;
-&lt;!--            y = n, --&gt;
-&lt;!--            fill = topic_name)) + --&gt;
-&lt;!--   geom_col(show.legend = F) + --&gt;
-&lt;!--   coord_flip() + --&gt;
 
-&lt;!--   geom_text(aes(label = comma(n, accuracy = 1)),  # 문서 빈도 표시 --&gt;
-&lt;!--             hjust = -0.2) + --&gt;
+```r
+# 토픽 이름 목록 만들기
+name_topic &lt;- tibble(topic = 1:9,
+                     name = c("1. 신사업 가로막는 국회",
+                              "2. 시대 흐름 역행하는 법안",
+                              "3. 택시 업계 보호, 국민 무시",
+                              "4. 자유 시장경제 반하는 결정",
+                              "5. 불만족스러운 택시 서비스",
+                              "6. 국가 발전 가로막는 정부",
+                              "7. 기존 업계 밥그릇 지키는 정치인",
+                              "8. 총선만 신경 쓰는 국회의원",
+                              "9. 타다는 렌트카, 무면허 택시 안된다"))
+```
 
-&lt;!--   geom_text(aes(label = term),                    # 주요 단어 표시 --&gt;
-&lt;!--             hjust = 1.03, --&gt;
-&lt;!--             col = "white", --&gt;
-&lt;!--             fontface = "bold", --&gt;
-&lt;!--             family = "nanumgothic") + --&gt;
 
-&lt;!--   scale_y_continuous(expand = c(0, 0),            # y축-막대 간격 줄이기 --&gt;
-&lt;!--                      limits = c(0, 1100)) +       # y축 범위 --&gt;
+---
 
-&lt;!--   labs(title = "타다 금지법 기사 댓글 토픽", --&gt;
-&lt;!--        subtitle = "토픽별 주요 단어 및 댓글 빈도", --&gt;
-&lt;!--        x = NULL, y = NULL) + --&gt;
+##### 3. 토픽 이름과 주요 단어 시각화하기
 
-&lt;!--   theme_minimal() + --&gt;
-&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
-&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
-&lt;!--         plot.subtitle = element_text(size = 12)) --&gt;
-&lt;!-- ``` --&gt;
 
-&lt;!-- &gt; [참고] `geom_text()`에는 `theme()`으로 설정한 폰트가 적용되지 않기 때문에 별도로 설정해야 합니다. --&gt;
+```r
+# 토픽 이름 결합하기
+top_term_topic_name &lt;- top_term_topic %&gt;%
+  left_join(name_topic, name_topic, by = "topic")
 
-&lt;!-- ### 7.5.6 토픽 이름 짓기 --&gt;
+top_term_topic_name
+```
 
-&lt;!-- 토픽의 특징을 잘 드러낼 수 있도록 토픽 이름을 지어 그래프에 표현하겠습니다. --&gt;
+```
+## # A tibble: 93 x 4
+## # Groups:   topic [9]
+##    topic term        beta name                   
+##    &lt;int&gt; &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;                  
+##  1     1 금지     0.0176  1. 신사업 가로막는 국회
+##  2     1 기존     0.0166  1. 신사업 가로막는 국회
+##  3     1 때문     0.0139  1. 신사업 가로막는 국회
+##  4     1 이상     0.0103  1. 신사업 가로막는 국회
+##  5     1 반대     0.00948 1. 신사업 가로막는 국회
+##  6     1 공유     0.00948 1. 신사업 가로막는 국회
+##  7     1 개인     0.00929 1. 신사업 가로막는 국회
+##  8     1 신사업   0.00600 1. 신사업 가로막는 국회
+##  9     1 국회의원 0.00581 1. 신사업 가로막는 국회
+## 10     1 정책     0.00581 1. 신사업 가로막는 국회
+## # ... with 83 more rows
+```
 
-&lt;!-- #### 1. 토픽별 주요 문서 추출하기 --&gt;
+---
 
-&lt;!-- 토픽별로 `gamma`가 높은 주요 댓글을 100개씩 추출해 내용을 살펴보겠습니다. --&gt;
 
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 토픽별 주요 문서 추출 --&gt;
-&lt;!-- reply_topic &lt;- tada_topic %&gt;% --&gt;
-&lt;!--   group_by(topic) %&gt;% --&gt;
-&lt;!--   slice_max(gamma, n = 100) --&gt;
-&lt;!-- ``` --&gt;
+```r
+# 막대 그래프 만들기
+ggplot(top_term_topic_name,
+       aes(x = reorder_within(term, beta, name),
+           y = beta,
+           fill = factor(topic))) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ name, scales = "free", ncol = 3) +
+  coord_flip() +
+  scale_x_reordered() +
 
-&lt;!-- &lt;br&gt; --&gt;
+  labs(title = "타다 금지법 기사 댓글 토픽",
+       subtitle = "토픽별 주요 단어 Top 10",
+       x = NULL, y = NULL) +
 
-&lt;!-- **토픽 1** : 토픽 1의 댓글을 보면 국회가 산업 발전을 가로막는다는 비판이 많다는 것을 알 수 있습니다. --&gt;
+  theme_minimal() +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        axis.text.x = element_blank(),   # x축 이름 삭제
+        axis.ticks.x = element_blank())  # x축 눈금 삭제
+```
 
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- # 토픽 1 내용 살펴보기 --&gt;
-&lt;!-- reply_topic %&gt;% --&gt;
-&lt;!--   filter(topic == 1) %&gt;% --&gt;
-&lt;!--   pull(reply_raw) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- # 토픽 1 내용 살펴보기 --&gt;
-&lt;!-- reply_topic %&gt;% --&gt;
-&lt;!--   filter(topic == 1) %&gt;% --&gt;
-&lt;!--   head(1) %&gt;% --&gt;
-&lt;!--   pull(reply_raw) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &gt; [편집] 출력 결과 생략 표시 삽입, 빈 줄 삭제 --&gt;
-
-&lt;!-- &lt;br&gt; --&gt;
-
-&lt;!-- **토픽 2** : 토픽 2의 댓글을 보면 법안이 시대 흐름에 역행한다는 비판이 많다는 것을 알 수 있습니다. --&gt;
-
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- # 토픽 2 내용 살펴보기 --&gt;
-&lt;!-- reply_topic %&gt;% --&gt;
-&lt;!--   filter(topic == 2) %&gt;% --&gt;
-&lt;!--   pull(reply_raw) --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 토픽 2 내용 살펴보기 --&gt;
-&lt;!-- reply_topic %&gt;% --&gt;
-&lt;!--   filter(topic == 2) %&gt;% --&gt;
-&lt;!--   head(1) %&gt;% --&gt;
-&lt;!--   pull(reply_raw) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- &gt; [편집] 출력 결과 생략 표시 삽입, 빈 줄 삭제 --&gt;
-
-&lt;!-- &lt;br&gt; --&gt;
-
-&lt;!-- &gt; [참고] 토픽 3~8도 직접 출력해 댓글 내용을 확인해보세요. --&gt;
-
-
-&lt;!-- #### 2. 토픽 이름 목록 만들기 --&gt;
-
-&lt;!-- 토픽별 주요 댓글의 내용을 토대로 토픽 이름 목록을 만들겠습니다. --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 토픽 이름 목록 만들기 --&gt;
-&lt;!-- name_topic &lt;- tibble(topic = 1:9, --&gt;
-&lt;!--                      name = c("1. 신사업 가로막는 국회", --&gt;
-&lt;!--                               "2. 시대 흐름 역행하는 법안", --&gt;
-&lt;!--                               "3. 택시 업계 보호, 국민 무시", --&gt;
-&lt;!--                               "4. 자유 시장경제 반하는 결정", --&gt;
-&lt;!--                               "5. 불만족스러운 택시 서비스", --&gt;
-&lt;!--                               "6. 국가 발전 가로막는 정부", --&gt;
-&lt;!--                               "7. 기존 업계 밥그릇 지키는 정치인", --&gt;
-&lt;!--                               "8. 총선만 신경 쓰는 국회의원", --&gt;
-&lt;!--                               "9. 타다는 렌트카, 무면허 택시 안된다")) --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- #### 3. 토픽 이름과 주요 단어 시각화하기 --&gt;
-
-&lt;!-- 토픽별 주요 단어가 들어있는 `top_term_topic`에 `name_topic`을 결합해 토픽 이름을 부여한 다음 막대 그래프를 만들겠습니다. 출력한 그래프를 보면 토픽 이름과 주요 단어가 함께 표현되어 특징을 쉽게 이해할 수 있습니다. --&gt;
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 토픽 이름 결합하기 --&gt;
-&lt;!-- top_term_topic_name &lt;- top_term_topic %&gt;% --&gt;
-&lt;!--   left_join(name_topic, name_topic, by = "topic") --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- ```{r eval=F} --&gt;
-&lt;!-- top_term_topic_name --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- ```{r echo=F} --&gt;
-&lt;!-- top_term_topic_name %&gt;% --&gt;
-&lt;!--   print(n = 5) --&gt;
-&lt;!-- ``` --&gt;
-
-&lt;!-- ```{r fig.height=8, fig.width=8} --&gt;
-&lt;!-- # 막대 그래프 만들기 --&gt;
-&lt;!-- ggplot(top_term_topic_name, --&gt;
-&lt;!--        aes(x = reorder_within(term, beta, name), --&gt;
-&lt;!--            y = beta, --&gt;
-&lt;!--            fill = factor(topic))) + --&gt;
-&lt;!--   geom_col(show.legend = F) + --&gt;
-&lt;!--   facet_wrap(~ name, scales = "free", ncol = 3) + --&gt;
-&lt;!--   coord_flip() + --&gt;
-&lt;!--   scale_x_reordered() + --&gt;
-
-&lt;!--   labs(title = "타다 금지법 기사 댓글 토픽", --&gt;
-&lt;!--        subtitle = "토픽별 주요 단어 Top 10", --&gt;
-&lt;!--        x = NULL, y = NULL) + --&gt;
-
-&lt;!--   theme_minimal() + --&gt;
-&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
-&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
-&lt;!--         plot.subtitle = element_text(size = 12), --&gt;
-&lt;!--         axis.text.x = element_blank(),   # x축 이름 삭제 --&gt;
-&lt;!--         axis.ticks.x = element_blank())  # x축 눈금 삭제 --&gt;
-&lt;!-- ``` --&gt;
-
-
-&lt;!-- #### 다양한 방법을 이용해 텍스트 분석하기 --&gt;
-
-&lt;!-- 책에서 익힌 여러 가지 분석 방법을 이용해 '타다 금지법' 기사 댓글을 분석해봤습니다. 자주 언급한 단어를 알아보고, 로그 오즈비와 TF-IDF를 이용해 주요 단어를 비교했습니다. 파이 계수와 바이그램을 이용해 단어의 관계를 살펴보고, 토픽 모델을 만들어 댓글의 주제를 살펴보기도 했습니다. --&gt;
-
-&lt;!-- 텍스트는 한 가지 방법만 적용하기 보다는 여러 가지 분석 방법을 적용해 분석해야만 깊이 있게 이해할 수 있습니다. 불용어나 유의어 처럼 분석 과정에서 알게 된 특징을 반영해 다시 분석하는 과정도 여러 번 거쳐야 합니다. 이처럼 다각도로 접근해 분석하면서 텍스트를 입체적으로 이해하게 되는 것입니다. --&gt;
+---
+&lt;img src="07-project1_files/figure-html/unnamed-chunk-115-1.png" width="60%" /&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
