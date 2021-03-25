@@ -686,875 +686,898 @@ tada %>% find_word(reply_raw, "조합", 2)
 ---
 
 
-##### 3.2 공감, 비공감 댓글 원문 추출하기
 
 
-<!-- #### (1) `tada`와 `word_sympathy` 결합하고 중복 댓글 제거하기 -->
+##### 3.1 `tada`와 `word_sympathy` 결합하고 중복 댓글 제거하기
 
-<!-- 공감, 비공감 댓글을 추출해 내용을 살펴보겠습니다. 먼저 `tada`와 `word_sympathy`를 결합하겠습니다. `tada`에는 댓글 원문이 들어있고, `word_sympathy`에는 `sympathy`(공감 여부), `diff`(공감, 비공감 수 차이)가 들어있습니다. `word_sympathy`는 각 행이 댓글별 명사이므로 여러 댓글이 중복되어 있습니다. `distinct()`를 이용해 댓글별로 한 행씩만 남기고 주요 변수를 추출한 다음 `tada`에 결합하겠습니다. -->
+- `word_sympathy`: `sympathy`(공감 여부), `diff`(공감, 비공감 수 차이) 들어 있음
+  - 각  행이  댓글별  명사이므로  여러  댓글이  중복되어  있음
+  - 댓글별로 한 행씩만 남기고 주요 변수를 추출한 다음 `tada`에 결합
 
-<!-- ```{r} -->
-<!-- tada <- tada %>% -->
-<!--   left_join(word_sympathy %>% -->
-<!--               distinct(id, .keep_all = T) %>%  # 중복 댓글 제거 -->
-<!--               select(id, sympathy, diff),      # 주요 변수 추출 -->
-<!--             by = "id") -->
-<!-- ``` -->
+```{r}
+tada <- tada %>%
+  left_join(word_sympathy %>%
+              distinct(id, .keep_all = T) %>%  # 중복 댓글 제거
+              select(id, sympathy, diff),      # 주요 변수 추출
+            by = "id")
+```
 
-<!-- #### (2) 공감, 비공감 데이터 만들기 -->
+---
 
-<!-- 공감, 비공감 댓글을 각각 추출해 별도의 데이터를 만들겠습니다. 공감 댓글은 공감 수가 높은 순으로, 비공감 댓글은 비공감 수가 높은 순으로 정렬하겠습니다. 이렇게 정렬해두면 원문을 출력할 때 주요 댓글 중심으로 살펴볼 수 있습니다. -->
+##### 3.2 공감, 비공감 데이터 만들기 
 
-<!-- ```{r} -->
-<!-- # 공감 댓글 추출 -->
-<!-- reply_like <- tada %>% -->
-<!--   filter(sympathy  == "like") %>%      # like 추출 -->
-<!--   arrange(-diff)                       # 공감 높은순 정렬 -->
+```{r}
+# 공감 댓글 추출
+reply_like <- tada %>%
+  filter(sympathy  == "like") %>%      # like 추출
+  arrange(-diff)                       # 공감 높은순 정렬
 
-<!-- # 비공감 댓글 추출 -->
-<!-- reply_dislike <- tada %>% -->
-<!--   filter(sympathy  == "dislike") %>%   # dislike 추출 -->
-<!--   arrange(diff)                        # 비공감 높은순 정렬 -->
-<!-- ``` -->
+# 비공감 댓글 추출
+reply_dislike <- tada %>%
+  filter(sympathy  == "dislike") %>%   # dislike 추출
+  arrange(diff)                        # 비공감 높은순 정렬
+```
 
+---
 
-<!-- #### 4. 공감 댓글 내용 살펴보기 -->
+##### 4. 공감 댓글 내용 살펴보기
 
-<!-- 앞에서 로그 오즈비로 만든 막대 그래프를 보면 공감 댓글 중에는 `"조합"`, `"소비자"`, `"동남아"`의 중요도가 가장 높습니다. 이 단어를 언급한 댓글을 출력해 내용을 살펴보겠습니다. 내용을 종합하면 다음과 같은 댓글이 공감을 많이 얻었다는 것을 알 수 있습니다. -->
+```{r eval=F}
+# 조합
+reply_like %>% find_word(x = reply_raw, keyword = "조합", n = 10)
+```
 
-<!-- - `"조합"`   : 택시 조합이 독점적인 권한을 유지하고 있다. -->
-<!-- - `"소비자"` : 소비자의 권리를 무시하고 기업의 입장만 고려해 법안이 만들어졌다. -->
-<!-- - `"동남아"` : 동남아시아 국가는 승차 공유 서비스가 활성화된 반면 한국은 그렇지 않다. -->
+```{r echo=F}
+# 조합
+reply_like %>% find_word(x = reply_raw, keyword = "조합", n = 3)
+```
 
-<!-- ```{r eval=F} -->
-<!-- # 조합 -->
-<!-- reply_like %>% find_word(x = reply_raw, keyword = "조합", n = 10) -->
-<!-- ``` -->
 
-<!-- ```{r echo=F} -->
-<!-- # 조합 -->
-<!-- reply_like %>% find_word(x = reply_raw, keyword = "조합", n = 1) -->
-<!-- ``` -->
+---
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "조합" -->
 
+```{r eval=F}
+# 소비자
+reply_like %>% find_word(x = reply_raw, keyword = "소비자", n = 10)
+```
 
-<!-- ```{r eval=F} -->
-<!-- # 소비자 -->
-<!-- reply_like %>% find_word(x = reply_raw, keyword = "소비자", n = 10) -->
-<!-- ``` -->
+```{r echo=F}
+# 소비자
+reply_like %>% find_word(x = reply_raw, keyword = "소비자", n = 3)
+```
 
-<!-- ```{r echo=F} -->
-<!-- # 소비자 -->
-<!-- reply_like %>% find_word(x = reply_raw, keyword = "소비자", n = 1) -->
-<!-- ``` -->
+---
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "소비자" -->
+```{r eval=F}
+# 동남아
+reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 10)
+```
 
-<!-- ```{r eval=F} -->
-<!-- # 동남아 -->
-<!-- reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 10) -->
-<!-- ``` -->
+```{r echo=F}
+# 동남아
+reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 3)
+```
 
-<!-- ```{r echo=F} -->
-<!-- # 동남아 -->
-<!-- reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 1) -->
-<!-- ``` -->
+---
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "동남아" -->
+- 주요 단어 사용 댓글 요약
+  - `"조합"`: 택시 조합이 독점적인 권한을 유지하고 있다.
+  - `"소비자"`: 소비자의 권리를 무시하고 기업 입장만 고려해 법안이 만들어졌다.
+  - `"동남아"`: 동남아시아 국가는 승차 공유 서비스가 활성화된 반면 한국은 그렇지 않다.
+ 
+ 
+---
 
-<!-- #### 5. 비공감 댓글 내용 살펴보기 -->
 
-<!-- 비공감 댓글 중에는 `"렌트카"`, `"한국"`, `"댓글"`의 중요도가 가장 높았습니다. 이 단어를 언급한 댓글을 출력해 내용을 살펴보겠습니다. 내용을 종합하면 다음과 같은 댓글이 비공감 수가 높았음을 알 수 있습니다. -->
 
-<!-- - `"렌트카"` : 타다는 렌트카와 비슷한 사업이므로 특혜를 주면 안된다. -->
-<!-- - `"한국"`   : 한국의 택시 업계를 보호해야 한다, 법안이 한국의 서비스업 발전을 막는다. -->
-<!-- - `"댓글"`   : 타다를 옹호하고 택시를 비판하는 편향된 댓글이 너무 많다. -->
+##### 5. 비공감 댓글 내용 살펴보기
 
 
-<!-- ```{r eval=F} -->
-<!-- # 렌트카 -->
-<!-- reply_dislike %>% find_word(x = reply_raw, keyword = "렌트카", n = 10) -->
-<!-- ``` -->
+```{r eval=F}
+# 렌트카
+reply_dislike %>% find_word(x = reply_raw, keyword = "렌트카", n = 10)
+```
 
-<!-- ```{r echo=F} -->
-<!-- # 렌트카 -->
-<!-- reply_dislike %>% find_word(x = reply_raw, keyword = "렌트카", n = 1) -->
-<!-- ``` -->
+```{r echo=F}
+# 렌트카
+reply_dislike %>% find_word(x = reply_raw, keyword = "렌트카", n = 3)
+```
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "렌트카" -->
+---
 
+```{r eval=F}
+# "한국당" 언급 댓글 제거 후 "한국" 언급한 댓글 추출
+reply_dislike %>%
+  filter(!str_detect(reply, "한국당")) %>%
+  find_word(x = reply, keyword = "한국", n = 10)
+```
 
-<!-- ```{r eval=F} -->
-<!-- # "한국당" 언급 댓글 제거 후 "한국" 언급한 댓글 추출 -->
-<!-- reply_dislike %>% -->
-<!--   filter(!str_detect(reply, "한국당")) %>% -->
-<!--   find_word(x = reply, keyword = "한국", n = 10) -->
-<!-- ``` -->
+```{r echo=F}
+# "한국당" 언급 댓글 제거 후 "한국" 언급한 댓글 추출
+reply_dislike %>%
+  filter(!str_detect(reply, "한국당")) %>%
+  find_word(x = reply, keyword = "한국", n = 1)
+```
 
-<!-- ```{r echo=F} -->
-<!-- # "한국당" 언급 댓글 제거 후 "한국" 언급한 댓글 추출 -->
-<!-- reply_dislike %>% -->
-<!--   filter(!str_detect(reply, "한국당")) %>% -->
-<!--   find_word(x = reply, keyword = "한국", n = 1) -->
-<!-- ``` -->
+---
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "한국" -->
 
+```{r eval=F}
+# 댓글
+reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 10)
+```
 
-<!-- ```{r eval=F} -->
-<!-- # 댓글 -->
-<!-- reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 10) -->
-<!-- ``` -->
+```{r echo=F}
+# 댓글
+reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 3)
+```
 
-<!-- ```{r echo=F} -->
-<!-- # 댓글 -->
-<!-- reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 1) -->
-<!-- ``` -->
+---
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "댓글" -->
+- 주요 단어 사용 댓글 요약
+  - `"렌트카"`: 타다는 렌트카와 비슷한 사업이므로 특혜를 주면 안 된다.
+  - `"한국"`: 한국의 택시 업계를 보호해야 한다. 법안이 한국의 서비스업 발전을 막는다.
+  - `"댓글"`: 타다를 옹호하고 택시를 비판하는 편향된 댓글이 너무 많다.
+ 
+---
+ 
+#### 6. 분석 결과 종합하기
 
+- 공감을 많이 받은 댓글
+  - 택시 조합에 비판적이거나 소비자의 권리를 강조
+  - 동남아 국가보다 한국의 승차 공유 서비스가 뒤처져 있다
 
-<!-- #### 6. 분석 결과 종합하기 -->
 
-<!-- 분석 결과를 종합해 보면 공감을 많이 받은 댓글은 택시 조합에 비판적이거나 소비자의 권리를 강조하는 내용, 동남아 국가에 비해 한국의 승차 공유 서비스가 뒤쳐져 있다는 내용이 많습니다. 반대로 공감을 받지 못한 댓글은 타다가 렌트카 서비스이므로 특혜를 주면 안된다는 내용, 타다를 옹호하는 분위기를 비판하거나 한국의 택시 업계를 보호해야 한다는 내용이 많습니다. -->
+- 공감을 받지 못한 댓글
+  - 타다가 렌터카 서비스이므로 특혜를 주면 안 된다
+  - 타다를 옹호하는 분위기를 비판하거나 한국의 택시 업계를 보호해야 한다
 
+---
 
-<!-- ## 7.3 관심 댓글 비교하기 - TF-IDF -->
+name: 07-3
+class: title1
 
-<!-- 댓글을 살펴보면 택시 업계, 정부, 국회의원을 다룬 댓글이 주를 이룹니다. 이 집단을 언급한 댓글을 추출해 TF-IDF를 구하고, 각 카테고리에서 어떤 단어가 중요한지 비교해보겠습니다. -->
+07-3 관심 댓글 비교하기
 
-<!-- > [편집] 분석 절차 요약 표 삽입 -->
+---
 
 
-<!-- ### 7.3.1 TF-IDF 구하기 -->
 
-<!-- 택시 업계, 정부, 국회의원을 언급한 댓글을 추출해 TF-IDF를 구하겠습니다. -->
+## 7.3 관심 댓글 비교하기 - TF-IDF
 
-<!-- #### 1. 카테고리별 문서 목록 만들기 -->
+댓글을 살펴보면 택시 업계, 정부, 국회의원을 다룬 댓글이 주를 이룹니다. 이 집단을 언급한 댓글을 추출해 TF-IDF를 구하고, 각 카테고리에서 어떤 단어가 중요한지 비교해보겠습니다.
 
-<!-- 카테고리 이름과 유사한 단어로 구성된 단어 목록을 만든 다음, 단어를 언급한 댓글을 추출해 카테고리를 부여하고 결합하겠습니다. -->
+> [편집] 분석 절차 요약 표 삽입
 
-<!-- ```{r} -->
-<!-- # 단어 목록 생성 -->
-<!-- category1 <- "택시 업계|택시업계|조합" -->
-<!-- category2 <- "정부" -->
-<!-- category3 <- "국회의원|한국당|자유한국당|자한당|자한|민주당|더불어민주당" -->
 
-<!-- # 추출 및 결합 -->
-<!-- bind_category <- bind_rows( -->
-<!--   word_sympathy %>% -->
-<!--     filter(str_detect(reply, category1)) %>% -->
-<!--     mutate(category = "택시업계"), -->
+### 7.3.1 TF-IDF 구하기
 
-<!--   word_sympathy %>% -->
-<!--     filter(str_detect(reply, category2)) %>% -->
-<!--     mutate(category = "정부"), -->
+택시 업계, 정부, 국회의원을 언급한 댓글을 추출해 TF-IDF를 구하겠습니다.
 
-<!--   word_sympathy %>% -->
-<!--     filter(str_detect(reply, category3)) %>% -->
-<!--     mutate(category = "국회의원")) -->
-<!-- ``` -->
+#### 1. 카테고리별 문서 목록 만들기
 
-<!-- > [참고] 여러 단어를 함께 언급한 댓글도 있기 때문에 `bind_category`는 같은 댓글이 카테고리만 다르게 여러 행으로 구성될 수 있습니다. 예를 들어 `"택시 업계"`와 `"정부"`를 함께 언급한 댓글은 `"택시업계"`와 `"정부"` 카테고리에 모두 속하므로 두 행을 구성하게 됩니다. -->
+카테고리 이름과 유사한 단어로 구성된 단어 목록을 만든 다음, 단어를 언급한 댓글을 추출해 카테고리를 부여하고 결합하겠습니다.
 
-<!-- <br> -->
+```{r}
+# 단어 목록 생성
+category1 <- "택시 업계|택시업계|조합"
+category2 <- "정부"
+category3 <- "국회의원|한국당|자유한국당|자한당|자한|민주당|더불어민주당"
 
-<!-- > [참고] 단어 목록을 `str_detect()`에 활용하기 때문에 `|`로 구분해야 합니다. -->
+# 추출 및 결합
+bind_category <- bind_rows(
+  word_sympathy %>%
+    filter(str_detect(reply, category1)) %>%
+    mutate(category = "택시업계"),
 
+  word_sympathy %>%
+    filter(str_detect(reply, category2)) %>%
+    mutate(category = "정부"),
 
-<!-- #### 2. 카테고리별 댓글 빈도 살펴보기 -->
+  word_sympathy %>%
+    filter(str_detect(reply, category3)) %>%
+    mutate(category = "국회의원"))
+```
 
-<!-- 카테고리별 댓글 빈도를 알아보겠습니다. `bind_category`는 한 행이 댓글별 명사로 구성되어 있으므로 댓글별로 분류해 카테고리를 종류별로 하나씩만 남긴 다음 빈도를 구하겠습니다.  출력 결과를 보면 `"국회의원"` 관련 댓글이 가장 많고, 그 뒤로는 `"정부"`, `"택시업계"` 순으로 많다는 것을 알 수 있습니다. -->
+> [참고] 여러 단어를 함께 언급한 댓글도 있기 때문에 `bind_category`는 같은 댓글이 카테고리만 다르게 여러 행으로 구성될 수 있습니다. 예를 들어 `"택시 업계"`와 `"정부"`를 함께 언급한 댓글은 `"택시업계"`와 `"정부"` 카테고리에 모두 속하므로 두 행을 구성하게 됩니다.
 
-<!-- ```{r} -->
-<!-- # 카테고리별 빈도 -->
-<!-- bind_category %>% -->
-<!--   group_by(id) %>% -->
-<!--   distinct(category, .keep_all = T) %>% -->
-<!--   ungroup() %>% -->
-<!--   count(category) -->
-<!-- ``` -->
+<br>
 
+> [참고] 단어 목록을 `str_detect()`에 활용하기 때문에 `|`로 구분해야 합니다.
 
-<!-- #### 3. TF-IDF 구하기 -->
 
-<!-- #### (1) 불용어 목록 만들기 -->
+#### 2. 카테고리별 댓글 빈도 살펴보기
 
-<!-- `bind_category`를 이용해 TF-IDF를 구하겠습니다. 우선 카테고리를 직접적으로 나타내는 단어를 제외하기 위해 불용어 목록을 만들겠습니다. 이 단어들의 언급 여부로 카테고리를 구성했기 때문에 빈도는 가장 높지만 댓글을 이해하는 데는 도움이 되지 않습니다. -->
+카테고리별 댓글 빈도를 알아보겠습니다. `bind_category`는 한 행이 댓글별 명사로 구성되어 있으므로 댓글별로 분류해 카테고리를 종류별로 하나씩만 남긴 다음 빈도를 구하겠습니다.  출력 결과를 보면 `"국회의원"` 관련 댓글이 가장 많고, 그 뒤로는 `"정부"`, `"택시업계"` 순으로 많다는 것을 알 수 있습니다.
 
-<!-- ```{r} -->
-<!-- # 불용어 목록 생성 -->
-<!-- stopword_category <- c("택시 업계", "택시업계", "업계", "조합", -->
-<!--                        "정부", "국회의원", "한국당", "자유한국당", -->
-<!--                        "자한당", "자한", "민주당", "더불어민주당") -->
-<!-- ``` -->
+```{r}
+# 카테고리별 빈도
+bind_category %>%
+  group_by(id) %>%
+  distinct(category, .keep_all = T) %>%
+  ungroup() %>%
+  count(category)
+```
 
-<!-- #### (2) 중복 단어 제거하기 -->
 
-<!-- TF-IDF는 단어 사용 빈도를 이용해 계산되기 때문에 어떤 단어가 여러 댓글에서 언급된 게 아니라 단순히 한 댓글에서 여러 번 사용된 경우에도 높은 값을 지니게 됩니다. 특히 `bind_category`는 텍스트의 수가 수백 개 정도로 많지 않기 때문에 중복 단어의 영향을 많이 받습니다. -->
+#### 3. TF-IDF 구하기
 
-<!-- 특정 댓글에서 반복 사용되었기 때문에 TF-IDF가 높아지는 문제를 방지하기 위해 `distinct()`로 댓글 내 중복 단어를 제외하겠습니다. 그런 다음 카테고리별 단어 빈도를 구하고 2글자 이상만 추출하겠습니다. -->
+#### (1) 불용어 목록 만들기
 
-<!-- ```{r} -->
-<!-- # 카테고리별 단어 빈도 구하기 -->
-<!-- frequency_category <- bind_category %>% -->
-<!--   filter(!word %in% stopword_category) %>%  # 불용어 제외 -->
+`bind_category`를 이용해 TF-IDF를 구하겠습니다. 우선 카테고리를 직접적으로 나타내는 단어를 제외하기 위해 불용어 목록을 만들겠습니다. 이 단어들의 언급 여부로 카테고리를 구성했기 때문에 빈도는 가장 높지만 댓글을 이해하는 데는 도움이 되지 않습니다.
 
-<!--   group_by(id) %>%                          # 댓글별 분리 -->
-<!--   distinct(word, .keep_all = T) %>%         # 댓글 내 중복 단어 제거 -->
-<!--   ungroup() %>%                             # 그룹 해제 -->
+```{r}
+# 불용어 목록 생성
+stopword_category <- c("택시 업계", "택시업계", "업계", "조합",
+                       "정부", "국회의원", "한국당", "자유한국당",
+                       "자한당", "자한", "민주당", "더불어민주당")
+```
 
-<!--   count(category, word, sort = T) %>%       # 카테고리별 단어 빈도 -->
-<!--   filter(str_count(word) >= 2)              # 2글자 이상 추출 -->
-<!-- ``` -->
+#### (2) 중복 단어 제거하기
 
-<!-- #### (3) TF-IDF 구하기 -->
+TF-IDF는 단어 사용 빈도를 이용해 계산되기 때문에 어떤 단어가 여러 댓글에서 언급된 게 아니라 단순히 한 댓글에서 여러 번 사용된 경우에도 높은 값을 지니게 됩니다. 특히 `bind_category`는 텍스트의 수가 수백 개 정도로 많지 않기 때문에 중복 단어의 영향을 많이 받습니다.
 
-<!-- 카테고리별 단어 빈도를 담은 `frequency_category`를 이용해 TF-IDF를 구하고 중요도가 높은 단어 중심으로 보기 위해 `tf_idf` 기준으로 내림차순 정렬하겠습니다. -->
+특정 댓글에서 반복 사용되었기 때문에 TF-IDF가 높아지는 문제를 방지하기 위해 `distinct()`로 댓글 내 중복 단어를 제외하겠습니다. 그런 다음 카테고리별 단어 빈도를 구하고 2글자 이상만 추출하겠습니다.
 
-<!-- ```{r} -->
-<!-- # tf-idf 구하기 -->
-<!-- tfidf_category <- frequency_category %>% -->
-<!--   bind_tf_idf(term = word, -->
-<!--               document = category, -->
-<!--               n = n) %>% -->
-<!--   arrange(-tf_idf) -->
-<!-- ``` -->
+```{r}
+# 카테고리별 단어 빈도 구하기
+frequency_category <- bind_category %>%
+  filter(!word %in% stopword_category) %>%  # 불용어 제외
 
+  group_by(id) %>%                          # 댓글별 분리
+  distinct(word, .keep_all = T) %>%         # 댓글 내 중복 단어 제거
+  ungroup() %>%                             # 그룹 해제
 
-<!-- ```{r eval=F} -->
-<!-- tfidf_category -->
-<!-- ``` -->
+  count(category, word, sort = T) %>%       # 카테고리별 단어 빈도
+  filter(str_count(word) >= 2)              # 2글자 이상 추출
+```
 
-<!-- ```{r echo=F} -->
-<!-- tfidf_category %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+#### (3) TF-IDF 구하기
 
-<!-- > [편집] 출력 줄맞춤 -->
+카테고리별 단어 빈도를 담은 `frequency_category`를 이용해 TF-IDF를 구하고 중요도가 높은 단어 중심으로 보기 위해 `tf_idf` 기준으로 내림차순 정렬하겠습니다.
 
-<!-- ### 7.3.2 주요 단어 비교하기 -->
+```{r}
+# tf-idf 구하기
+tfidf_category <- frequency_category %>%
+  bind_tf_idf(term = word,
+              document = category,
+              n = n) %>%
+  arrange(-tf_idf)
+```
 
-<!-- `tf_idf`가 높은 주요 단어를 추출해 비교하겠습니다. -->
 
-<!-- #### 1. 불용어 목록 만들기 -->
+```{r eval=F}
+tfidf_category
+```
 
-<!-- 우선 카테고리별로 `tf_idf`가 가장 높은 단어를 15개씩 추출해 살펴본 다음 불용어 목록을 만들겠습니다. -->
+```{r echo=F}
+tfidf_category %>%
+  print(n = 5)
+```
 
-<!-- ```{r eval=F} -->
-<!-- # 주요 단어 추출, 불용어 확인 -->
-<!-- tfidf_category %>% -->
-<!--   group_by(category) %>% -->
-<!--   slice_max(tf_idf, n = 15, with_ties = F) %>% -->
-<!--   print(n = Inf) -->
-<!-- ``` -->
+> [편집] 출력 줄맞춤
 
-<!-- ```{r echo=F} -->
-<!-- # 주요 단어 추출, 불용어 확인 -->
-<!-- tfidf_category %>% -->
-<!--   group_by(category) %>% -->
-<!--   slice_max(tf_idf, n = 15, with_ties = F) %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+### 7.3.2 주요 단어 비교하기
 
-<!-- ```{r eval=F} -->
-<!-- # 불용어 목록 생성 -->
-<!-- stopword_tfidf <- c("국회의윈님하고", "현정부", "에휴") -->
-<!-- ``` -->
+`tf_idf`가 높은 주요 단어를 추출해 비교하겠습니다.
 
-<!-- ```{r echo=F} -->
-<!-- # 불용어 목록 생성 -->
-<!-- stopword_tfidf <- c("국회의윈님하고", "현정부", "에휴") -->
-<!-- ``` -->
+#### 1. 불용어 목록 만들기
 
-<!-- > [편집] 출력 줄맞춤 -->
+우선 카테고리별로 `tf_idf`가 가장 높은 단어를 15개씩 추출해 살펴본 다음 불용어 목록을 만들겠습니다.
 
-<!-- #### 2. 주요 단어 추출하기 -->
+```{r eval=F}
+# 주요 단어 추출, 불용어 확인
+tfidf_category %>%
+  group_by(category) %>%
+  slice_max(tf_idf, n = 15, with_ties = F) %>%
+  print(n = Inf)
+```
 
-<!-- 불용어를 제외하고 카테고리별로 `tf_idf`가 가장 높은 단어를 10개씩 추출하겠습니다. -->
+```{r echo=F}
+# 주요 단어 추출, 불용어 확인
+tfidf_category %>%
+  group_by(category) %>%
+  slice_max(tf_idf, n = 15, with_ties = F) %>%
+  print(n = 5)
+```
 
-<!-- ```{r} -->
-<!-- # 주요 단어 추출 -->
-<!-- top10 <- tfidf_category %>% -->
-<!--   filter(!word %in% stopword_tfidf) %>% -->
-<!--   group_by(category) %>% -->
-<!--   slice_max(tf_idf, n = 10, with_ties = F) -->
-<!-- ``` -->
+```{r eval=F}
+# 불용어 목록 생성
+stopword_tfidf <- c("국회의윈님하고", "현정부", "에휴")
+```
 
+```{r echo=F}
+# 불용어 목록 생성
+stopword_tfidf <- c("국회의윈님하고", "현정부", "에휴")
+```
 
-<!-- #### 3. 막대 그래프 만들기 -->
+> [편집] 출력 줄맞춤
 
-<!-- 앞에서 만든 `top10`을 이용해 카테고리별 주요 단어를 표현한 막대 그래프를 만들겠습니다. -->
+#### 2. 주요 단어 추출하기
 
-<!-- ```{r} -->
-<!-- # 그래프 순서 정하기 -->
-<!-- top10$category <- factor(top10$category, -->
-<!--                          levels = c("택시업계", "정부", "국회의원")) -->
+불용어를 제외하고 카테고리별로 `tf_idf`가 가장 높은 단어를 10개씩 추출하겠습니다.
 
-<!-- # 막대 그래프 만들기 -->
-<!-- ggplot(top10, aes(x = reorder_within(word, tf_idf, category), -->
-<!--                   y = tf_idf, -->
-<!--                   fill = category)) + -->
-<!--   geom_col(show.legend = F) + -->
-<!--   coord_flip() + -->
-<!--   facet_wrap(~ category, scales = "free", ncol = 3) + -->
-<!--   scale_x_reordered() + -->
-<!--   scale_y_continuous(n.breaks = 5, -->
-<!--                      labels = number_format(accuracy = .001)) + -->
+```{r}
+# 주요 단어 추출
+top10 <- tfidf_category %>%
+  filter(!word %in% stopword_tfidf) %>%
+  group_by(category) %>%
+  slice_max(tf_idf, n = 10, with_ties = F)
+```
 
-<!--   labs(title = "타다 금지법 기사 댓글 주요 단어", -->
-<!--        subtitle = "카테고리별 TF-IDF Top 10", -->
-<!--        x = NULL) + -->
 
-<!--   theme_minimal() + -->
-<!--   theme(text = element_text(family = "nanumgothic"), -->
-<!--         plot.title = element_text(size = 14, face = "bold"), -->
-<!--         plot.subtitle = element_text(size = 12), -->
-<!--         strip.text = element_text(size = 11))  # 카테고리명 폰트 -->
-<!-- ``` -->
+#### 3. 막대 그래프 만들기
 
-<!-- > [편집] 그래프 폭 넓게 만들기 -->
+앞에서 만든 `top10`을 이용해 카테고리별 주요 단어를 표현한 막대 그래프를 만들겠습니다.
 
-<!-- ### 7.3.3 카테고리별 댓글 내용 살펴보기 -->
+```{r}
+# 그래프 순서 정하기
+top10$category <- factor(top10$category,
+                         levels = c("택시업계", "정부", "국회의원"))
 
-<!-- 카테고리별로 주요 단어를 언급한 댓글을 추출해 내용을 살펴보겠습니다. -->
+# 막대 그래프 만들기
+ggplot(top10, aes(x = reorder_within(word, tf_idf, category),
+                  y = tf_idf,
+                  fill = category)) +
+  geom_col(show.legend = F) +
+  coord_flip() +
+  facet_wrap(~ category, scales = "free", ncol = 3) +
+  scale_x_reordered() +
+  scale_y_continuous(n.breaks = 5,
+                     labels = number_format(accuracy = .001)) +
 
-<!-- #### 1. 중복 댓글 제거하기 -->
+  labs(title = "타다 금지법 기사 댓글 주요 단어",
+       subtitle = "카테고리별 TF-IDF Top 10",
+       x = NULL) +
 
-<!-- `bind_category`에서 `category`별로 중복 댓글을 제거하고 하나씩만 남기겠습니다. -->
+  theme_minimal() +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        strip.text = element_text(size = 11))  # 카테고리명 폰트
+```
 
-<!-- ```{r} -->
-<!-- # 중복 댓글 제거 -->
-<!-- reply_category <- bind_category %>% -->
-<!--   group_by(category) %>% -->
-<!--   distinct(id, .keep_all = T) -->
-<!-- ``` -->
+> [편집] 그래프 폭 넓게 만들기
 
-<!-- #### 2. 댓글 내용 살펴보기 -->
+### 7.3.3 카테고리별 댓글 내용 살펴보기
 
-<!-- `reply_category`에서 카테고리를 추출한 다음 `find_word()`를 이용하면 댓글에서 주요 단어가 어떻게 사용됐는지 확인할 수 있습니다. -->
+카테고리별로 주요 단어를 언급한 댓글을 추출해 내용을 살펴보겠습니다.
 
-<!-- ```{r eval=F} -->
-<!-- # 택시업계 카테고리 -->
-<!-- reply_category %>% -->
-<!--   filter(category == "택시업계") %>% -->
-<!--   find_word(x = reply_raw, keyword = "대기업") -->
-<!-- ``` -->
+#### 1. 중복 댓글 제거하기
 
-<!-- ```{r echo=F} -->
-<!-- reply_category %>% -->
-<!--   filter(category == "택시업계") %>% -->
-<!--   find_word(x = reply_raw, keyword = "대기업", n = 1) -->
-<!-- ``` -->
+`bind_category`에서 `category`별로 중복 댓글을 제거하고 하나씩만 남기겠습니다.
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "대기업" -->
+```{r}
+# 중복 댓글 제거
+reply_category <- bind_category %>%
+  group_by(category) %>%
+  distinct(id, .keep_all = T)
+```
 
-<!-- ```{r eval=F} -->
-<!-- # 정부 카테고리 -->
-<!-- reply_category %>% -->
-<!--   filter(category == "정부") %>% -->
-<!--   find_word(x = reply_raw, keyword = "지원") -->
-<!-- ``` -->
+#### 2. 댓글 내용 살펴보기
 
-<!-- ```{r echo=F} -->
-<!-- reply_category %>% -->
-<!--   filter(category == "정부") %>% -->
-<!--   find_word(x = reply_raw, keyword = "지원", n = 1) -->
-<!-- ``` -->
+`reply_category`에서 카테고리를 추출한 다음 `find_word()`를 이용하면 댓글에서 주요 단어가 어떻게 사용됐는지 확인할 수 있습니다.
 
-<!-- ```{r eval=F} -->
-<!-- # 국회의원 카테고리 -->
-<!-- reply_category %>% -->
-<!--   filter(category == "국회의원") %>% -->
-<!--   find_word(x = reply_raw, keyword = "박홍근") -->
-<!-- ``` -->
+```{r eval=F}
+# 택시업계 카테고리
+reply_category %>%
+  filter(category == "택시업계") %>%
+  find_word(x = reply_raw, keyword = "대기업")
+```
 
+```{r echo=F}
+reply_category %>%
+  filter(category == "택시업계") %>%
+  find_word(x = reply_raw, keyword = "대기업", n = 3)
+```
 
-<!-- ```{r echo=F} -->
-<!-- reply_category %>% -->
-<!--   filter(category == "국회의원") %>% -->
-<!--   find_word(x = reply_raw, keyword = "박홍근", n = 1) -->
-<!-- ``` -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "대기업"
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "박홍근" -->
+```{r eval=F}
+# 정부 카테고리
+reply_category %>%
+  filter(category == "정부") %>%
+  find_word(x = reply_raw, keyword = "지원")
+```
 
-<!-- <br> -->
+```{r echo=F}
+reply_category %>%
+  filter(category == "정부") %>%
+  find_word(x = reply_raw, keyword = "지원", n = 3)
+```
 
-<!-- > [참고] TF-IDF는 단어가 문서에서 상대적으로 많이 사용된 정도를 의미하기 때문에 TF-IDF를 이용하면 개성이 뚜렷하고 사용 빈도는 낮은 단어가 추출되는 경향이 있습니다. 관심 단어를 언급한 댓글 수가 적은 것은 이런 이유 때문입니다. -->
+```{r eval=F}
+# 국회의원 카테고리
+reply_category %>%
+  filter(category == "국회의원") %>%
+  find_word(x = reply_raw, keyword = "박홍근")
+```
 
-<!-- --- -->
 
-<!-- > [알아두면 좋아요] 텍스트 중복을 제거하는 문제는 생각보다 간단하지 않습니다. -->
+```{r echo=F}
+reply_category %>%
+  filter(category == "국회의원") %>%
+  find_word(x = reply_raw, keyword = "박홍근", n = 3)
+```
 
-<!-- 국회의원 카테고리를 보면 `"깨구락지"`가 주요 단어로 추출됐습니다. 그런데 이 단어를 언급한 댓글을 살펴보면 대부분 내용이 같습니다. -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "박홍근"
 
-<!-- ```{r eval=F} -->
-<!-- tada %>% -->
-<!--   find_word(x = reply_raw, keyword = "깨구락지") -->
-<!-- ``` -->
+<br>
 
-<!-- ```{r echo=F} -->
-<!-- tada %>% -->
-<!--   find_word(x = reply_raw, keyword = "깨구락지", n = 1) -->
-<!-- ``` -->
+> [참고] TF-IDF는 단어가 문서에서 상대적으로 많이 사용된 정도를 의미하기 때문에 TF-IDF를 이용하면 개성이 뚜렷하고 사용 빈도는 낮은 단어가 추출되는 경향이 있습니다. 관심 단어를 언급한 댓글 수가 적은 것은 이런 이유 때문입니다.
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "깨구락지" -->
+---
 
-<!-- `raw_tada`에서 이 단어를 언급한 댓글을 추출하면 4개의 기사에 내용이 같거나 거의 비슷한 댓글이 달려있습니다. 이런 댓글을 보면 같은 사용자가 여러 기사에 댓글을 달았다고 추측할 수 있습니다. -->
+> [알아두면 좋아요] 텍스트 중복을 제거하는 문제는 생각보다 간단하지 않습니다.
 
-<!-- ```{r} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply, "깨구락지")) %>% -->
-<!--   select(press, reply_raw) -->
-<!-- ``` -->
+국회의원 카테고리를 보면 `"깨구락지"`가 주요 단어로 추출됐습니다. 그런데 이 단어를 언급한 댓글을 살펴보면 대부분 내용이 같습니다.
 
-<!-- 텍스트를 분석할 때는 이와 같은 중복 문서를 어떻게 처리할지 결정해야 합니다. 가장 간단한 방법은 중복 문서를 모두 제거하고 분석하는 것입니다. 하지만 이 방법은 서로 다른 사람이 동일한 내용으로 글을 쓴 경우 문서를 손실하게 되는 문제가 있습니다. 특히 댓글처럼 짧은 문서는 동일한 내용이 많기 때문에 모두 제거하는 방법은 적절하지 않습니다. 일정 길이 이상의 댓글을 대상으로 중복을 제거하는 방법도 있지만, 이 방법 역시 한 사용자가 짧은 댓글을 여러 번 단 경우 제거하지 못하는 한계가 있습니다. -->
+```{r eval=F}
+tada %>%
+  find_word(x = reply_raw, keyword = "깨구락지")
+```
 
-<!-- 가장 좋은 방법은 로그인 정보와 같은 사용자 식별 정보를 이용해 사용자별 중복 문서를 제거하는 것입니다. 하지만 서비스 운영자가 아니라면 사용자 식별 정보를 확인할 수 없습니다. 외부에서 수집한 텍스트는 어뷰징으로 만들어졌는지 판단하기 어렵기 때문에 중복 문서를 제거하는 방법을 결정하는 문제가 생각보다 간단하지 않습니다. -->
+```{r echo=F}
+tada %>%
+  find_word(x = reply_raw, keyword = "깨구락지", n = 1)
+```
 
-<!-- --- -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "깨구락지"
 
+`raw_tada`에서 이 단어를 언급한 댓글을 추출하면 4개의 기사에 내용이 같거나 거의 비슷한 댓글이 달려있습니다. 이런 댓글을 보면 같은 사용자가 여러 기사에 댓글을 달았다고 추측할 수 있습니다.
 
-<!-- ## 7.4 단어 간 관계 살펴보기 -->
+```{r}
+tada %>%
+  filter(str_detect(reply, "깨구락지")) %>%
+  select(press, reply_raw)
+```
 
-<!-- 지금까지는 단어 중심으로 분석했으니 이제 파이 계수와 엔그램을 이용해 단어 간 관계를 살펴보겠습니다. -->
+텍스트를 분석할 때는 이와 같은 중복 문서를 어떻게 처리할지 결정해야 합니다. 가장 간단한 방법은 중복 문서를 모두 제거하고 분석하는 것입니다. 하지만 이 방법은 서로 다른 사람이 동일한 내용으로 글을 쓴 경우 문서를 손실하게 되는 문제가 있습니다. 특히 댓글처럼 짧은 문서는 동일한 내용이 많기 때문에 모두 제거하는 방법은 적절하지 않습니다. 일정 길이 이상의 댓글을 대상으로 중복을 제거하는 방법도 있지만, 이 방법 역시 한 사용자가 짧은 댓글을 여러 번 단 경우 제거하지 못하는 한계가 있습니다.
 
-<!-- > [편집] '분석 절차' 요약 표 삽입 -->
+가장 좋은 방법은 로그인 정보와 같은 사용자 식별 정보를 이용해 사용자별 중복 문서를 제거하는 것입니다. 하지만 서비스 운영자가 아니라면 사용자 식별 정보를 확인할 수 없습니다. 외부에서 수집한 텍스트는 어뷰징으로 만들어졌는지 판단하기 어렵기 때문에 중복 문서를 제거하는 방법을 결정하는 문제가 생각보다 간단하지 않습니다.
 
+---
 
-<!-- ### 7.4.1 파이 계수로 단어 간 상관관계 살펴보기 -->
 
-<!-- 파이 계수를 이용해 관련성이 큰 단어쌍을 알아보겠습니다. -->
+## 7.4 단어 간 관계 살펴보기
 
-<!-- #### 1. 파이 계수 구하기 -->
+지금까지는 단어 중심으로 분석했으니 이제 파이 계수와 엔그램을 이용해 단어 간 관계를 살펴보겠습니다.
 
-<!-- #### (1) 토큰화하기 -->
+> [편집] '분석 절차' 요약 표 삽입
 
-<!-- 먼저 **7.1.1**에서 전처리한  `tada`의 `reply`를 토큰화해 명사, 동사, 형용사를 추출한 다음, 품사별로 분리하고 태그를 정리하겠습니다. -->
 
-<!-- ```{r eval=F} -->
-<!-- # 토큰화 -->
-<!-- pos_tada <- tada %>% -->
-<!--   unnest_tokens(input = reply, -->
-<!--                 output = word_pos, -->
-<!--                 token = SimplePos22, -->
-<!--                 drop = F) -->
+### 7.4.1 파이 계수로 단어 간 상관관계 살펴보기
 
-<!-- # 품사 태그 정리 -->
-<!-- separate_pos_tada <- pos_tada %>% -->
-<!--   separate_rows(word_pos, sep = "[+]") %>%                   # 품사 태그 분리 -->
-<!--   filter(str_detect(word_pos, "/n|/pv|/pa")) %>%             # 품사 추출 -->
-<!--   mutate(word = ifelse(str_detect(word_pos, "/pv|/pa"),      # "/pv", "/pa" 추출 -->
-<!--                        str_replace(word_pos, "/.*$", "다"),  # "~다"로 바꾸기 -->
-<!--                        str_remove(word_pos, "/.*$"))) %>%    # 태그 제거 -->
-<!--   filter(str_count(word) >= 2) %>%                           # 2글자 이상 추출 -->
-<!--   arrange(id) -->
-<!-- ``` -->
+파이 계수를 이용해 관련성이 큰 단어쌍을 알아보겠습니다.
 
+#### 1. 파이 계수 구하기
 
-<!-- ```{r echo=F} -->
-<!-- # saveRDS(separate_pos_tada, "separate_pos_tada.rds") -->
-<!-- separate_pos_tada <- readRDS(here::here("preprocessing/news_coments/tada/separate_pos_tada.rds")) -->
+#### (1) 토큰화하기
 
-<!-- ``` -->
+먼저 **7.1.1**에서 전처리한  `tada`의 `reply`를 토큰화해 명사, 동사, 형용사를 추출한 다음, 품사별로 분리하고 태그를 정리하겠습니다.
 
-<!-- ```{r eval=F} -->
-<!-- separate_pos_tada %>% -->
-<!--   select(word) -->
-<!-- ``` -->
+```{r eval=F}
+# 토큰화
+pos_tada <- tada %>%
+  unnest_tokens(input = reply,
+                output = word_pos,
+                token = SimplePos22,
+                drop = F)
 
-<!-- ```{r echo=F} -->
-<!-- separate_pos_tada %>% -->
-<!--   select(word) %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+# 품사 태그 정리
+separate_pos_tada <- pos_tada %>%
+  separate_rows(word_pos, sep = "[+]") %>%                   # 품사 태그 분리
+  filter(str_detect(word_pos, "/n|/pv|/pa")) %>%             # 품사 추출
+  mutate(word = ifelse(str_detect(word_pos, "/pv|/pa"),      # "/pv", "/pa" 추출
+                       str_replace(word_pos, "/.*$", "다"),  # "~다"로 바꾸기
+                       str_remove(word_pos, "/.*$"))) %>%    # 태그 제거
+  filter(str_count(word) >= 2) %>%                           # 2글자 이상 추출
+  arrange(id)
+```
 
 
-<!-- #### (2) 파이 계수 구하기 -->
+```{r echo=F}
+# saveRDS(separate_pos_tada, "separate_pos_tada.rds")
+separate_pos_tada <- readRDS(here::here("preprocessing/news_coments/tada/separate_pos_tada.rds"))
 
-<!-- `separate_pos_tada`에서 빈도가 20 이하로 낮은 단어는 제외한 다음 파이 계수를 구하겠습니다. -->
+```
 
-<!-- ```{r} -->
-<!-- library(widyr) -->
-<!-- word_cors <- separate_pos_tada %>% -->
-<!--   add_count(word) %>% -->
-<!--   filter(n >= 20) %>% -->
-<!--   pairwise_cor(item = word, feature = id, sort = T) -->
-<!-- ``` -->
+```{r eval=F}
+separate_pos_tada %>%
+  select(word)
+```
 
+```{r echo=F}
+separate_pos_tada %>%
+  select(word) %>%
+  print(n = 5)
+```
 
-<!-- ```{r eval=F} -->
-<!-- word_cors -->
-<!-- ``` -->
 
-<!-- ```{r echo=F} -->
-<!-- word_cors %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+#### (2) 파이 계수 구하기
 
-<!-- #### 2. 관련성이 큰 단어로 막대 그래프 만들기 -->
+`separate_pos_tada`에서 빈도가 20 이하로 낮은 단어는 제외한 다음 파이 계수를 구하겠습니다.
 
-<!-- '타다 금지법' 뉴스 기사 댓글은 `"타다"`, `"정부"`, `"택시"`의 입장을 다루고 있습니다. `word_cors`에서 `"타다"`, `"정부"`, `"택시"`와 관련성이 큰 단어를 살펴보겠습니다. 먼저 관심 단어 별로 파이 계수가 가장 큰 단어를 10개씩 추출한 다음 막대 그래프를 만들겠습니다. -->
+```{r}
+library(widyr)
+word_cors <- separate_pos_tada %>%
+  add_count(word) %>%
+  filter(n >= 20) %>%
+  pairwise_cor(item = word, feature = id, sort = T)
+```
 
-<!-- ```{r} -->
-<!-- target <- c("타다", "정부", "택시") -->
 
-<!-- # 상위 10개 추출 -->
-<!-- top_cors <- word_cors %>% -->
-<!--   filter(item1 %in% target) %>% -->
-<!--   group_by(item1) %>% -->
-<!--   slice_max(correlation, n = 10) -->
-<!-- ``` -->
+```{r eval=F}
+word_cors
+```
 
+```{r echo=F}
+word_cors %>%
+  print(n = 5)
+```
 
-<!-- ```{r eval=F} -->
-<!-- top_cors -->
-<!-- ``` -->
+#### 2. 관련성이 큰 단어로 막대 그래프 만들기
 
-<!-- ```{r echo=F} -->
-<!-- top_cors %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+'타다 금지법' 뉴스 기사 댓글은 `"타다"`, `"정부"`, `"택시"`의 입장을 다루고 있습니다. `word_cors`에서 `"타다"`, `"정부"`, `"택시"`와 관련성이 큰 단어를 살펴보겠습니다. 먼저 관심 단어 별로 파이 계수가 가장 큰 단어를 10개씩 추출한 다음 막대 그래프를 만들겠습니다.
 
-<!-- ```{r} -->
-<!-- # 그래프 순서 정하기 -->
-<!-- top_cors$item1 <- factor(top_cors$item1, levels = target) -->
+```{r}
+target <- c("타다", "정부", "택시")
 
-<!-- # 막대 그래프 만들기 -->
-<!-- ggplot(top_cors, aes(x = reorder_within(item2, correlation, item1), -->
-<!--                      y = correlation, -->
-<!--                      fill = item1)) + -->
-<!--   geom_col(show.legend = F) + -->
-<!--   facet_wrap(~ item1, scales = "free") + -->
-<!--   coord_flip() + -->
-<!--   scale_x_reordered() + -->
+# 상위 10개 추출
+top_cors <- word_cors %>%
+  filter(item1 %in% target) %>%
+  group_by(item1) %>%
+  slice_max(correlation, n = 10)
+```
 
-<!--   labs(title = "타다 금지법 기사 댓글 주요 단어", -->
-<!--        subtitle = "파이 계수 Top 10", -->
-<!--        x = NULL) + -->
 
-<!--   theme_minimal() + -->
-<!--   theme(text = element_text(family = "nanumgothic"), -->
-<!--         plot.title = element_text(size = 14, face = "bold"), -->
-<!--         plot.subtitle = element_text(size = 12), -->
-<!--         strip.text = element_text(size = 11)) -->
-<!-- ``` -->
+```{r eval=F}
+top_cors
+```
 
-<!-- > [편집] 그래프 폭 넓게 만들기 -->
+```{r echo=F}
+top_cors %>%
+  print(n = 5)
+```
 
-<!-- 관심 단어와 관련성이 큰 단어를 보면 다음과 같이 해석할 수 있습니다. -->
+```{r}
+# 그래프 순서 정하기
+top_cors$item1 <- factor(top_cors$item1, levels = target)
 
-<!-- **타다** : `"타다"`와 가장 관계가 큰 단어가 `"택시"`인 것을 보면 타다와 택시 업계의 갈등을 다룬 댓글이 많다는 것을 알 수 있습니다. `"서비스"`, `"편하다"`, `"좋다"`, `"많다"`와 같은 단어를 보면 전반적으로 타다의 장점을 표현한 단어들과 관련성이 크다는 것을 알 수 있습니다. -->
+# 막대 그래프 만들기
+ggplot(top_cors, aes(x = reorder_within(item2, correlation, item1),
+                     y = correlation,
+                     fill = item1)) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ item1, scales = "free") +
+  coord_flip() +
+  scale_x_reordered() +
 
-<!-- **택시** : `"택시"`와 관계가 가장 큰 단어가 `"타다"`인 것은 앞의 설명과 마찬가지로 타다와 택시 업계의 갈등을 다룬 댓글이 많기 때문이라고 볼 수 있습니다. 전반적으로 `"서비스"`, `"승차거부"`, `"불친절"`, `"요금"`, `"비싸다"` 등 택시 서비스의 품질을 비판하는데 사용하는 단어들과 관련성이 크다는 것을 알 수 있습니다. -->
+  labs(title = "타다 금지법 기사 댓글 주요 단어",
+       subtitle = "파이 계수 Top 10",
+       x = NULL) +
 
-<!-- **정부** : `"세금"`이 `"정부"`와 가장 관계가 큰 단어로 나타난 것은 정부가 세금을 어떤 산업을 지원하는데 사용해야 하는지 주장한 댓글이 많기 때문이라고 볼 수 있습니다. 전반적으로 `"기업"`, `"자유"`, `"시장"`, `"경제"`, `"규제"`, `"막다"` 등 정부가 산업의 발전을 막는다는 주장과 관련된 단어들의 관련성이 크다는 것을 알 수 있습니다. -->
+  theme_minimal() +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        strip.text = element_text(size = 11))
+```
 
-<!-- #### 3. 네트워크 그래프 만들기 -->
+> [편집] 그래프 폭 넓게 만들기
 
-<!-- 파이 계수를 이용해 네트워크 그래프를 만들어 단어 간 관계를 살펴보겠습니다. 출력된 그래프를 보면 빈도가 높지 않아도 관계가 큰 단어들이 군집으로 표현되어 있기 때문에 댓글에 담겨있는 다양한 주장을 파악할 수 있습니다. -->
+관심 단어와 관련성이 큰 단어를 보면 다음과 같이 해석할 수 있습니다.
 
-<!-- ```{r fig.height=7, fig.width=8} -->
-<!-- # 네트워크 그래프 데이터 만들기 -->
-<!-- library(tidygraph) -->
-<!-- set.seed(1234) -->
-<!-- graph_cors <- word_cors %>% -->
-<!--   filter(correlation >= 0.15) %>% -->
-<!--   as_tbl_graph(directed = F) %>% -->
-<!--   mutate(centrality = centrality_degree(),       # 중심성 -->
-<!--          group = as.factor(group_infomap()))     # 커뮤니티 -->
+**타다** : `"타다"`와 가장 관계가 큰 단어가 `"택시"`인 것을 보면 타다와 택시 업계의 갈등을 다룬 댓글이 많다는 것을 알 수 있습니다. `"서비스"`, `"편하다"`, `"좋다"`, `"많다"`와 같은 단어를 보면 전반적으로 타다의 장점을 표현한 단어들과 관련성이 크다는 것을 알 수 있습니다.
 
-<!-- # 네트워크 그래프 만들기 -->
-<!-- library(ggraph) -->
-<!-- set.seed(1234) -->
-<!-- ggraph(graph_cors, layout = "fr") +              # 레이아웃 -->
+**택시** : `"택시"`와 관계가 가장 큰 단어가 `"타다"`인 것은 앞의 설명과 마찬가지로 타다와 택시 업계의 갈등을 다룬 댓글이 많기 때문이라고 볼 수 있습니다. 전반적으로 `"서비스"`, `"승차거부"`, `"불친절"`, `"요금"`, `"비싸다"` 등 택시 서비스의 품질을 비판하는데 사용하는 단어들과 관련성이 크다는 것을 알 수 있습니다.
 
-<!--   geom_edge_link(color = "gray50",               # 엣지 색깔 -->
-<!--                  aes(edge_alpha = correlation,   # 엣지 명암 -->
-<!--                      edge_width = correlation),  # 엣지 두께 -->
-<!--                  show.legend = F) +              # 범례 삭제 -->
-<!--   scale_edge_width(range = c(1, 4)) +            # 엣지 두께 범위 -->
+**정부** : `"세금"`이 `"정부"`와 가장 관계가 큰 단어로 나타난 것은 정부가 세금을 어떤 산업을 지원하는데 사용해야 하는지 주장한 댓글이 많기 때문이라고 볼 수 있습니다. 전반적으로 `"기업"`, `"자유"`, `"시장"`, `"경제"`, `"규제"`, `"막다"` 등 정부가 산업의 발전을 막는다는 주장과 관련된 단어들의 관련성이 크다는 것을 알 수 있습니다.
 
-<!--   geom_node_point(aes(size = centrality,         # 노드 크기 -->
-<!--                       color = group),            # 노드 색깔 -->
-<!--                   show.legend = F) +             # 범례 삭제 -->
-<!--   scale_size(range = c(5, 10)) +                 # 노드 크기 범위 -->
+#### 3. 네트워크 그래프 만들기
 
-<!--   geom_node_text(aes(label = name),              # 텍스트 표시 -->
-<!--                  repel = T,                      # 노드밖 표시 -->
-<!--                  size = 5,                       # 텍스트 크기 -->
-<!--                  family = "nanumgothic") +       # 폰트 -->
+파이 계수를 이용해 네트워크 그래프를 만들어 단어 간 관계를 살펴보겠습니다. 출력된 그래프를 보면 빈도가 높지 않아도 관계가 큰 단어들이 군집으로 표현되어 있기 때문에 댓글에 담겨있는 다양한 주장을 파악할 수 있습니다.
 
-<!--   theme_graph()                                  # 배경 삭제 -->
-<!-- ``` -->
+```{r fig.height=7, fig.width=8}
+# 네트워크 그래프 데이터 만들기
+library(tidygraph)
+set.seed(1234)
+graph_cors <- word_cors %>%
+  filter(correlation >= 0.15) %>%
+  as_tbl_graph(directed = F) %>%
+  mutate(centrality = centrality_degree(),       # 중심성
+         group = as.factor(group_infomap()))     # 커뮤니티
 
-<!-- > [참고] 노드가 많기 때문에 plot 창이 작으면 그래프를 알아보기 어렵습니다. 윈도우는 `windows()`, 맥은 `x11()`을 실행해 별도의 이미지 출력 창을 띄운 다음 창을 크게 키우고 나서 그래프를 출력해보세요. -->
+# 네트워크 그래프 만들기
+library(ggraph)
+set.seed(1234)
+ggraph(graph_cors, layout = "fr") +              # 레이아웃
 
-<!-- #### 4. 댓글 내용 살펴보기 -->
+  geom_edge_link(color = "gray50",               # 엣지 색깔
+                 aes(edge_alpha = correlation,   # 엣지 명암
+                     edge_width = correlation),  # 엣지 두께
+                 show.legend = F) +              # 범례 삭제
+  scale_edge_width(range = c(1, 4)) +            # 엣지 두께 범위
 
-<!-- 그래프의 노드 군집 중에서 몇 가지 눈에 띄는 단어쌍을 언급한 댓글을 출력해 내용을 살펴보겠습니다. -->
+  geom_node_point(aes(size = centrality,         # 노드 크기
+                      color = group),            # 노드 색깔
+                  show.legend = F) +             # 범례 삭제
+  scale_size(range = c(5, 10)) +                 # 노드 크기 범위
 
-<!-- **선거-내년-총선** : `"선거"`와 `"내년"`, `"내년"`과 `"총선"`을 함께 언급한 댓글을 보면 2020년에 있을 국회의원 선거를 의식하고 법안을 개정했다는 비판을 담고 있습니다. -->
+  geom_node_text(aes(label = name),              # 텍스트 표시
+                 repel = T,                      # 노드밖 표시
+                 size = 5,                       # 텍스트 크기
+                 family = "nanumgothic") +       # 폰트
 
-<!-- ```{r eval=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "선거")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "내년", n = 10) -->
-<!-- ``` -->
+  theme_graph()                                  # 배경 삭제
+```
 
-<!-- ```{r echo=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "선거")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "내년", n = 1) -->
-<!-- ``` -->
+> [참고] 노드가 많기 때문에 plot 창이 작으면 그래프를 알아보기 어렵습니다. 윈도우는 `windows()`, 맥은 `x11()`을 실행해 별도의 이미지 출력 창을 띄운 다음 창을 크게 키우고 나서 그래프를 출력해보세요.
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "내년" -->
+#### 4. 댓글 내용 살펴보기
 
+그래프의 노드 군집 중에서 몇 가지 눈에 띄는 단어쌍을 언급한 댓글을 출력해 내용을 살펴보겠습니다.
 
-<!-- ```{r eval=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "내년")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "총선", n = 10) -->
-<!-- ``` -->
+**선거-내년-총선** : `"선거"`와 `"내년"`, `"내년"`과 `"총선"`을 함께 언급한 댓글을 보면 2020년에 있을 국회의원 선거를 의식하고 법안을 개정했다는 비판을 담고 있습니다.
 
-<!-- ```{r echo=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "내년")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "총선", n = 1) -->
-<!-- ``` -->
+```{r eval=F}
+tada %>%
+  filter(str_detect(reply_raw, "선거")) %>%
+  find_word(x = reply_raw, keyword = "내년", n = 10)
+```
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "총선" -->
+```{r echo=F}
+tada %>%
+  filter(str_detect(reply_raw, "선거")) %>%
+  find_word(x = reply_raw, keyword = "내년", n = 3)
+```
 
-<!-- <br> -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "내년"
 
-<!-- **목적지-손님-고르다** : `"목적지"`와 `"손님"`, `"손님"`과 `"고르다"`를 함께 언급한 댓글을 보면 택시 기사가 손님을 골라서 태운다는 비판을 담고 있습니다. -->
 
-<!-- ```{r eval=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "목적지")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "손님", n = 10) -->
-<!-- ``` -->
+```{r eval=F}
+tada %>%
+  filter(str_detect(reply_raw, "내년")) %>%
+  find_word(x = reply_raw, keyword = "총선", n = 10)
+```
 
-<!-- ```{r echo=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "목적지")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "손님", n = 1) -->
-<!-- ``` -->
+```{r echo=F}
+tada %>%
+  filter(str_detect(reply_raw, "내년")) %>%
+  find_word(x = reply_raw, keyword = "총선", n = 3)
+```
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "손님" -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "총선"
 
-<!-- ```{r eval=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "손님")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "골라", n = 10) -->
+<br>
 
-<!-- ``` -->
+**목적지-손님-고르다** : `"목적지"`와 `"손님"`, `"손님"`과 `"고르다"`를 함께 언급한 댓글을 보면 택시 기사가 손님을 골라서 태운다는 비판을 담고 있습니다.
 
-<!-- ```{r echo=F} -->
-<!-- tada %>% -->
-<!--   filter(str_detect(reply_raw, "손님")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "골라", n = 1) -->
+```{r eval=F}
+tada %>%
+  filter(str_detect(reply_raw, "목적지")) %>%
+  find_word(x = reply_raw, keyword = "손님", n = 10)
+```
 
-<!-- ``` -->
+```{r echo=F}
+tada %>%
+  filter(str_detect(reply_raw, "목적지")) %>%
+  find_word(x = reply_raw, keyword = "손님", n = 3)
+```
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "골라" -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "손님"
 
-<!-- <br> -->
+```{r eval=F}
+tada %>%
+  filter(str_detect(reply_raw, "손님")) %>%
+  find_word(x = reply_raw, keyword = "골라", n = 10)
 
-<!-- > [참고] `"골라"`가 전처리 과정에서 원형인 `"고르다"`로 변형되었기 때문에 `"골라"`를 언급한 댓글을 추출했습니다. 관심 단어를 언급한 원문을 찾을 때는 전처리 작업을 통해 변형되기 전 단어를 이용해야 합니다. 다음과 같이 원문을 추출하면 어떤 단어가 변형됐는지 알 수 있습니다. -->
+```
 
-<!-- ```{r eval=F} -->
-<!-- separate_pos_tada %>% -->
-<!--   filter(word == "고르다") %>% -->
-<!--   pull(reply_raw) -->
-<!-- ``` -->
+```{r echo=F}
+tada %>%
+  filter(str_detect(reply_raw, "손님")) %>%
+  find_word(x = reply_raw, keyword = "골라", n = 3)
 
-<!-- > [편집] 결과 생략 표시 -->
+```
 
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "골라"
 
-<!-- ### 7.4.2 엔그램으로 연이어 사용된 단어 살펴보기 -->
+<br>
 
-<!-- #### 1. 바이그램으로 토큰화해 빈도 구하기 -->
+> [참고] `"골라"`가 전처리 과정에서 원형인 `"고르다"`로 변형되었기 때문에 `"골라"`를 언급한 댓글을 추출했습니다. 관심 단어를 언급한 원문을 찾을 때는 전처리 작업을 통해 변형되기 전 단어를 이용해야 합니다. 다음과 같이 원문을 추출하면 어떤 단어가 변형됐는지 알 수 있습니다.
 
-<!-- 엔그램을 이용해 연이어 사용된 단어쌍을 살펴보겠습니다. 우선 `separate_pos_tada`를 한 댓글이 하나의 행을 구성하도록 결합한 다음 바이그램으로 토큰화하겠습니다. -->
+```{r eval=F}
+separate_pos_tada %>%
+  filter(word == "고르다") %>%
+  pull(reply_raw)
+```
 
-<!-- ```{r} -->
-<!-- # 한 댓글이 하나의 행을 구성하도록 결합 -->
-<!-- line_comment <- separate_pos_tada %>% -->
-<!--   group_by(id) %>% -->
-<!--   summarise(sentence = paste(word, collapse = " ")) -->
+> [편집] 결과 생략 표시
 
-<!-- # 바이그램으로 토큰화 -->
-<!-- bigram_comment <- line_comment %>% -->
-<!--   unnest_tokens(input = sentence, -->
-<!--                 output = bigram, -->
-<!--                 token = "ngrams", -->
-<!--                 n = 2) -->
-<!-- ``` -->
 
+### 7.4.2 엔그램으로 연이어 사용된 단어 살펴보기
 
-<!-- ```{r eval=F} -->
-<!-- bigram_comment -->
-<!-- ``` -->
+#### 1. 바이그램으로 토큰화해 빈도 구하기
 
-<!-- ```{r echo=F} -->
-<!-- bigram_comment %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+엔그램을 이용해 연이어 사용된 단어쌍을 살펴보겠습니다. 우선 `separate_pos_tada`를 한 댓글이 하나의 행을 구성하도록 결합한 다음 바이그램으로 토큰화하겠습니다.
 
-<!-- 바이그램을 구성하는 두 단어를 분리한 다음 단어쌍 빈도를 구하겠습니다. -->
+```{r}
+# 한 댓글이 하나의 행을 구성하도록 결합
+line_comment <- separate_pos_tada %>%
+  group_by(id) %>%
+  summarise(sentence = paste(word, collapse = " "))
 
-<!-- ```{r} -->
-<!-- # 바이그램 분리하기 -->
-<!-- bigram_seprated <- bigram_comment %>% -->
-<!--   separate(bigram, c("word1", "word2"), sep = " ") -->
+# 바이그램으로 토큰화
+bigram_comment <- line_comment %>%
+  unnest_tokens(input = sentence,
+                output = bigram,
+                token = "ngrams",
+                n = 2)
+```
 
-<!-- # 단어쌍 빈도 구하기 -->
-<!-- pair_bigram <- bigram_seprated %>% -->
-<!--   count(word1, word2, sort = T) %>% -->
-<!--   na.omit() -->
-<!-- ``` -->
 
+```{r eval=F}
+bigram_comment
+```
 
-<!-- ```{r eval=F} -->
-<!-- pair_bigram -->
-<!-- ``` -->
+```{r echo=F}
+bigram_comment %>%
+  print(n = 5)
+```
 
-<!-- ```{r echo=F} -->
-<!-- pair_bigram %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+바이그램을 구성하는 두 단어를 분리한 다음 단어쌍 빈도를 구하겠습니다.
 
+```{r}
+# 바이그램 분리하기
+bigram_seprated <- bigram_comment %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
 
-<!-- #### 2. 네트워크 그래프 만들기 -->
+# 단어쌍 빈도 구하기
+pair_bigram <- bigram_seprated %>%
+  count(word1, word2, sort = T) %>%
+  na.omit()
+```
 
-<!-- `pair_bigram`를 이용해 네트워크 그래프를 만들어 단어의 관계를 살펴보겠습니다. 출력된 그래프를 보면 함께 사용할 때 분명한 의미를 지니는 단어쌍 중심으로 네트워크가 형성되어 있기 때문에 단어가 사용된 맥락을 이해할 수 있습니다. -->
 
-<!-- ```{r fig.height=7, fig.width=8} -->
-<!-- # 네트워크 그래프 데이터 만들기 -->
-<!-- set.seed(1234) -->
-<!-- graph_bigram <- pair_bigram %>% -->
-<!--   filter(n >= 8) %>% -->
-<!--   as_tbl_graph(directed = F) %>% -->
-<!--   mutate(centrality = centrality_degree(),       # 중심성 -->
-<!--          group = as.factor(group_infomap()))     # 커뮤니티 -->
+```{r eval=F}
+pair_bigram
+```
 
-<!-- # 네트워크 그래프 만들기 -->
-<!-- set.seed(1234) -->
-<!-- ggraph(graph_bigram, layout = "fr") +            # 레이아웃 -->
+```{r echo=F}
+pair_bigram %>%
+  print(n = 5)
+```
 
-<!--   geom_edge_link(color = "gray50",               # 엣지 색깔 -->
-<!--                  alpha = 0.5) +                  # 엣지 명암 -->
 
-<!--   geom_node_point(aes(size = centrality,         # 노드 크기 -->
-<!--                       color = group),            # 노드 색깔 -->
-<!--                   show.legend = F) +             # 범례 삭제 -->
-<!--   scale_size(range = c(5, 15)) +                 # 노드 크기 범위 -->
+#### 2. 네트워크 그래프 만들기
 
-<!--   geom_node_text(aes(label = name),              # 텍스트 표시 -->
-<!--                  repel = T,                      # 노드밖 표시 -->
-<!--                  size = 5,                       # 텍스트 크기 -->
-<!--                  family = "nanumgothic") +       # 폰트 -->
+`pair_bigram`를 이용해 네트워크 그래프를 만들어 단어의 관계를 살펴보겠습니다. 출력된 그래프를 보면 함께 사용할 때 분명한 의미를 지니는 단어쌍 중심으로 네트워크가 형성되어 있기 때문에 단어가 사용된 맥락을 이해할 수 있습니다.
 
-<!--   theme_graph()                                  # 배경 삭제 -->
-<!-- ``` -->
+```{r fig.height=7, fig.width=8}
+# 네트워크 그래프 데이터 만들기
+set.seed(1234)
+graph_bigram <- pair_bigram %>%
+  filter(n >= 8) %>%
+  as_tbl_graph(directed = F) %>%
+  mutate(centrality = centrality_degree(),       # 중심성
+         group = as.factor(group_infomap()))     # 커뮤니티
 
+# 네트워크 그래프 만들기
+set.seed(1234)
+ggraph(graph_bigram, layout = "fr") +            # 레이아웃
 
-<!-- #### 3. 댓글 내용 살펴보기 -->
+  geom_edge_link(color = "gray50",               # 엣지 색깔
+                 alpha = 0.5) +                  # 엣지 명암
 
-<!-- 노드 군집 중에 몇 가지 눈에 띄는 바이그램 단어쌍을 언급한 댓글을 출력해 내용을 살펴보겠습니다. -->
+  geom_node_point(aes(size = centrality,         # 노드 크기
+                      color = group),            # 노드 색깔
+                  show.legend = F) +             # 범례 삭제
+  scale_size(range = c(5, 15)) +                 # 노드 크기 범위
 
-<!-- #### (1) `line_comment`에 `tada` 결합하기 -->
+  geom_node_text(aes(label = name),              # 텍스트 표시
+                 repel = T,                      # 노드밖 표시
+                 size = 5,                       # 텍스트 크기
+                 family = "nanumgothic") +       # 폰트
 
-<!-- 먼저, 토큰화한 단어가 한 행으로 되어 있는 `line_comment`에 댓글 원문이 들어 있는 `tada`를 결합하겠습니다. 이렇게 하면 특정한 바이그램 단어쌍이 사용된 댓글을 추출해 내용을 확인할 수 있습니다. -->
+  theme_graph()                                  # 배경 삭제
+```
 
-<!-- ```{r} -->
-<!-- line_tada <- line_comment %>% -->
-<!--   left_join(tada, by = "id") -->
-<!-- ``` -->
 
-<!-- ```{r eval=F} -->
-<!-- line_tada %>% -->
-<!--   select(sentence) -->
-<!-- ``` -->
+#### 3. 댓글 내용 살펴보기
 
-<!-- ```{r echo=F} -->
-<!-- line_tada %>% -->
-<!--   select(sentence) %>% -->
-<!--   print(n = 5) -->
-<!-- ``` -->
+노드 군집 중에 몇 가지 눈에 띄는 바이그램 단어쌍을 언급한 댓글을 출력해 내용을 살펴보겠습니다.
 
+#### (1) `line_comment`에 `tada` 결합하기
 
-<!-- #### (2) 댓글 원문 살펴보기 -->
+먼저, 토큰화한 단어가 한 행으로 되어 있는 `line_comment`에 댓글 원문이 들어 있는 `tada`를 결합하겠습니다. 이렇게 하면 특정한 바이그램 단어쌍이 사용된 댓글을 추출해 내용을 확인할 수 있습니다.
 
-<!-- 바이그램 단어쌍을 언급한 댓글을 출력해 내용을 살펴보겠습니다. -->
+```{r}
+line_tada <- line_comment %>%
+  left_join(tada, by = "id")
+```
 
-<!-- **역행-시대-뒤떨어지다** : `"시대 역행"`, `"시대 뒤떨어지다"`를 언급한 댓글을 보면 법안 개정이 시대에 뒤떨어진 판단이라는 비판을 담고 있습니다. -->
+```{r eval=F}
+line_tada %>%
+  select(sentence)
+```
 
-<!-- ```{r eval=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "시대 역행")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "역행", n = 10) -->
-<!-- ``` -->
+```{r echo=F}
+line_tada %>%
+  select(sentence) %>%
+  print(n = 5)
+```
 
-<!-- ```{r echo=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "시대 역행")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "역행", n = 1) -->
-<!-- ``` -->
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "시대" -->
+#### (2) 댓글 원문 살펴보기
 
-<!-- ```{r eval=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "시대 뒤떨어지다")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "뒤떨어", n = 10) -->
-<!-- ``` -->
+바이그램 단어쌍을 언급한 댓글을 출력해 내용을 살펴보겠습니다.
 
-<!-- ```{r echo=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "시대 뒤떨어지다")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "뒤떨어", n = 1) -->
-<!-- ``` -->
+**역행-시대-뒤떨어지다** : `"시대 역행"`, `"시대 뒤떨어지다"`를 언급한 댓글을 보면 법안 개정이 시대에 뒤떨어진 판단이라는 비판을 담고 있습니다.
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "뒤떨어" -->
+```{r eval=F}
+line_tada %>%
+  filter(str_detect(sentence, "시대 역행")) %>%
+  find_word(x = reply_raw, keyword = "역행", n = 10)
+```
 
-<!-- <br> -->
+```{r echo=F}
+line_tada %>%
+  filter(str_detect(sentence, "시대 역행")) %>%
+  find_word(x = reply_raw, keyword = "역행", n = 3)
+```
 
-<!-- **택시-면허-사다** : `"택시 면허"`, `"면허 사다"`를 언급한 댓글을 보면 '택시 면허 거래를 비판'하는 의견과 '타다도 택시와 동등하게 면허를 사서 영업해야 한다'는 상반된 의견이 있다는 것을 알 수 있습니다. -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "시대"
 
-<!-- ```{r eval=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "택시 면허")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "면허", n = 10) -->
-<!-- ``` -->
+```{r eval=F}
+line_tada %>%
+  filter(str_detect(sentence, "시대 뒤떨어지다")) %>%
+  find_word(x = reply_raw, keyword = "뒤떨어", n = 10)
+```
 
-<!-- ```{r echo=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "택시 면허")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "면허", n = 1) -->
-<!-- ``` -->
+```{r echo=F}
+line_tada %>%
+  filter(str_detect(sentence, "시대 뒤떨어지다")) %>%
+  find_word(x = reply_raw, keyword = "뒤떨어", n = 3)
+```
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "면허" -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "뒤떨어"
 
-<!-- ```{r eval=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "면허 사다")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "사서", n = 10) -->
-<!-- ``` -->
+<br>
 
-<!-- ```{r echo=F} -->
-<!-- line_tada %>% -->
-<!--   filter(str_detect(sentence, "면허 사다")) %>% -->
-<!--   find_word(x = reply_raw, keyword = "사서", n = 1) -->
-<!-- ``` -->
+**택시-면허-사다** : `"택시 면허"`, `"면허 사다"`를 언급한 댓글을 보면 '택시 면허 거래를 비판'하는 의견과 '타다도 택시와 동등하게 면허를 사서 영업해야 한다'는 상반된 의견이 있다는 것을 알 수 있습니다.
 
-<!-- > [편집] 출력 결과 생략, 폰트 적용 수정 - "사서" -->
+```{r eval=F}
+line_tada %>%
+  filter(str_detect(sentence, "택시 면허")) %>%
+  find_word(x = reply_raw, keyword = "면허", n = 10)
+```
 
-<!-- <br> -->
+```{r echo=F}
+line_tada %>%
+  filter(str_detect(sentence, "택시 면허")) %>%
+  find_word(x = reply_raw, keyword = "면허", n = 3)
+```
 
-<!-- > [참고] `"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"`를 언급한 댓글을 추출했습니다. -->
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "면허"
+
+```{r eval=F}
+line_tada %>%
+  filter(str_detect(sentence, "면허 사다")) %>%
+  find_word(x = reply_raw, keyword = "사서", n = 10)
+```
+
+```{r echo=F}
+line_tada %>%
+  filter(str_detect(sentence, "면허 사다")) %>%
+  find_word(x = reply_raw, keyword = "사서", n = 3)
+```
+
+> [편집] 출력 결과 생략, 폰트 적용 수정 - "사서"
+
+<br>
+
+> [참고] `"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"`를 언급한 댓글을 추출했습니다.
 
 
 <!-- ## 7.5 토픽 모델링 -->
