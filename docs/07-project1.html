@@ -17,14 +17,7 @@
 
 
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## Loading required package: sysfonts
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## Loading required package: showtextdb
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'crayon'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following object is masked _by_ '.GlobalEnv':
-## 
-##     num_colors
-&lt;/code&gt;&lt;/pre&gt;
+
 
 
 class: title0
@@ -153,26 +146,6 @@ glimpse(raw_tada)
 
 ---
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'dplyr'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## &lt;span style='color: #00BBBB;'&gt;──&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span style='font-weight: bold;'&gt;Column specification&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span style='color: #00BBBB;'&gt;────────────────────────────────────────────────────────&lt;/span&gt;&lt;span&gt;
-## cols(
-##   reg_time = &lt;/span&gt;&lt;span style='color: #0000BB;'&gt;col_datetime(format = "")&lt;/span&gt;&lt;span&gt;,
-##   reply = &lt;/span&gt;&lt;span style='color: #BB0000;'&gt;col_character()&lt;/span&gt;&lt;span&gt;,
-##   press = &lt;/span&gt;&lt;span style='color: #BB0000;'&gt;col_character()&lt;/span&gt;&lt;span&gt;,
-##   title = &lt;/span&gt;&lt;span style='color: #BB0000;'&gt;col_character()&lt;/span&gt;&lt;span&gt;,
-##   url = &lt;/span&gt;&lt;span style='color: #BB0000;'&gt;col_character()&lt;/span&gt;&lt;span&gt;,
-##   sympathyCount = &lt;/span&gt;&lt;span style='color: #00BB00;'&gt;col_double()&lt;/span&gt;&lt;span&gt;,
-##   antipathyCount = &lt;/span&gt;&lt;span style='color: #00BB00;'&gt;col_double()&lt;/span&gt;&lt;span&gt;
-## )
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
 ```
 ## Rows: 5,270
@@ -219,12 +192,7 @@ tada &lt;- raw_tada %&gt;%
 ```r
 library(tidytext)
 library(KoNLP)
-```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## Checking user defined dictionary!
-&lt;/code&gt;&lt;/pre&gt;
-
-```r
 word_noun &lt;- tada %&gt;%
   unnest_tokens(input = reply,
                 output = word,
@@ -363,17 +331,7 @@ ggplot(top20_noun, aes(x = reorder(word, n), y = n)) +
 
 ---
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'scales'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following object is masked from 'package:readr':
-## 
-##     col_factor
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'ggplot2'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following object is masked from 'package:crayon':
-## 
-##     %+%
-&lt;/code&gt;&lt;/pre&gt;&lt;img src="07-project1_files/figure-html/unnamed-chunk-12-1.png" width="70%" /&gt;
+&lt;img src="07-project1_files/figure-html/unnamed-chunk-12-1.png" width="70%" /&gt;
 
 ---
 
@@ -643,6 +601,8 @@ tada %&gt;%
 ##### 2. 스타일 함수로 관심 단어만 눈에 띄게 출력하기
 
 ##### 2.1 텍스트에 스타일 입히기 - `combine_styles()`
+
+
 
 
 ```r
@@ -1170,7 +1130,7 @@ ggplot(top10, aes(x = reorder_within(word, tf_idf, category),
 ```
 
 ---
-![](07-project1_files/figure-html/unnamed-chunk-53-1.png)&lt;!-- --&gt;
+![](07-project1_files/figure-html/unnamed-chunk-54-1.png)&lt;!-- --&gt;
 ---
 
 
@@ -1418,7 +1378,7 @@ ggplot(top_cors, aes(x = reorder_within(item2, correlation, item1),
 ```
 
 ---
-![](07-project1_files/figure-html/unnamed-chunk-64-1.png)&lt;!-- --&gt;
+![](07-project1_files/figure-html/unnamed-chunk-65-1.png)&lt;!-- --&gt;
 ---
 
 ##### 관심 단어와 관련성이 큰 단어 해석
@@ -1742,20 +1702,20 @@ line_tada %&gt;%
 ```
 
 ```
-## # A tibble: 5,108 x 1
+## [38;5;246m# A tibble: 5,108 x 1[39m
 ##    sentence                                       
-##    &lt;chr&gt;                                          
-##  1 분단 결론 진정성 결과적 타다 택시 맞다 택시업계 헌법위반 드론택배 불법 현재국기 …
-##  2 러다이트 운동 영국 중부 북부 직물공업지대 일어나다 기계 파괴운동 택시기사들 나중 …
-##  3 저런것들도 국회의원                            
-##  4 우버 그랩 같다 서비스 자연 서비스 택시 서비스 자율경쟁 통하다 상생 제도 개선해 …
-##  5 택시승차거부하면 벌금 만원 때리다 근무복       
-##  6 자율주행택시 나오다 택시기사들 뒤지다 왜이렇게 밥그릇 지키다…
-##  7 옛말 고인 물다 썩다 택시기사들 꼬라지 고이다 상태 승차거부 시작해서 정치 이야기 …
-##  8 택시 자격증 따다 운행하면 모르다 자격증 운행   
-##  9 편법 돈벌라는 양아치들 내주                    
-## 10 똥남아보다 우리나라 네트웍 강국 맞다 택시 타다 태국 민주당 감성팔이 우치다보 나라…
-## # … with 5,098 more rows
+##    [3m[38;5;246m&lt;chr&gt;[39m[23m                                          
+## [38;5;250m 1[39m 분단 결론 진정성 결과적 타다 택시 맞다 택시업계 헌법위반 드론택배 불법 현재국기 …
+## [38;5;250m 2[39m 러다이트 운동 영국 중부 북부 직물공업지대 일어나다 기계 파괴운동 택시기사들 나중 …
+## [38;5;250m 3[39m 저런것들도 국회의원                            
+## [38;5;250m 4[39m 우버 그랩 같다 서비스 자연 서비스 택시 서비스 자율경쟁 통하다 상생 제도 개선해 …
+## [38;5;250m 5[39m 택시승차거부하면 벌금 만원 때리다 근무복       
+## [38;5;250m 6[39m 자율주행택시 나오다 택시기사들 뒤지다 왜이렇게 밥그릇 지키다…
+## [38;5;250m 7[39m 옛말 고인 물다 썩다 택시기사들 꼬라지 고이다 상태 승차거부 시작해서 정치 이야기 …
+## [38;5;250m 8[39m 택시 자격증 따다 운행하면 모르다 자격증 운행   
+## [38;5;250m 9[39m 편법 돈벌라는 양아치들 내주                    
+## [38;5;250m10[39m 똥남아보다 우리나라 네트웍 강국 맞다 택시 타다 태국 민주당 감성팔이 우치다보 나라…
+## [38;5;246m# … with 5,098 more rows[39m
 ```
 
 ---
