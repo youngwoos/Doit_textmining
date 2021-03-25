@@ -545,7 +545,7 @@ tada %>%
 ##### 2.1 텍스트에 스타일 입히기 - `combine_styles()`
 
 ```{r echo=F}
-# setup for crayon 
+# setup for crayon
 knitr::opts_chunk$set(message = T)
 ```
 
@@ -604,12 +604,12 @@ keyword <- "조합"
 tada %>%
   filter(str_detect(reply_raw, keyword)) %>%
   slice(1:3) %>%
-  mutate(reply = paste0(reply, "<br>##<br>## ")) %>% 
+  mutate(reply = paste0(reply, "<br>##<br>## ")) %>%
   mutate(reply = paste0(str_replace_all(reply,
                                         keyword,
                                         font(keyword)))) %>%  # 스타일 적용
   pull(reply) %>%                                             # reply 추출
-  # cat(sep = "\n\n") %>% 
+  # cat(sep = "\n\n") %>%
   message()
 ```
 
@@ -653,10 +653,10 @@ find_word <- function(df, x, keyword, n = 6) {
   df %>%
     filter(str_detect({{x}}, keyword)) %>%              # 키워드 추출
     slice(1:n) %>%                                      # n행 추출
-    
+
     mutate(x = paste0("[", row_number(), "] ", {{x}}),  # 행번호 삽입
            x = paste0(x, "<br>##<br>## "))  %>%         # 줄바꿈 삽입
-    
+
     pull(x) %>%                                           # 텍스트 추출
     paste(., collapse = "") %>%                           # 합치기
     str_remove_all(., "<br>##<br>## $") %>%               # 마지막 ## 제거
@@ -671,7 +671,7 @@ find_word <- function(df, x, keyword, n = 6) {
  - `x`: 텍스트
  - `keyword`: 스타일을 적용할 단어
  - `n`: 추출할 행 수. 아무 값도 입력하지 않으면 6행 출력
- 
+
 ```{r}
 tada %>% find_word(x = reply_raw, keyword = "조합", n = 2)
 ```
@@ -709,7 +709,7 @@ tada <- tada %>%
 
 ---
 
-##### 3.2 공감, 비공감 데이터 만들기 
+##### 3.2 공감, 비공감 데이터 만들기
 
 ```{r}
 # 공감 댓글 추출
@@ -769,8 +769,8 @@ reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 3)
   - `"조합"`: 택시 조합이 독점적인 권한을 유지하고 있다.
   - `"소비자"`: 소비자의 권리를 무시하고 기업 입장만 고려해 법안이 만들어졌다.
   - `"동남아"`: 동남아시아 국가는 승차 공유 서비스가 활성화된 반면 한국은 그렇지 않다.
- 
- 
+
+
 ---
 
 
@@ -823,9 +823,9 @@ reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 3)
   - `"렌트카"`: 타다는 렌트카와 비슷한 사업이므로 특혜를 주면 안 된다.
   - `"한국"`: 한국의 택시 업계를 보호해야 한다. 법안이 한국의 서비스업 발전을 막는다.
   - `"댓글"`: 타다를 옹호하고 택시를 비판하는 편향된 댓글이 너무 많다.
- 
+
 ---
- 
+
 #### 6. 분석 결과 종합하기
 
 - 공감 많이 받은 댓글
@@ -887,7 +887,7 @@ bind_category <- bind_rows(
 `r fontawesome("lightbulb")` 여러 단어를 함께 언급한 댓글도 있기 때문에 댓글 내용은 같지만 카테고리는 다른 행이 있음<br>&nbsp;&nbsp;&nbsp;(ex: `"택시업계"`와 `"정부"`를 함께 언급한 댓글)
 
 `r fontawesome("lightbulb")` `str_detect()`에 적용할 목록은 단어를 `|`로 구분
- 
+
 ---
 
 #### 2. 카테고리별 댓글 빈도 살펴보기
@@ -924,7 +924,7 @@ stopword_category <- c("택시 업계", "택시업계", "업계", "조합",
 
 
 - 특정 댓글에서 반복 사용되어 TF-IDF가 높은 문제를 방지하기 위해 댓글 내 중복 단어 제거
-- TF-IDF는 단어 사용 빈도를 이용해 계산되므로 어떤 단어가 여러 댓글에 언급된 게 아니라 
+- TF-IDF는 단어 사용 빈도를 이용해 계산되므로 어떤 단어가 여러 댓글에 언급된 게 아니라
 단순히 한 댓글에 여러 번 사용되더라도 높은 값 지님
 
 ```{r}
@@ -1378,7 +1378,7 @@ separate_pos_tada %>%
 ```{r echo=F}
 separate_pos_tada %>%
   filter(word == "고르다") %>%
-  head(3) %>% 
+  head(3) %>%
   pull(reply_raw)
 ```
 
@@ -1487,7 +1487,7 @@ include_graphics("Image/07/07_4_3.png")
 
 ##### 3.1 `line_comment`에 `tada` 결합하기
 
-```{r, R.options=list(tibble.width = 50, width=50)}
+```{r, R.options=list(tibble.width = 50)}
 line_tada <- line_comment %>%
   left_join(tada, by = "id")
 
