@@ -944,7 +944,10 @@ frequency_category <- bind_category %>%
 
 ##### 3.3 TF-IDF 구하기
 
-```{r tfidf_category, results='hide'}
+.scroll-box-26[
+
+
+```{r}
 # tf-idf 구하기
 tfidf_category <- frequency_category %>%
   bind_tf_idf(term = word,
@@ -954,10 +957,7 @@ tfidf_category <- frequency_category %>%
 
 tfidf_category
 ```
-
----
-```{r ref.label="tfidf_category", echo=F}
-```
+]
 ---
 
 #### 카테고리별 주요 단어 비교하기
@@ -1475,8 +1475,6 @@ ggraph(graph_bigram, layout = "fr") +            # 레이아웃
 
 ---
 
-<br-back-10>
-
 ```{r, echo=FALSE, out.width="80%", fig.align='center'}
 include_graphics("Image/07/07_4_3.png")
 ```
@@ -1603,7 +1601,7 @@ noun_tada <- tada %>%
 
 ---
 
-```{r unique_noun_tada, results='hide'}
+```{r }
 # 중복, 고빈도 단어 제거
 unique_noun_tada <- noun_tada %>%
   group_by(id) %>%                                     # 중복 단어 제거
@@ -1616,10 +1614,6 @@ unique_noun_tada <- noun_tada %>%
 unique_noun_tada
 ```
 
-
----
-```{r ref.label="unique_noun_tada", echo=F}
-```
 ---
 
 
@@ -1685,7 +1679,8 @@ lda_model
 
 - 토픽별 단어 확률을 나타낸 `beta` 추출
 
-```{r term_topic, results='hide'}
+.scroll-box-22[
+```{r}
 # 토픽별 단어 확률 beta 추출
 term_topic <- tidy(lda_model, matrix = "beta")
 
@@ -1694,15 +1689,16 @@ term_topic %>%
   group_by(topic) %>%
   slice_max(beta, n = 15)
 ```
----
-```{r ref.label="term_topic", echo=F}
-```
----
+]
 
+---
 
 ##### 2. 불용어 제외하고 상위 10개 단어 추출하기
 
-```{r top_term_topic, results='hide'}
+<br-10>
+
+.scroll-box-26[
+```{r}
 # 불용어 목록 생성
 stopword_lda <- c("하게", "하다", "하려", "해라", "그것", "하면", "하네",
                   "하기", "하나", "해서", "하면", "하지", "한거", "니들")
@@ -1715,11 +1711,7 @@ top_term_topic <- term_topic %>%
 
 top_term_topic
 ```
-
----
-```{r ref.label="top_term_topic", echo=F}
-```
-
+]
 ---
 
 

@@ -968,6 +968,9 @@ frequency_category &lt;- bind_category %&gt;%
 
 ##### 3.3 TF-IDF 구하기
 
+.scroll-box-26[
+
+
 
 ```r
 # tf-idf 구하기
@@ -979,8 +982,6 @@ tfidf_category &lt;- frequency_category %&gt;%
 
 tfidf_category
 ```
-
----
 
 ```
 ## # A tibble: 4,145 x 6
@@ -998,6 +999,7 @@ tfidf_category
 ## 10 정부     가족         4 0.00164 1.10  0.00180
 ## # ... with 4,135 more rows
 ```
+]
 ---
 
 #### 카테고리별 주요 단어 비교하기
@@ -1679,8 +1681,6 @@ ggraph(graph_bigram, layout = "fr") +            # 레이아웃
 
 ---
 
-&lt;br-back-10&gt;
-
 &lt;img src="Image/07/07_4_3.png" width="80%" style="display: block; margin: auto;" /&gt;
 
 ---
@@ -1830,9 +1830,6 @@ unique_noun_tada &lt;- noun_tada %&gt;%
 unique_noun_tada
 ```
 
-
----
-
 ```
 ## # A tibble: 36,972 x 2
 ##       id word    
@@ -1849,6 +1846,7 @@ unique_noun_tada
 ## 10     1 국기    
 ## # ... with 36,962 more rows
 ```
+
 ---
 
 
@@ -1930,6 +1928,7 @@ lda_model
 
 - 토픽별 단어 확률을 나타낸 `beta` 추출
 
+.scroll-box-22[
 
 ```r
 # 토픽별 단어 확률 beta 추출
@@ -1940,7 +1939,6 @@ term_topic %&gt;%
   group_by(topic) %&gt;%
   slice_max(beta, n = 15)
 ```
----
 
 ```
 ## # A tibble: 136 x 3
@@ -1959,11 +1957,15 @@ term_topic %&gt;%
 ## 10     1 공유  0.00948
 ## # ... with 126 more rows
 ```
----
+]
 
+---
 
 ##### 2. 불용어 제외하고 상위 10개 단어 추출하기
 
+&lt;br-10&gt;
+
+.scroll-box-26[
 
 ```r
 # 불용어 목록 생성
@@ -1978,8 +1980,6 @@ top_term_topic &lt;- term_topic %&gt;%
 
 top_term_topic
 ```
-
----
 
 ```
 ## # A tibble: 93 x 3
@@ -1998,7 +1998,7 @@ top_term_topic
 ## 10     1 정책     0.00581
 ## # ... with 83 more rows
 ```
-
+]
 ---
 
 
