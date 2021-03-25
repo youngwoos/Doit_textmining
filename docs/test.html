@@ -14,58 +14,86 @@
 
 
 
+```r
+# options(cli.unicode = T)
 
+library(readr)
+library(dplyr)
+```
 
+```
+## 
+## Attaching package: 'dplyr'
+```
 
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
 
-
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
 
 ```r
-df &lt;- data.frame(reply = c("가나다", "라나다","가나다", "라나다","가나다", "라나다"))
-# df
-
-keyword &lt;- "다"
-
-df
+library(tidyverse)
 ```
 
 ```
-##    reply
-## 1 가나다
-## 2 라나다
-## 3 가나다
-## 4 라나다
-## 5 가나다
-## 6 라나다
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
 ```
 
+```
+## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.0.6     ✓ stringr 1.4.0
+## ✓ tidyr   1.1.2     ✓ forcats 0.5.1
+```
 
+```
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+```
 
+```r
+raw_tada &lt;- read_csv(here::here("Data/news_comment_tada.csv")) %&gt;%
+  mutate(id = row_number())
+```
 
+```
+## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   reg_time = col_datetime(format = ""),
+##   reply = col_character(),
+##   press = col_character(),
+##   title = col_character(),
+##   url = col_character(),
+##   sympathyCount = col_double(),
+##   antipathyCount = col_double()
+## )
+```
 
+```r
+glimpse(raw_tada)
+```
 
+```
+## Rows: 5,270
+## Columns: 8
+## $ reg_time       &lt;dttm&gt; 2019-12-05 20:29:54, 2019-12-05 18:11:40, 2019-12-05 1…
+## $ reply          &lt;chr&gt; "祝[RHG::분단韓백년]결론:진정성!!&lt;U+2714&gt;결과적으로 타다는 택시가 맞다.그러나 택시업계…
+## $ press          &lt;chr&gt; "연합뉴스", "연합뉴스", "연합뉴스", "연합뉴스", "연합뉴스", "연합뉴스", "연합뉴스",…
+## $ title          &lt;chr&gt; "'타다 금지법', 국토위 법안소위 통과", "'타다 금지법', 국토위 법안소위 통과", "'타다 …
+## $ url            &lt;chr&gt; "https://news.naver.com/main/read.nhn?mode=LSD&amp;mid=sec&amp;…
+## $ sympathyCount  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 3, 0, 1, …
+## $ antipathyCount &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 3, 0…
+## $ id             &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, …
+```
 
-
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 가나&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;## [2] 라나&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;## [3] 가나&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;다&lt;/span&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-
-
-
-&lt;!-- ```{r} --&gt;
-&lt;!-- # 마지막 ## 지우기: &lt;br&gt;##&lt;br&gt;## --&gt;
-&lt;!-- x &lt;- "가나다&lt;br&gt;##&lt;br&gt;## 라나다&lt;br&gt;##&lt;br&gt;## 가나다&lt;br&gt;##&lt;br&gt;##" --&gt;
-&lt;!-- x --&gt;
-
-&lt;!-- str_remove_all(x, "&lt;br&gt;##&lt;br&gt;##$") --&gt;
-
-&lt;!-- str_remove_all(k, "&lt;br&gt;##&lt;br&gt;##$") --&gt;
-&lt;!-- k[3] --&gt;
-
-&lt;!-- paste(k, collapse = "") %&gt;% str_remove_all("&lt;br&gt;##&lt;br&gt;## $")  --&gt;
-
-&lt;!-- k --&gt;
-
-&lt;!-- ``` --&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>

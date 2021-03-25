@@ -17,14 +17,7 @@
 
 
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## Loading required package: sysfonts
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## Loading required package: showtextdb
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'crayon'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following object is masked _by_ '.GlobalEnv':
-## 
-##     num_colors
-&lt;/code&gt;&lt;/pre&gt;
+
 
 
 class: title0
@@ -154,14 +147,6 @@ glimpse(raw_tada)
 ---
 
 &lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'dplyr'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following objects are masked from 'package:stats':
-## 
-##     filter, lag
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## 
 ## &lt;span style='color: #00BBBB;'&gt;──&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span style='font-weight: bold;'&gt;Column specification&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span style='color: #00BBBB;'&gt;────────────────────────────────────────────────────────&lt;/span&gt;&lt;span&gt;
 ## cols(
 ##   reg_time = &lt;/span&gt;&lt;span style='color: #0000BB;'&gt;col_datetime(format = "")&lt;/span&gt;&lt;span&gt;,
@@ -219,12 +204,7 @@ tada &lt;- raw_tada %&gt;%
 ```r
 library(tidytext)
 library(KoNLP)
-```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## Checking user defined dictionary!
-&lt;/code&gt;&lt;/pre&gt;
-
-```r
 word_noun &lt;- tada %&gt;%
   unnest_tokens(input = reply,
                 output = word,
@@ -363,17 +343,7 @@ ggplot(top20_noun, aes(x = reorder(word, n), y = n)) +
 
 ---
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'scales'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following object is masked from 'package:readr':
-## 
-##     col_factor
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'ggplot2'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following object is masked from 'package:crayon':
-## 
-##     %+%
-&lt;/code&gt;&lt;/pre&gt;&lt;img src="07-project1_files/figure-html/unnamed-chunk-12-1.png" width="70%" /&gt;
+&lt;img src="07-project1_files/figure-html/unnamed-chunk-12-1.png" width="70%" /&gt;
 
 ---
 
