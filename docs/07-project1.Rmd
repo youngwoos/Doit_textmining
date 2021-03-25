@@ -63,9 +63,11 @@ knitr::knit_hooks$set(source = function(x, options) {
 })
 
 
-# rmarkdown crayon setup
-# options(crayon.enabled = T) # tibble과 출동. 개별 청크에서 설정.
-# moon_reader시 충돌. knit로 생성.
+# rmarkdown crayon setup ####
+# options(crayon.enabled = T) # tibble과 출동. 개별 청크에서 설정
+# message = T
+# moon_reader시 충돌 -> knit
+# ubuntu에서 불가. windows에서 knit
 knitr::knit_hooks$set(message = function(x, options){
   paste0(
     "<pre class=\"r-output\"><code>",
