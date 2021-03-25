@@ -64,7 +64,8 @@ knitr::knit_hooks$set(source = function(x, options) {
 
 
 # rmarkdown crayon setup
-options(crayon.enabled = TRUE)
+# options(crayon.enabled = T) # tibble과 출동. 개별 청크에서 설정.
+# moon_reader시 충돌. knit로 생성.
 knitr::knit_hooks$set(message = function(x, options){
   paste0(
     "<pre class=\"r-output\"><code>",
@@ -76,10 +77,9 @@ knitr::knit_hooks$set(message = function(x, options){
 # crayon colour setup
 num_colors <- function(forget=TRUE) 256
 library(crayon)
-assignInNamespace("num_colors", num_colors, pos="package:crayon") 
+assignInNamespace("num_colors", num_colors, pos="package:crayon")
 
 ```
-
 
 class: title0
 
@@ -560,7 +560,7 @@ font("폰트를 적용해 출력") %>% cat()
 
 ```
 
-```{r  echo=F}
+```{r, R.options=list(crayon.enabled = T), echo = F}
 # 스타일 함수 만들기
 library(crayon)
 font <- combine_styles(make_style("ivory"),
@@ -639,7 +639,7 @@ find_word <- function(df, x, keyword, n = 6) {
 }
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 # function for rmarkdown crayon output
 
 find_word <- function(df, x, keyword, n = 6) {
@@ -672,7 +672,7 @@ find_word <- function(df, x, keyword, n = 6) {
  - `keyword`: 스타일을 적용할 단어
  - `n`: 추출할 행 수. 아무 값도 입력하지 않으면 6행 출력
 
-```{r}
+```{r, R.options=list(crayon.enabled = T)}
 tada %>% find_word(x = reply_raw, keyword = "조합", n = 2)
 ```
 
@@ -680,7 +680,7 @@ tada %>% find_word(x = reply_raw, keyword = "조합", n = 2)
 
 - `find_word()`: 파라미터명 입력하지 않고 활용
 
-```{r}
+```{r, R.options=list(crayon.enabled = T)}
 tada %>% find_word(reply_raw, "조합", 2)
 ```
 
@@ -732,7 +732,7 @@ reply_dislike <- tada %>%
 reply_like %>% find_word(x = reply_raw, keyword = "조합", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 # 조합
 reply_like %>% find_word(x = reply_raw, keyword = "조합", n = 3)
 ```
@@ -746,7 +746,7 @@ reply_like %>% find_word(x = reply_raw, keyword = "조합", n = 3)
 reply_like %>% find_word(x = reply_raw, keyword = "소비자", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 # 소비자
 reply_like %>% find_word(x = reply_raw, keyword = "소비자", n = 3)
 ```
@@ -758,7 +758,7 @@ reply_like %>% find_word(x = reply_raw, keyword = "소비자", n = 3)
 reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 # 동남아
 reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 3)
 ```
@@ -783,7 +783,7 @@ reply_like %>% find_word(x = reply_raw, keyword = "동남아", n = 3)
 reply_dislike %>% find_word(x = reply_raw, keyword = "렌트카", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 # 렌트카
 reply_dislike %>% find_word(x = reply_raw, keyword = "렌트카", n = 3)
 ```
@@ -797,7 +797,7 @@ reply_dislike %>%
   find_word(x = reply, keyword = "한국", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 # "한국당" 언급 댓글 제거 후 "한국" 언급한 댓글 추출
 reply_dislike %>%
   filter(!str_detect(reply, "한국당")) %>%
@@ -812,7 +812,7 @@ reply_dislike %>%
 reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 # 댓글
 reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 3)
 ```
@@ -1059,7 +1059,7 @@ reply_category %>%
   find_word(x = reply_raw, keyword = "대기업")
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 reply_category %>%
   filter(category == "택시업계") %>%
   find_word(x = reply_raw, keyword = "대기업", n = 3)
@@ -1074,7 +1074,7 @@ reply_category %>%
   find_word(x = reply_raw, keyword = "지원")
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 reply_category %>%
   filter(category == "정부") %>%
   find_word(x = reply_raw, keyword = "지원", n = 3)
@@ -1090,7 +1090,7 @@ reply_category %>%
 ```
 
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 reply_category %>%
   filter(category == "국회의원") %>%
   find_word(x = reply_raw, keyword = "박홍근", n = 3)
@@ -1300,7 +1300,7 @@ tada %>%
   find_word(x = reply_raw, keyword = "내년", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 tada %>%
   filter(str_detect(reply_raw, "선거")) %>%
   find_word(x = reply_raw, keyword = "내년", n = 3)
@@ -1319,7 +1319,7 @@ tada %>%
   find_word(x = reply_raw, keyword = "총선", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 tada %>%
   filter(str_detect(reply_raw, "내년")) %>%
   find_word(x = reply_raw, keyword = "총선", n = 3)
@@ -1335,7 +1335,7 @@ tada %>%
   find_word(x = reply_raw, keyword = "손님", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 tada %>%
   filter(str_detect(reply_raw, "목적지")) %>%
   find_word(x = reply_raw, keyword = "손님", n = 3)
@@ -1353,7 +1353,7 @@ tada %>%
 
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 tada %>%
   filter(str_detect(reply_raw, "손님")) %>%
   find_word(x = reply_raw, keyword = "골라", n = 3)
@@ -1507,7 +1507,7 @@ line_tada %>%
   find_word(x = reply_raw, keyword = "역행", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 line_tada %>%
   filter(str_detect(sentence, "시대 역행")) %>%
   find_word(x = reply_raw, keyword = "역행", n = 3)
@@ -1525,7 +1525,7 @@ line_tada %>%
   find_word(x = reply_raw, keyword = "뒤떨어", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 line_tada %>%
   filter(str_detect(sentence, "시대 뒤떨어지다")) %>%
   find_word(x = reply_raw, keyword = "뒤떨어", n = 3)
@@ -1543,7 +1543,7 @@ line_tada %>%
   find_word(x = reply_raw, keyword = "면허", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 line_tada %>%
   filter(str_detect(sentence, "택시 면허")) %>%
   find_word(x = reply_raw, keyword = "면허", n = 3)
@@ -1561,7 +1561,7 @@ line_tada %>%
   find_word(x = reply_raw, keyword = "사서", n = 10)
 ```
 
-```{r echo=F}
+```{r, R.options=list(crayon.enabled = T), echo=F}
 line_tada %>%
   filter(str_detect(sentence, "면허 사다")) %>%
   find_word(x = reply_raw, keyword = "사서", n = 3)
