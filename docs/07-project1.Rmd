@@ -4,7 +4,7 @@ author: "김영우"
 output:
   xaringan::moon_reader:
     seal: false
-    css: ["default", "css/custom.css"]
+    css: ["default", "css/custom_06.css"]
     lib_dir: libs
     chakra: libs/remark-latest.min.js
     nature:
@@ -35,7 +35,7 @@ options(htmltools.dir.version = FALSE,
 
 knitr::opts_chunk$set(cache = T, 
                       warning = F, 
-                      message = T,  # True for crayon setup
+                      message = F,
                       dpi = 300, 
                       fig.height = 4)
 
@@ -544,6 +544,11 @@ tada %>%
 
 ##### 2.1 텍스트에 스타일 입히기 - `combine_styles()`
 
+```{r echo=F}
+# setup for crayon 
+knitr::opts_chunk$set(message = T)
+```
+
 ```{r eval=FALSE}
 # 스타일 함수 만들기
 library(crayon)
@@ -796,7 +801,7 @@ reply_dislike %>%
 # "한국당" 언급 댓글 제거 후 "한국" 언급한 댓글 추출
 reply_dislike %>%
   filter(!str_detect(reply, "한국당")) %>%
-  find_word(x = reply, keyword = "한국", n = 1)
+  find_word(x = reply, keyword = "한국", n = 3)
 ```
 
 ---
@@ -823,12 +828,12 @@ reply_dislike %>% find_word(x = reply, keyword = "댓글", n = 3)
  
 #### 6. 분석 결과 종합하기
 
-- 공감을 많이 받은 댓글
+- 공감 많이 받은 댓글
   - 택시 조합에 비판적이거나 소비자의 권리를 강조
   - 동남아 국가보다 한국의 승차 공유 서비스가 뒤처져 있다
 
 
-- 공감을 받지 못한 댓글
+- 공감 받지 못한 댓글
   - 타다가 렌터카 서비스이므로 특혜를 주면 안 된다
   - 타다를 옹호하는 분위기를 비판하거나 한국의 택시 업계를 보호해야 한다
 
@@ -859,7 +864,11 @@ class: title1
 category1 <- "택시 업계|택시업계|조합"
 category2 <- "정부"
 category3 <- "국회의원|한국당|자유한국당|자한당|자한|민주당|더불어민주당"
+```
 
+---
+
+```{r}
 # 추출 및 결합
 bind_category <- bind_rows(
   word_sympathy %>%
@@ -875,7 +884,7 @@ bind_category <- bind_rows(
     mutate(category = "국회의원"))
 ```
 
-`r fontawesome("lightbulb")` 여러 단어를 함께 언급한 댓글도 있기 때문에 `bind_category`에는 댓글 내용은 같지만 카테고리는 다른 행이 있음(ex: `"택시업계"`와 `"정부"`를 함께 언급한 댓글)
+`r fontawesome("lightbulb")` 여러 단어를 함께 언급한 댓글도 있기 때문에 댓글 내용은 같지만 카테고리는 다른 행이 있음<br>&nbsp;&nbsp;&nbsp;(ex: `"택시업계"`와 `"정부"`를 함께 언급한 댓글)
 
 `r fontawesome("lightbulb")` `str_detect()`에 적용할 목록은 단어를 `|`로 구분
  
@@ -947,7 +956,7 @@ tfidf_category
 ```
 
 ---
-```{r ref.label="", echo=F}
+```{r ref.label="tfidf_category", echo=F}
 ```
 ---
 
@@ -956,26 +965,26 @@ tfidf_category
 
 ##### 1. 불용어 목록 만들기
 
-```{r out_tfidf_category, results='hide'}
+<br-10>
+
+.scroll-box-24[
+
+```{r out_tfidf_category}
 # 주요 단어 추출, 불용어 확인
 tfidf_category %>%
   group_by(category) %>%
   slice_max(tf_idf, n = 15, with_ties = F) %>%
   print(n = Inf)
 ```
+]
 
 ---
-```{r ref.label="out_tfidf_category", echo=F}
-```
----
-
-```{r}
-# 불용어 목록 생성
-stopword_tfidf <- c("국회의윈님하고", "현정부", "에휴")
-```
 
 ##### 2. 주요 단어 추출하기
 ```{r}
+# 불용어 목록 생성
+stopword_tfidf <- c("국회의윈님하고", "현정부", "에휴")
+
 # 주요 단어 추출
 top10 <- tfidf_category %>%
   filter(!word %in% stopword_tfidf) %>%
@@ -995,9 +1004,8 @@ top10$category <- factor(top10$category,
 ```
 
 ---
+
 ##### 3. 막대 그래프 만들기
-
-
 
 ```{r p_top10_tfidf, fig.show='hide'}
 # 막대 그래프 만들기
@@ -1113,7 +1121,7 @@ class: title1
 
 - 중복 댓글을 제거한 `tada`의 `reply`를 토큰화해 명사, 동사, 형용사 추출
 
-```{r eval=F}
+```{r}
 # 토큰화
 pos_tada <- tada %>%
   unnest_tokens(input = reply,
@@ -1134,7 +1142,7 @@ separate_pos_tada <- pos_tada %>%
 
 ---
 
-```{r eval=F}
+```{r}
 separate_pos_tada %>%
   select(word)
 ```
@@ -1143,7 +1151,7 @@ separate_pos_tada %>%
 
 ##### 1.2 파이 계수 구하기
 
-```{r p_word_cors, results='hide'}
+```{r p_word_cors}
 library(widyr)
 word_cors <- separate_pos_tada %>%
   add_count(word) %>%
@@ -1153,15 +1161,13 @@ word_cors <- separate_pos_tada %>%
 word_cors
 ```
 
-
 ---
-```{r ref.label="p_word_cors", echo=F}
-```
----
-
 
 ##### 2. 관심 단어와 관련성이 큰 단어로 막대 그래프 만들기
 
+<br-10>
+
+.scroll-box-26[
 ```{r}
 target <- c("타다", "정부", "택시")
 
@@ -1173,6 +1179,8 @@ top_cors <- word_cors %>%
 
 top_cors
 ```
+]
+
 
 ---
 
@@ -1207,9 +1215,11 @@ ggplot(top_cors, aes(x = reorder_within(item2, correlation, item1),
 
 ##### 관심 단어와 관련성이 큰 단어 해석
 
+<br>
+
 - **타다**
   - 타다와 택시 업계의 갈등을 다룬 댓글이 많다
-  - `"서비스"`, `"편하다"`, `"좋다"`, `"많다"`: 타다의 장점을 표현한 단어와 관련성이 큽니다.
+  - `"서비스"`, `"편하다"`, `"좋다"`, `"많다"`: 타다의 장점을 표현한 단어와 관련성 크다
 
 
 - **택시**
@@ -1219,7 +1229,7 @@ ggplot(top_cors, aes(x = reorder_within(item2, correlation, item1),
 
 - **정부**
   - `"세금"`: 정부의 세금 운용을 비판하는 댓글이 많다
-  - `"기업"`, `"자유"`, `"시장"`, `"경제"`, `"규제"`, `"막다"`: 정부가 산업 발전을 막는다는 비판을 할 때 사용하는 단어와 관련성이 크다
+  - `"기업"`, `"자유"`, `"시장"`, `"경제"`, `"규제"`, `"막다"`: 정부가 산업 발전을 막는다는 비판을 할 때 <br>사용하는 단어와 관련성이 크다
 
 
 ---
@@ -1268,15 +1278,13 @@ ggraph(graph_cors, layout = "fr") +              # 레이아웃
 
 ---
 
-<br-back-30>
+<br-back-20>
 
-```{r, echo=FALSE, out.width="80%"}
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
 include_graphics("Image/07/07_4_2.png")
 ```
 
----
-
-`r fontawesome("lightbulb")` 별도의 이미지 출력 창을 열어 크게 만든 다음 그래프 출력하기. 윈도우 `windows()`, 맥 `x11()`
+`r fontawesome("lightbulb")` 별도의 이미지 출력 창을 열어 크게 만든 다음 그래프 출력하기: 윈도우 `windows()`, 맥 `x11()`
 
 ---
 
@@ -1390,7 +1398,7 @@ separate_pos_tada %>%
 
 #### 1. 바이그램으로 토큰화해 빈도 구하기
 
-```{r}
+```{r out_bigram_comment, results='hide'}
 # 한 댓글이 하나의 행을 구성하도록 결합
 line_comment <- separate_pos_tada %>%
   group_by(id) %>%
@@ -1406,6 +1414,9 @@ bigram_comment <- line_comment %>%
 bigram_comment
 ```
 
+---
+```{r ref.label="out_bigram_comment", echo=F}
+```
 ---
 
 
@@ -1428,7 +1439,6 @@ pair_bigram
 
 ##### 2. 네트워크 그래프 만들기
 
-`
 ```{r}
 # 네트워크 그래프 데이터 만들기
 set.seed(1234)
@@ -1439,6 +1449,8 @@ graph_bigram <- pair_bigram %>%
          group = as.factor(group_infomap()))     # 커뮤니티
 ```
 
+
+---
 
 ```{r, eval=F}
 # 네트워크 그래프 만들기
@@ -1463,22 +1475,19 @@ ggraph(graph_bigram, layout = "fr") +            # 레이아웃
 
 ---
 
-<br-back-30>
+<br-back-10>
 
-```{r, echo=FALSE, out.width="80%"}
+```{r, echo=FALSE, out.width="80%", fig.align='center'}
 include_graphics("Image/07/07_4_3.png")
 ```
 
 ---
 
-
-
-
 ##### 3. 댓글 내용 살펴보기
 
 ##### 3.1 `line_comment`에 `tada` 결합하기
 
-```{r}
+```{r, R.options=list(tibble.width = 50, width=50)}
 line_tada <- line_comment %>%
   left_join(tada, by = "id")
 
@@ -1559,6 +1568,8 @@ line_tada %>%
 ```
 
 `r fontawesome("lightbulb")`"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"` 언급 댓글  추출
+
+---
 
 
 <!-- ## 7.5 토픽 모델링 -->
