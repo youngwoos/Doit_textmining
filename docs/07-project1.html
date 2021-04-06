@@ -119,7 +119,7 @@ class: title1
 
 --
 
-#### 분석 절차
+##### 분석 절차
 - 1.단어 빈도를 구합니다.
 - 2.막대 그래프를 만들어 주요 단어를 살펴봅니다.
 
@@ -612,8 +612,7 @@ font &lt;- combine_styles(make_style("ivory"),
 font("폰트를 적용해 출력") %&gt;% cat()
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;폰트를 적용해 출력&lt;/span&gt;&lt;span&gt;
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -641,8 +640,7 @@ tada %&gt;%
 
 ---
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## 우리나라가 안되는 이유 기득권 특히 전국 노동조합 금속노조 환경단체 택시조합 수많은 조합업체 택시는 기득권만 내세우지 말고 국민들이 왜 싫어하는지 알기나 하길&lt;br&gt;##&lt;br&gt;## 수십만 재개발재건축 조합원이 피해보는 분양가상한제는 공익을 위해 사익은 희생될수 있다가 니네 논리잔아 개쓰렉 정권아&lt;br&gt;##&lt;br&gt;## 그럼 국민들의 피해는 모르겠니 어째 택시조합에서 나오는 표가 무시 못할거 같아 이번 선거에서 진정한 국민의 힘이 무엇인지 보여주고 너네들에게 헬조선에서 허우적대고 있는 국민의 피눈물에 대한 책임을 꼭 물을줄 알아라 에라이 카악 퇫&lt;br&gt;##&lt;br&gt;##
-&lt;/code&gt;&lt;/pre&gt;
+
 
 
 ---
@@ -685,9 +683,6 @@ find_word &lt;- function(df, x, keyword, n = 6) {
 tada %&gt;% find_word(x = reply_raw, keyword = "조합", n = 2)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 우리나라가 안되는 이유 기득권 특히 전국 노동&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt; 금속노조 환경단체 택시&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt; 수많은 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt;업체 택시는 기득권만 내세우지 말고 국민들이 왜 싫어하는지 알기나 하길&lt;br&gt;##&lt;br&gt;## [2] 수십만 재개발재건축 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt;원이 피해보는 분양가상한제는? 공익을 위해 사익은 희생될수 있다가 니네 논리잔아! 개쓰렉 정권아!
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
-
 ---
 
 - `find_word()`: 파라미터명 입력하지 않고 활용
@@ -696,9 +691,6 @@ tada %&gt;% find_word(x = reply_raw, keyword = "조합", n = 2)
 ```r
 tada %&gt;% find_word(reply_raw, "조합", 2)
 ```
-
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 우리나라가 안되는 이유 기득권 특히 전국 노동&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt; 금속노조 환경단체 택시&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt; 수많은 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt;업체 택시는 기득권만 내세우지 말고 국민들이 왜 싫어하는지 알기나 하길&lt;br&gt;##&lt;br&gt;## [2] 수십만 재개발재건축 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt;원이 피해보는 분양가상한제는? 공익을 위해 사익은 희생될수 있다가 니네 논리잔아! 개쓰렉 정권아!
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
 
 &lt;br10&gt;
 
@@ -751,8 +743,7 @@ reply_dislike &lt;- tada %&gt;%
 reply_like %&gt;% find_word(x = reply_raw, keyword = "조합", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 국민들의 선택은 어떨까? 나 같으면 타다 타겠다! 택시 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt;이 서민의 대중교통인 버스를 늘리는 것도 데모해서 못하게 하는 지역도 있더라!&lt;br&gt;##&lt;br&gt;## [2] 타다는 어짜피 적용할 산업이다. '타다 금지법'이라고? 기가 찬다. 시대에 흐름을 거스르는 저런 법안은 도데체 누가 상정한거야? 다 택시 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt;에 뒷돈받는 국개가 있겠지.유치원 3법에 개거품물고 달려드는 국개들만봐도.. 뻔하지!! 선택은 소비자가 해야지 법안으로 막는건 아니라 본다. 솔직히 자율주행 자리 잡으면.택시기사. 운수업이란 직업은 장기적으로 봐선 사라지는 직업 아니던가? 그때 가서는 어쩔건데...&lt;br&gt;##&lt;br&gt;## [3] 국개의원_새_들 택시&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;조합&lt;/span&gt;&lt;span&gt;한테 돈 얼마쳐받았냐
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 
 ---
@@ -764,8 +755,7 @@ reply_like %&gt;% find_word(x = reply_raw, keyword = "조합", n = 10)
 reply_like %&gt;% find_word(x = reply_raw, keyword = "소비자", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 공산국가가 되어가는구나 대중교통 이외에 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;소비자&lt;/span&gt;&lt;span&gt;의 선택권은 오직 택시 만 이용하라고 못 박아 놓다니 독과점도 이런 독과점이 없네 OOO 이러니 택시 기사들이 갑질하듯 서비스 정신 하나 없이 지들 맘대로 골라태우고 막 교통법규 우습게 알고 운전들 쳐 하지 경쟁을 통해 서비스 개선 할 생각은 없고 내 밥그릇에 숟가락 얻지 말라고 난리치고 그걸 또 받아주네 국회 나으리님들께서 ㅋ 이러니 택시가 서비스 발전과 운전습관 드러운게 나아지지 않지 에이 퉷 더러운 뒷거래 ... 택시관련 유권자가 아쉽더냐? 아니면 택시노조가 무섭더냐?&lt;br&gt;##&lt;br&gt;## [2] &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;소비자&lt;/span&gt;&lt;span&gt;들이 편하면 탈거고 불편하면 도태될텐데 왜 정부가 앞장서서 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;소비자&lt;/span&gt;&lt;span&gt;에 선택 권한을 뺐는건가 기대했던 이번정부도 실망이 크다&lt;br&gt;##&lt;br&gt;## [3] 국토부와 포퓰리즘 국회가 후진적인 대한민국을 만들고 있어 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;소비자&lt;/span&gt;&lt;span&gt;는 없고 기득권만 보호하고 새로운 산업 기술에는 등한시
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -775,8 +765,7 @@ reply_like %&gt;% find_word(x = reply_raw, keyword = "소비자", n = 10)
 reply_like %&gt;% find_word(x = reply_raw, keyword = "동남아", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 그냥 대한민국은 규제로 인해 망할수 밖에 없다 영국처럼 유럽에서 가장 늦게 자동차 도입한 국가 꼴 될듯 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;동남아&lt;/span&gt;&lt;span&gt; 가봐라 개나소나 크랩 이용해다닌다 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;동남아&lt;/span&gt;&lt;span&gt;보다 못한게 자칭 it강국 한국현실이다&lt;br&gt;##&lt;br&gt;## [2] &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;동남아&lt;/span&gt;&lt;span&gt;도 우버가 판치는데 표때문에 실시하는 법안이라니 국회의원탓할것도 없는게 우리나라 수준이 저 정도인거야&lt;br&gt;##&lt;br&gt;## [3] 미국에서 우버, &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;동남아&lt;/span&gt;&lt;span&gt;에서 그랩 타고 다녔는데 정말 개편했슴! 요금 일반 택시보다 싼거는 둘째치고 어플 실행해서 신청하면 몇분도 안되서 내 코앞으로 옴, 위치 설명 안해도 알아서 연계되서 설명안해도 기사가 알아서 감, 결제 카드 등록 하면 내릴때 그냥 내리면 됨[지갑 불필요] , 기사 평점제가 있어서 굉장히 친절하고 짭소리 안함 ㅋㅋ 평점 등록 동시에 기사한테 팁주는 버튼이 있는데 클릭하면 내카드에서 선택한 금액만큼 팁이 결제됨, 이러다보니 좀 장거리 가거나 고생한 기사 있으면 내가 절로 팁 주고 평점도 높게 해줌.
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -799,8 +788,7 @@ reply_like %&gt;% find_word(x = reply_raw, keyword = "동남아", n = 10)
 reply_dislike %&gt;% find_word(x = reply_raw, keyword = "렌트카", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 타다가 택시 역활을 하면 안된다.타다가 합법화되면 전국에 유사 타다가 넘쳐 난다.택시는 좋아하진않지만 사업면허를 무사고로 해서 취득한사람도 있고.돈을주고 산 사람도 있다.근데 타다는 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;렌트카&lt;/span&gt;&lt;span&gt;를 가지고 경쟁도 안하고 .택시 사업을 한다는건 옳지않다.법 개정후에 타다를 하든지 말든지 하고‥지금은 불법이 맞다.&lt;br&gt;##&lt;br&gt;## [2] 현정부는 타다에 뇌물쳐먹었냐? &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;렌트카&lt;/span&gt;&lt;span&gt;로 불법콜택시하는 타다가 4차산업? 장난해!검찰은 김상조부터 죠지고가자!&lt;br&gt;##&lt;br&gt;## [3] 근데 하나만 묻자 이게 왜 미래산업이냐 그냥 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;렌트카&lt;/span&gt;&lt;span&gt; 영업하는거잖아 무슨 되도 안한 미래산업이야기를 하고 있어 스마트폰으로 배차하면 다 미래산업이냐 ~~
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -812,8 +800,7 @@ reply_dislike %&gt;%
   find_word(x = reply, keyword = "한국", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 택시놈들 이기주의가 혁신성장을 가로막는다 솔직히 미국에 살지만 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;한국&lt;/span&gt;&lt;span&gt;보면 노답이다&lt;br&gt;##&lt;br&gt;## [2] 공유를 사전에서 찾으면 한 물건을 두사람 이상이 나눠갖는다는 뜻으로 결국 제조업이 타격을 입게됩니다 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;한국&lt;/span&gt;&lt;span&gt; 자동차가 만대 타다 공유차량이 시작되서 차 한대로 명 명 공유하면 결국 완성차업체인 현대차 기아차 생산직은 물론 전장부품 업체부터 금속 산업까지 근로자들의 생계가 사라집니다 이재웅씨 남의 나라 따라할것이 아니라 울산 광주 지역 상인들과 주민들의 생계는 안보이시나요 어디다 국민들의 이익을 거론 하십니까 전 국민들이 일어나 저들의 공유차량을 반대해야만 합니다&lt;br&gt;##&lt;br&gt;## [3] 시대 역행하는 헬조선 코리아 나중에 다른나라는 자동운전 도입할때도 택시운전수 기득권 챙기느라 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;한국&lt;/span&gt;&lt;span&gt;만 뒤떨어지겠네
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -824,8 +811,7 @@ reply_dislike %&gt;%
 reply_dislike %&gt;% find_word(x = reply, keyword = "댓글", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 근데 여기 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;댓글&lt;/span&gt;&lt;span&gt; 웃긴게 택시고 타다고 이런걸 떠나서 입장바꿔서 누가 지들 밥그릇뺏으면 육갑 염병들을 떨거면서 깨시민인척 뒤지게 하시는분들 많네&lt;br&gt;##&lt;br&gt;## [2] 살 제주도 개인택시 기사입니다 걍 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;댓글&lt;/span&gt;&lt;span&gt;만보고 글적어요 불친절하다고 하는데 불친절택시타면 바로 신고하세요 신고하면 바로처리하는데 뒤에서 말 하지 마시구요 택시타서 침뱉고 썅욕하고 술먹고 인사불성되면 택시에 오줌싸고 똥싸고 손님들이 그래요 우리는 먹고살기위해 찍소리 안합니다 서비스업이니까요 저는 저녁시간만 되면 밥 안 먹어요 손님 명 테운다 치면 명은 술취해서 욕하거든요 그욕으로 배채워요 그래도 그술취한사람 저의같은 택시기사가 집앞까지 모셔다 드리잖아요 암튼 나의밥그릇 뺏으면 자기밥그릇도 빼끼기 마련입니다&lt;br&gt;##&lt;br&gt;## [3] 개인택시 기사분들의 생존권 엄연히 법테두리 안에 운수업계 종사자들을 생존권이 달린 법이 통과되어 환영합니다 방구석 워리어들이 무슨 눈앞에 뭐만 보인다고 사회 전체를 봐야 하는데 표팔이다 어쩐다 폄하하는 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;댓글&lt;/span&gt;&lt;span&gt;들 보면 그런사람들에게 권한을 주면 세상이 좋아지고 사회가 좋아질거 같은지 아무것도 못하고 눈앞에 초콜렛만 떨어지면 좋은 정책인줄 아는 이들입니다 늦었지만 지금이라도 통과되어 다행입니다
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1158,8 +1144,7 @@ reply_category %&gt;%
   find_word(x = reply_raw, keyword = "대기업")
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 타다가 신사업이냐? 기존 택시랑 아주 똑같은 개념의 사업을 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;대기업&lt;/span&gt;&lt;span&gt;이 택시업계 말살하고 독식하겠단거지.. 이런 게 논란이 되고 있다는 자체가 넌센스..&lt;br&gt;##&lt;br&gt;## [2] 대한민국 자유민주주의 공화국이며, 노조입김이빠이공화국이자, 떼쓰면해주는공화국으로써 국민의 편의는 없고 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;대기업&lt;/span&gt;&lt;span&gt;과 그노조의 일당들만 위하는 나라요, 서민들은 죽어나도 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;대기업&lt;/span&gt;&lt;span&gt;과 그노조들 그외 수많은 단체와 조합들의 세상일세....&lt;br&gt;##&lt;br&gt;## [3] 진짜 머저리들아 택시업계 눈치보는 ㅅ ㄲ 들 때문에 국민 편의성은 무시되는 잦도 논리도 없고 명분도 없는 법을 왜 통과시키려고 하냐. 그따위 개도 안먹히는 논리대로면 동네 슈퍼마켓도 보호해 줘야하니 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;대기업&lt;/span&gt;&lt;span&gt; 마트들 들어오면 안되고 빵집도 보호해줘야하니 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;대기업&lt;/span&gt;&lt;span&gt; 빵집은 막아야 하는거 아니냐? 사회주의 시장경제로 가라 그냥
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1171,8 +1156,7 @@ reply_category %&gt;%
   find_word(x = reply_raw, keyword = "지원")
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 4차산업 같은 소리하고 있네. 말 따로 정부 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;지원&lt;/span&gt;&lt;span&gt; 없는 대한민국 경제 발전? 정말 이 나라는 뭘 먹고 사려고하는지 모든 비지니스를 규제와 노동법으로 막아 놓고 있구나. 정말 해외로 뜨려는 사람들 러쉬가 있을까 겁난다&lt;br&gt;##&lt;br&gt;## [2] 택시기사들 눈치 보지 말고, 내년 선거를 의식 하지 말고, 불법은 불법으로 규정 짓고 합법은 대대적인 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;지원&lt;/span&gt;&lt;span&gt;을 통해 국민의 삶을 더욱 윤택하게 하라. 내년 제정만 방만하게 하면 나라 살림과 국민의 삶이 풍요롭게 되는지 되묻고 싶다. 소득이 주도하는 성장은 이제 그만하고 멀리 볼 수 있는 국가적 먹거리에 투자하길 바란다. 지금 정부가 쏟아 붓고 있는 내년 예산은 빛이며 후대의 우리 자손들이 값아야 할 빚이다. 이정부 너무하네.... ㅠ&lt;br&gt;##&lt;br&gt;## [3] 개발도상국 지위나 박탈 해라. 선진국 비교질 하면서 왜 아직도 개발도상국 지위 가지고 있냐 어디 하나 경쟁력이 없고 정부 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;지원&lt;/span&gt;&lt;span&gt;금만 축내는 기업들이 태반이다
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1185,8 +1169,7 @@ reply_category %&gt;%
 ```
 
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 더불어민주당 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;박홍근&lt;/span&gt;&lt;span&gt; 의원이 대표 발의했다. 더불어민주당 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;박홍근&lt;/span&gt;&lt;span&gt; 의원이 대표 발의했다. 더불어민주당 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;박홍근&lt;/span&gt;&lt;span&gt; 의원이 대표 발의했다.&lt;br&gt;##&lt;br&gt;## [2] 타다 금지법 발의한 의원 - 더불어민주당 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;박홍근&lt;/span&gt;&lt;span&gt;&lt;br&gt;##&lt;br&gt;## [3] 그래도정의로운국회의원이있어다행입니다 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;박홍근&lt;/span&gt;&lt;span&gt;의원화이팅중랑구조합원님들 내년선거에꼭지원바랍니다본회의통과응원합시다
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 
 ---
@@ -1408,16 +1391,6 @@ ggplot(top_cors, aes(x = reorder_within(item2, correlation, item1),
 ```r
 # 네트워크 그래프 데이터 만들기
 library(tidygraph)
-```
-
-&lt;pre class="r-output"&gt;&lt;code&gt;## 
-## Attaching package: 'tidygraph'
-&lt;/code&gt;&lt;/pre&gt;&lt;pre class="r-output"&gt;&lt;code&gt;## The following object is masked from 'package:stats':
-## 
-##     filter
-&lt;/code&gt;&lt;/pre&gt;
-
-```r
 set.seed(1234)
 graph_cors &lt;- word_cors %&gt;%
   filter(correlation &gt;= 0.15) %&gt;%
@@ -1480,8 +1453,7 @@ tada %&gt;%
   find_word(x = reply_raw, keyword = "내년", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 이런 인간들이 어딨어? 국토위 의원 이 사람들 반드시 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;내년&lt;/span&gt;&lt;span&gt;에 낙선시켜야 한다! 선거표 의식에서 국민들의 편익이나 변화에는 관심없고...쪽수가 많은 택시기사들 눈치보니라고 이런 짓껄이를 하는가 보네....예전에 박그네가 지 대통령 표의식해서 세종시 추진한 것하고 똑같네....나라 말아먹는 짓거리지...한국당 의원들도 똑같은 인간들이지 지들 표만 건질려고...한마디로 의원들 잘살펴보고 투표합시다!! 당장 취소해라!!&lt;br&gt;##&lt;br&gt;## [2] 택시기사들 눈치 보지 말고, &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;내년&lt;/span&gt;&lt;span&gt; 선거를 의식 하지 말고, 불법은 불법으로 규정 짓고 합법은 대대적인 지원을 통해 국민의 삶을 더욱 윤택하게 하라. &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;내년&lt;/span&gt;&lt;span&gt; 제정만 방만하게 하면 나라 살림과 국민의 삶이 풍요롭게 되는지 되묻고 싶다. 소득이 주도하는 성장은 이제 그만하고 멀리 볼 수 있는 국가적 먹거리에 투자하길 바란다. 지금 정부가 쏟아 붓고 있는 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;내년&lt;/span&gt;&lt;span&gt; 예산은 빛이며 후대의 우리 자손들이 값아야 할 빚이다. 이정부 너무하네.... ㅠ&lt;br&gt;##&lt;br&gt;## [3] 그래도정의로운국회의원이있어다행입니다 박홍근의원화이팅중랑구조합원님들 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;내년&lt;/span&gt;&lt;span&gt;선거에꼭지원바랍니다본회의통과응원합시다
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1497,8 +1469,7 @@ tada %&gt;%
   find_word(x = reply_raw, keyword = "총선", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 내년에 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;총선&lt;/span&gt;&lt;span&gt; 민주당은 아마도 작살날것...지난 서울.,수도권 싹쓸이 꿈도 꾸지 말지어다..그렇다고 표가 자한당으로 갈것도 아니고..지금보다 국회가 더 어수선한 상황이 전개될것..서민은 더 살기 힘들고 서울 집값은 더 오르고 민심 대란이 일어날것..&lt;br&gt;##&lt;br&gt;## [2] 이 나라는 국민이 내년 4월 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;총선&lt;/span&gt;&lt;span&gt;에서 심판해야 할 것이다&lt;br&gt;##&lt;br&gt;## [3] ㅎㅎ. 지금 정부가 타다 운전자와 가족들수 그리고 전국의 택시기사들과 그 가족들 수 합계를 계산해본 결과 택시 쪽 손을 들어주는게 내년 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;총선&lt;/span&gt;&lt;span&gt;과 정권 연장에 도움이 된다고 판단한거야. 이용자의 불편 따위는 표로 환산 되는게 아니거던.ㅎㅎ
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1511,8 +1482,7 @@ tada %&gt;%
   find_word(x = reply_raw, keyword = "손님", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 목적지 입력없이 앱이나 전화로 콜만해서[가려받기 방지] 기사 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;손님&lt;/span&gt;&lt;span&gt; 둘다 평가받게 하고[클린한 문화] 3진아웃제도 적용해서 기사 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;손님&lt;/span&gt;&lt;span&gt; 둘다 블랙 만들면 좀 나아지려나 욕부터 하지말고 방법을 찾아봅시다. 택시 손들고 잡는 구시대적인 방법 좀 없애고 목적지 부터 묻는 문화 없애고 서로 평가하면서 클린하게&lt;br&gt;##&lt;br&gt;## [2] 발전을 하려면 변화를 가지고 시도하는게 맞다 근데 대한민국은 정치 때문에 본인욕심 챙기고 나머지를 볼려고하니 국민들이 원하는 발전보다 본인들 이득이 생기는 발전을 지향한다 타다가 택시의 생계를 위협하면 경쟁하면된다 택시들도 서비스 질을 높이고, 승차거부없이 목적지 골라 태우지말고 모든 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;손님&lt;/span&gt;&lt;span&gt;을 태우면되는것이다. 간혹 택시기사님들 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;손님&lt;/span&gt;&lt;span&gt; 없다고 택시안에서 담배 핀다 몇번이고 목격했다. 그리고 택시를 타는 가장 큰 목적은 편의성인데 조금만 골목길로 들어가는 경로, 빈차로 되돌아 와야하는 외진 지역은 거의 대놓고 싫은 내색 다한다.&lt;br&gt;##&lt;br&gt;## [3] 타다가 불법인것은 사실이다..이재웅이가 말 장난으로 공유서비스라는 명목하에 영업 면허없이 유상 운송수단으로 불법 영업을한게 사실이기때문에 타다가 처음 운행될때 조금 염려 스러웠는데 결국은 이렇게 되는군...택시 기사들이 친절하게 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;손님&lt;/span&gt;&lt;span&gt;을 맞이하고 차안에서 담배피지 말고 쓸데없는말않하고 조용히 목적지 까지 바래다주는 모범 적인 행동을 보여줘야 한다~ 타다가 불법이라고 또 택시기사들 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;손님&lt;/span&gt;&lt;span&gt;들한테 이런저런 소리 하지말고 본연의 소임만 하기 바란다..
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1526,8 +1496,7 @@ tada %&gt;%
   find_word(x = reply_raw, keyword = "골라", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 소비자들을 좀 생각해줘야 되는거 아닌가... 이럴거면 택시 승차거부 문제같은거좀 해결해주던가.. 이마저 없애버리면 우린 또 택시 전쟁해야 하고 택시는 또 손님 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;골라&lt;/span&gt;&lt;span&gt;태우고 바뀌는게 없잖아...&lt;br&gt;##&lt;br&gt;## [2] 발전을 하려면 변화를 가지고 시도하는게 맞다 근데 대한민국은 정치 때문에 본인욕심 챙기고 나머지를 볼려고하니 국민들이 원하는 발전보다 본인들 이득이 생기는 발전을 지향한다 타다가 택시의 생계를 위협하면 경쟁하면된다 택시들도 서비스 질을 높이고, 승차거부없이 목적지 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;골라&lt;/span&gt;&lt;span&gt; 태우지말고 모든 손님을 태우면되는것이다. 간혹 택시기사님들 손님 없다고 택시안에서 담배 핀다 몇번이고 목격했다. 그리고 택시를 타는 가장 큰 목적은 편의성인데 조금만 골목길로 들어가는 경로, 빈차로 되돌아 와야하는 외진 지역은 거의 대놓고 싫은 내색 다한다.&lt;br&gt;##&lt;br&gt;## [3] 택시 타려고 해도 탑승거부에 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;골라&lt;/span&gt;&lt;span&gt;서 손님 받고.. 대체 서비스도 있어야 서로 경쟁하며 고객들의 편의와 만족도가 오르지 않을까요.. 어떤 분야던 단독은 아닌듯
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 .box[
@@ -1728,8 +1697,7 @@ line_tada %&gt;%
   find_word(x = reply_raw, keyword = "역행", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 한국은 정치인들땜에 발전이 없고 나라 망한다! 택시표심때문에 시대의 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;역행&lt;/span&gt;&lt;span&gt;하고 있고 진작 우버라든지 시대의 맞게 개방하고 개선되야 하는데 기득권 지킬려다 조선망하듯 망할듯 ㅜ ㅜ 꼭 노조집행부와 정치인들이 똑같해~~~&lt;br&gt;##&lt;br&gt;## [2] 미친.... 이런 시대를 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;역행&lt;/span&gt;&lt;span&gt;하는 법안은 도데체 어디서 발의하는거냐&lt;br&gt;##&lt;br&gt;## [3] 시대랑 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;역행&lt;/span&gt;&lt;span&gt;으로 가네 ㅋㅋㅋㅋ 무인주행자동차 금지법도 만들어라 이럴꺼면 ㅋㅋㅋㅋㅋㅋㅋㅋㅋ
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1744,8 +1712,7 @@ line_tada %&gt;%
   find_word(x = reply_raw, keyword = "뒤떨어", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 대한민국이 자유민주주의 국가 맞나요? 시대 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;뒤떨어&lt;/span&gt;&lt;span&gt;진 사고로 나라가 낙후되어 가네요.&lt;br&gt;##&lt;br&gt;## [2] 전 세계에 우버가 다 있는데 이거 결국 시대에 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;뒤떨어&lt;/span&gt;&lt;span&gt;지는 결정임...&lt;br&gt;##&lt;br&gt;## [3] 거꾸로 가는 나라. 시대에 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;뒤떨어&lt;/span&gt;&lt;span&gt;진 나라가 되어 가는구나.
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1760,8 +1727,7 @@ line_tada %&gt;%
   find_word(x = reply_raw, keyword = "면허", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 택시 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;면허&lt;/span&gt;&lt;span&gt; 남발 하자 타다불법이라니 왜 막음&lt;br&gt;##&lt;br&gt;## [2] 택시 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;면허&lt;/span&gt;&lt;span&gt;를 사서 영업을 해야지...&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;면허&lt;/span&gt;&lt;span&gt;도 없이 권리도 없이 택시와 유사 행위를 하는게 맞냐??&lt;br&gt;##&lt;br&gt;## [3] 택시 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;면허&lt;/span&gt;&lt;span&gt;제를 완전히 없애라!!!
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 ---
 
@@ -1776,8 +1742,7 @@ line_tada %&gt;%
   find_word(x = reply_raw, keyword = "사서", n = 10)
 ```
 
-&lt;pre class="r-output"&gt;&lt;code&gt;## [1] 택시 면허를 &lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 영업을 해야지...면허도 없이 권리도 없이 택시와 유사 행위를 하는게 맞냐??&lt;br&gt;##&lt;br&gt;## [2] 타다가 무슨 혁신기업이라고 봐줘야 되냐. 기존 점보택시랑 다할게 없는데. 정식으로 택시 면허 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 하면 누가 뭐라 하냐. 꼼수로 면허 돈 주고 안&lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 한다니 문제지.&lt;br&gt;##&lt;br&gt;## [3] 이건 타다가 잘못한거. 면허 &lt;/span&gt;&lt;span style='color: #FFFFFF;background-color: #FF00AF;font-weight: bold;'&gt;사서&lt;/span&gt;&lt;span&gt; 하겠다더니 정부와 합의 꺠고 렌터카로만 1만대 돌리겠다고 발표하면 어쩌라는겨. 국토부에서 불법화 검토하겠다고 한 후에도 바로잡지 않고 버티면서 타다 금지법 어쩌구 언플만하는데. 나라시 콜밴에 어플 붙여서 혁신이라고 우기는데. 우버나 그랩 케이스를 봐도 그렇고 결국 대중교통 택시시장 진입하고 접수하기 위한 방편이라는 혐의에서 자유롭지 않아 보이기도 하고.
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;
+
 
 &lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `"사서"`가 전처리 과정에서 원형인 `"사다"`로 변형되었기 때문에 `"사서"` 언급 댓글  추출
 

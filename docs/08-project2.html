@@ -1,0 +1,2023 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Do it! 쉽게 배우는 R 텍스트 마이닝 - 08 텍스트 마이닝 프로젝트: 차기 대선 주자 SNS 여론 분석</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="김영우" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <link rel="stylesheet" href="css/custom_06.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+
+
+
+
+
+
+class: title0
+
+Do it! 쉽게 배우는 R 텍스트 마이닝
+
+---
+
+class: no-page-num
+
+&lt;br&gt;
+
+.pull-left[
+&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+&lt;img src="https://raw.githubusercontent.com/youngwoos/Doit_textmining/main/cover.png" width="70%" height="70%" /&gt;
+]
+
+.pull-right[
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+&lt;svg viewBox="0 0 496 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"&gt;&lt;/path&gt;&lt;/svg&gt; [github.com/youngwoos/Doit_textmining](https://github.com/youngwoos/Doit_textmining)
+
+&lt;svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M400 32H48A48 48 0 0 0 0 80v352a48 48 0 0 0 48 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0 0 48-48V80a48 48 0 0 0-48-48z"&gt;&lt;/path&gt;&lt;/svg&gt; [facebook.com/groups/datacommunity](https://facebook.com/groups/datacommunity)
+
+- [네이버책](https://book.naver.com/bookdb/book_detail.nhn?bid=17891971)
+  - [yes24](http://bit.ly/3oUuJOB)
+  - [알라딘](http://bit.ly/3oXOSDn)
+  - [교보문고](https://bit.ly/2LtNOcB)
+]
+
+---
+
+class: title0
+
+08 텍스트 마이닝 프로젝트:  
+차기 대선 주자 SNS 여론 분석
+
+---
+
+class: title0-2
+
+We'll make
+
+&lt;br-back-30&gt;
+
+&lt;img src="Image/08/08_1_5.png" width="53%" /&gt;
+
+---
+
+class: title0-2
+
+We'll make
+
+&lt;br-back-30&gt;
+
+&lt;img src="Image/08/08_3_2.png" width="43%" /&gt;
+
+---
+
+class: title0-2
+
+We'll make
+
+&lt;br-back-30&gt;
+
+&lt;img src="Image/08/08_4_5.png" width="50%" /&gt;
+
+---
+
+class: title0-2
+
+and
+
+&lt;br-back-40&gt;
+
+&lt;img src="Image/08/08_6_4.png" width="50%" /&gt;
+
+---
+
+&lt;br&gt;
+
+.large2[.font-jua[목차]]
+
+.large[.font-jua[08-1 SNS 언급량 추이 살펴보기]]([link](#08-1))
+
+.large[.font-jua[08-2 SNS 이슈 알아보기]]([link](#08-2))
+
+.large[.font-jua[08-3 감정 단어 살펴보기]]([link](#08-3))
+
+.large[.font-jua[08-4 감정 경향 살펴보기]]([link](#08-4))
+
+.large[.font-jua[08-5 감정 추이 살펴보기]]([link](#08-5))
+
+.large[.font-jua[08-6 긍정, 부정 트윗 단어 비교하기]]([link](#08-6))
+
+
+---
+
+name: 08-1
+class: title1
+
+08-1 SNS 언급량 추이 살펴보기
+
+---
+
+
+##### SNS 데이터를 분석해서 사람들이 대통령 후보를 어떻게 생각하는지 알아보기
+
+- 20대 대통령 선거 유력 후보: 이낙연 의원, 이재명 경기도지사
+
+
+
+##### 분석 절차
+
+- 1.트윗 작성 날짜 및 후보자별 언급 빈도를 구합니다.
+- 2.선 그래프와 영역 차트를 만들어 추이를 살펴봅니다.
+
+---
+
+
+#### 기본적인 전처리
+
+- 2020년 8월 13일~21일, 두 후보 언급한 트위터 데이터
+- 두 후보를 함께 언급한 트윗이 있기 때문에 `bind_tweet`에는 중복된 행이 포함됨
+
+
+```r
+# 데이터 불러오기
+library(dplyr)
+library(readr)
+bind_tweet &lt;- bind_rows(
+  read_csv("tweet_nak.csv") %&gt;% mutate(candidate = "이낙연"),
+  read_csv("tweet_jae.csv") %&gt;% mutate(candidate = "이재명"))
+
+glimpse(bind_tweet)
+```
+
+
+```
+## Rows: 13,928
+## Columns: 5
+## $ status_id   &lt;dbl&gt; 1.296742e+18, 1.296737e+18, 1.296354e+18, 1.2...
+## $ screen_name &lt;chr&gt; "iloveabc0712", "park_pyung", "park_pyung", "...
+## $ created_at  &lt;dttm&gt; 2020-08-21 09:33:09, 2020-08-21 09:13:52, 20...
+## $ text        &lt;chr&gt; "@nylee21 @nylee_office 29일 전당대회 기다리고 있습니다. 이...
+## $ candidate   &lt;chr&gt; "이낙연", "이낙연", "이낙연", "이낙연", "이낙연", "이낙연", "이낙...
+```
+
+---
+
+
+##### 전처리 절차
+
+&lt;br10&gt;
+
+- **사용자 아이디 태그 제거**
+  - 트윗에는 사용자 아이디를 언급한 아이디 태그(@)가 있음
+  - `textclean::replace_tag()`를 이용해 아이디 태그 제거
+  - `stringr::str_to_lower()`를 이용해 소문자로 변환한 다음 적용
+
+
+- **html 태그 제거**
+  - 트윗에는 html 특수 문자가 포함되어 있어 출력하면 내용 알아보기 어려움
+  - `textclean::replace_html()`을 이용해 html 특수 문자 제거
+  - `stringr::str_squish()` 이용해 중복 공백 제거
+
+
+- **날짜 변수 추가만들기**
+  - `lubridate::date()`를 이용해 트윗 작성 시각에서 '년월일'을 추출한 변수 만들기
+  - 트윗을 날짜별로 분석할 때 활용
+  
+  
+---
+
+##### 전처리 절차
+
+&lt;br10&gt;
+
+- **광고 트윗 제거** 
+  - 트윗 광고에는 대부분 URL 링크가 있음
+  - `"https://"`가 포함된 텍스트 제거
+
+
+- **중복 트윗 제거**
+  - 한 사용자나 여러 사용자가 내용이 같은 트윗을 반복 게시하는 경우가 있음
+  - 내용이 같은 트윗은 후보별로 하나씩만 남기기
+
+
+- **어뷰징 트윗 제거**
+  - 트위터에는 극단적으로 트윗을 많이 올리는 사용자가 있음.
+  - 이런 사용자가 작성한 트윗 모두 포함하면 분석 결과에 소수 의견 과도하게 반영되므로 제거하기
+  - `slice_sample()`을 이용해 사용자당 하루 최대 5개만 남기기
+  
+
+---
+
+
+```r
+install.packages("lubridate")
+library(lubridate)
+library(textclean)
+library(stringr)
+
+set.seed(1234)
+tweet &lt;- bind_tweet %&gt;%
+
+  mutate(text = replace_tag(str_to_lower(text)),  # id 태그 제거
+         text = str_squish(replace_html(text)),   # html 특수 문자 제거
+         date = date(created_at)) %&gt;%             # 날짜 변수 생성
+
+  filter(!str_detect(text, "https://")) %&gt;%       # 광고 트윗 제거
+
+  group_by(candidate) %&gt;%                         # 중복 글 제거
+  distinct(text, .keep_all = T) %&gt;%
+
+  group_by(candidate, date, screen_name) %&gt;%      # 사용자별 하루 최대 5개 추출
+  slice_sample(n = 5) %&gt;%
+  ungroup()
+
+glimpse(tweet)
+```
+
+---
+
+
+```
+## Rows: 8,337
+## Columns: 6
+## $ status_id   &lt;dbl&gt; 1.293765e+18, 1.293839e+18, 1.29373...
+## $ screen_name &lt;chr&gt; "0o0o0o0o0125", "1112_e_h", "1112_e...
+## $ created_at  &lt;dttm&gt; 2020-08-13 04:23:35, 2020-08-13 09...
+## $ text        &lt;chr&gt; "\"나 채식주의잔데 지금 치킨먹고싶다\" 한편 나라가 디비진다...
+## $ candidate   &lt;chr&gt; "이낙연", "이낙연", "이낙연", "이낙연", "이낙연", ...
+## $ date        &lt;date&gt; 2020-08-13, 2020-08-13, 2020-08-13...
+```
+
+---
+
+#### 트윗 빈도 추이
+
+##### 1. 트윗 빈도 추이 선 그래프
+
+- 날짜별로 어떤 후보를 언급한 트윗이 많은지 알아보기
+
+.scroll-box-26[
+
+
+```r
+# 날짜, 후보별 빈도
+frequency_date &lt;- tweet %&gt;%
+  count(date, candidate)
+
+frequency_date
+```
+
+```
+## # A tibble: 18 x 3
+##    date       candidate     n
+##    &lt;date&gt;     &lt;chr&gt;     &lt;int&gt;
+##  1 2020-08-13 이낙연      247
+##  2 2020-08-13 이재명      639
+##  3 2020-08-14 이낙연      709
+##  4 2020-08-14 이재명     1179
+##  5 2020-08-15 이낙연      153
+##  6 2020-08-15 이재명      462
+##  7 2020-08-16 이낙연      242
+##  8 2020-08-16 이재명      515
+##  9 2020-08-17 이낙연      295
+## 10 2020-08-17 이재명      454
+## 11 2020-08-18 이낙연      582
+## 12 2020-08-18 이재명      452
+## 13 2020-08-19 이낙연      628
+## 14 2020-08-19 이재명      338
+## 15 2020-08-20 이낙연      250
+## 16 2020-08-20 이재명      526
+## 17 2020-08-21 이낙연      143
+## 18 2020-08-21 이재명      523
+```
+]
+
+---
+
+
+
+```r
+# 선 그래프
+library(ggplot2)
+ggplot(frequency_date, aes(x = date, y = n, col = candidate)) +
+  geom_line()
+```
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-12-1.png" width="80%" /&gt;
+
+---
+
+##### 그래프 다듬기
+
+
+```r
+col_candidate &lt;- c("#619CFF", "#B79F00")                      # 후보 색상 목록 생성
+```
+&lt;br-back-10&gt;
+
+
+```r
+ggplot(frequency_date, aes(x = date, y = n, col = candidate)) +  
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  
+  scale_x_date(date_labels = "%m/%d",                         # x축 날짜 포맷
+               date_breaks  = "1 day") +                      # x축 날짜 간격
+  scale_y_continuous(limits = c(0, 1200),                     # y축 범위
+                     breaks = seq(0, 1200, 300)) +            # y축 간격
+  scale_color_manual(values = col_candidate) +                # 선 색깔
+  
+  labs(title = "차기 대선주자 트위터 언급량 추이",            # 그래프 제목
+       subtitle = "2020.8.13 ~ 2020.8.21",                    # 보조 제목
+       x = NULL, y = NULL, col = NULL) +                      # 축 이름 삭제
+
+  theme_minimal(12) +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),  # 제목 폰트
+        plot.subtitle = element_text(size = 12),              # 부제목 폰트
+        panel.grid.minor.x = element_blank())                 # x축 보조축 삭제
+```
+
+---
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `theme_minimal(12)`: `theme_`로 시작하는 `ggplot2` 테마 함수에 숫자를 입력하면 그래프의 전체 폰트 &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;크기를 조정함
+ 
+---
+&lt;br&gt;&lt;br&gt;
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-14-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+##### 2. 트윗 빈도 추이 영역 차트
+
+- `geom_area()`: 언급량 차이를 차이를 잘 표현하는 영역 차트(area chart) 만들기
+  - `position = "dodge"`: 두 후보의 영역 충첩
+  - `alpha = 0.6`: 투명하게 표현
+
+
+```r
+# 영역 그래프
+ggplot(frequency_date, aes(x = date, y = n, fill = candidate)) +
+  geom_area(position = "dodge", alpha = 0.6)
+```
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-15-1.png" width="58%" /&gt;
+
+---
+
+##### 그래프 다듬기
+
+
+```r
+ggplot(frequency_date, aes(x = date, y = n, fill = candidate)) +
+  geom_area(position = "dodge", alpha = 0.6) +
+  geom_line(size = 0.5, alpha = 0.5) +
+  
+  scale_x_date(date_labels = "%m/%d", date_breaks  = "1 day") +
+  scale_y_continuous(limits = c(0, 1200),
+                     breaks = seq(0, 1200, 300)) +
+  scale_fill_manual(values = col_candidate) +
+  
+  labs(title = "차기 대선주자 트위터 언급량 추이",
+       subtitle = "2020.8.13 ~ 2020.8.21",
+       x = NULL, y = NULL, fill = NULL) +
+  
+  theme_minimal(12) +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),            
+        panel.grid.minor.x = element_blank(),
+        panel.grid.minor.y = element_blank())  # y축 보조축 삭제
+```
+
+---
+
+---
+&lt;br&gt;&lt;br&gt;
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-16-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+name: 08-2
+class: title1
+
+08-2 SNS 이슈 알아보기
+---
+
+##### 8월 14일의 이슈 알아보기
+- 트위터 언급량 추이 그래프를 보면 8월 14일에 유독 두 후보의 언급량이 많다
+- 이날 무슨 일이 있었는지 알아보기
+
+
+##### 분석 절차
+- 1.관심 날짜와 그 외 날짜의 단어 빈도를 구합니다.
+- 2.로그 오즈비를 이용해 관심 날짜에 상대적으로 많이 사용된 단어를 추출합니다.
+- 3.트윗의 내용을 살펴보고 관심 날짜에 무슨 일이 있었는지 알아봅니다.
+
+
+---
+
+##### 1. 띄어쓰기 기준 토큰화
+
+
+```r
+library(tidytext)
+library(KoNLP)
+word_tweet_raw &lt;- tweet %&gt;%
+  unnest_tokens(input = text,
+                output = word,
+                token = "words",
+                drop = F)
+```
+
+---
+
+##### 2. 날짜 분류, 단어별 빈도 구하기
+
+
+```r
+frequency14 &lt;- word_tweet_raw %&gt;%
+  mutate(category = ifelse(date == "2020-08-14", "target", "etc")) %&gt;%
+  filter(str_count(word) &gt;= 2) %&gt;%
+  count(category, word, sort = T)
+
+frequency14
+```
+
+```
+## # A tibble: 59,382 x 3
+##    category word         n
+##    &lt;chr&gt;    &lt;chr&gt;    &lt;int&gt;
+##  1 etc      이재명    2194
+##  2 etc      이낙연    1928
+##  3 target   이재명     791
+##  4 target   이낙연     651
+##  5 etc      이재명이   650
+##  6 etc      이재명은   507
+##  7 etc      민주당     396
+##  8 etc      의원님     394
+##  9 etc      코로나     349
+## 10 target   이재명이   287
+## # ... with 59,372 more rows
+```
+
+---
+
+##### 3. 로그 오즈비 구하기
+
+- 분모에 `"etc"`, 분자에 `"target"`의 단어 빈도를 놓고 로그 오즈비를 구함
+  - 관심 날짜에 상대적으로 많이 사용된 단어일수록 `log_odds_ratio`가 큰 값을 지님
+
+
+```r
+# Wide form으로 변환
+library(tidyr)
+wide14 &lt;- frequency14 %&gt;%
+  pivot_wider(names_from = category,
+              values_from = n,
+              values_fill = list(n = 0))
+
+# 로그 오즈비 변수 추가
+wide14 &lt;- wide14 %&gt;%
+  mutate(log_odds_ratio = log(((target + 1) / (sum(target + 1))) /
+                                ((etc  + 1) / (sum(etc    + 1)))))
+
+# log_odds_ratio 높은 순 출력
+wide14 %&gt;%
+  arrange(-log_odds_ratio) %&gt;%
+  head(20)
+```
+
+---
+
+- '조사기관', '선호도', '여론조사': 여론조사와 관련된 일이 있었다
+
+
+```
+## # A tibble: 20 x 4
+##    word           etc target log_odds_ratio
+##    &lt;chr&gt;        &lt;int&gt;  &lt;int&gt;          &lt;dbl&gt;
+##  1 조사기관         0     10           3.00
+##  2 댓방             0      9           2.90
+##  3 지지층에서는     0      9           2.90
+##  4 높게             0      8           2.80
+##  5 이재멍           0      7           2.68
+##  6 조국장관을       0      7           2.68
+##  7 권력찬탈         0      6           2.55
+##  8 나가지           0      6           2.55
+##  9 떨어지는데       0      6           2.55
+## 10 맞대응           0      6           2.55
+## 11 선수를           0      6           2.55
+## 12 선호도가         0      6           2.55
+## 13 여론조사는       0      6           2.55
+## 14 이낙연후보는     0      6           2.55
+## 15 이죄명은         0      6           2.55
+## 16 차기선호도       0      6           2.55
+## 17 역선택           1     12           2.47
+## 18 가능성은         0      5           2.39
+## 19 가치인           0      5           2.39
+## 20 고귀한           0      5           2.39
+```
+---
+
+##### 4. 원문 살펴보기
+
+- 2020년 8월 14일에 `"조사"`를 언급한 트윗을 추출해 내용 살펴보기
+- 이날 발표된 차기 대선주자 지지도 조사 결과에서 이재명 경기도지사가 이낙연 의
+원을 처음으로 역전
+
+.scroll-box-26[
+
+```r
+# 트윗 내용 확인
+tweet %&gt;%
+  filter(date == "2020-08-14" &amp; str_detect(text, "조사")) %&gt;%
+  head(10) %&gt;%
+  pull(text)
+```
+
+```
+##  [1] "서너개로 쪼개져 있던 극보수 정당들의 몰락과 바미당 유승민계를 흡수해서 지지율이 30% 정도 되는 미통당 지지자들이 이낙연 적수가 되는 뚜렷한 대권후보가 없어서 여론조사시 윤석렬과 상대적으로 만만한 이재명을 역선택하고 있는 것이다. 이들은 미통당 유력후보 출현시 다시 돌아갈 표이다."               
+##  [2] "저건 진짜진짜 말도 안됨;;;; 시발 나한테도 지지율조사해가라고 난 아닥하고 이낙연의원님"                                                                                                                                                                                                              
+##  [3] "어차피 갤럽은 누가 잘하고 있는지 묻는게 아니야 요즘 누구 이름 많이 들어봤냐는 인지도 조사라 언플 좀만 해도 1위 금방 가져오는데 언플은 워낙 이낙연 총리님과는 거리가 멀고 당대표 되시면 다시 1위 쉬움. 근데 걱정되는건 그때까지 언론과 당빠들이 연일 공격할거란말야. 상처받으실까 속상.."            
+##  [4] "어느 여론조사에서 이재명지사가 이낙연 후보보다 지지율이 높게 나왔군요 이재명 지사 지지자들에겐 축하를 보내 드립니다. 전 이낙연 이재명 두분 모두 민주당의 자산이니.. 메너있고 슬기러운 경쟁이길 기대해 봅니다"                                                                                       
+##  [5] "정신을 누가 듣냐며 개무시해놓고 정신 나간다고 욕하는 것들이 있었네. 트친님들 말씀처럼 정신 듣는 사람들은 어차피 이낙연 의원님 뽑을 사람들임. 말도 안되는 여론조사 결과 내면서 공중파에서 쉬지 않고 빨아주는 이재명 생각해서라도 공중파에 많이 나오시길!"                                            
+##  [6] "여론조사, 이낙연의원의 차기정치지도자 선호도, 이재명이 앞섰다고? 믿어주라고? 개도 안쓰는 쌍욕에 오럴거리는 그가 선호도가 높아? 대한민국 국민이 미쳐간다는거라고? 돈 몇푼에 영혼마저 파는놈들이 기레기놈들 뿐인줄 알았더니 그게 아닌가보구나!"                                                       
+##  [7] "3 글구 더 재미있는건 찢명이 지지율이 이낙연을 앞선게\u314b대구경북과 미통당 그리구 오렌지당이 민 결과\u314b\u314b 못믿겠어?뇌피셜이 아니라 갤럽 세부 조사 분석표 캡쳐한번 봐! 혹여 수구보수까지 찢명이를 지지한다며 확장성 운운 하는새끼는 그냥 모지리 아니면 간악한새끼라 보면됨\u314b 암튼 재밌어"
+##  [8] "전당대회도 그렇고 진짜 민주당 지지자들은 여론조사 신경 1도 안쓰는 사람 많음. 그냥 이낙연 찍으면 되니까."                                                                                                                                                                                            
+##  [9] "여론조사에서(신빙성은 없다만) 이재명이 이낙연 눌렀다고 연락왔다. 대선검증가면 탈탈털릴텐데 뭔 자신감이냐"                                                                                                                                                                                           
+## [10] "응원합니다 여론조작 전 안믿어요 조금전 당대표 여론조사 번호대로 하면 되지 1번 박주민 2번 김부겸 3번 이낙연 4번 없음 . 장난하나. 최고의원은 1번 어쩌구 7번 김종민. 8번 신승. ? 여하간 끝까지 듣는라 화나네요 여론조사 요새 하루에 3-4번도 받는 날도 있네요 돈은 어디서 나는지."
+```
+]
+
+---
+
+
+
+
+#### 8월 18일~19일의 이슈 알아보기
+
+- 8월 18일과 19일에 이낙연 의원의 언급량이 크게 상승함
+
+##### 1. 날짜 분류하고 단어별 빈도 구하기
+
+
+```r
+frequency_nak1819 &lt;- word_tweet_raw %&gt;%
+  mutate(category = ifelse(date &gt;= "2020-08-18" &amp;
+                           date &lt;= "2020-08-19", "target", "etc")) %&gt;%
+  filter(candidate == "이낙연" &amp; str_count(word) &gt;= 2) %&gt;%
+  count(category, word, sort = T)
+```
+
+---
+
+##### 2. 로그 오즈비 구하기
+
+
+```r
+# Wide form으로 변환
+wide_nak1819 &lt;- frequency_nak1819 %&gt;%
+  pivot_wider(names_from = category,
+              values_from = n,
+              values_fill = list(n = 0))
+
+# 로그 오즈비 변수 추가
+wide_nak1819 &lt;- wide_nak1819 %&gt;%
+  mutate(log_odds_ratio = log(((target + 1) / (sum(target + 1))) /
+                                ((etc  + 1) / (sum(etc    + 1)))))
+```
+
+---
+
+- `"음성판정"`, `"검사결과"`: 이낙연 의원에게 코로나19 검사와 관련된 일이 있었다
+
+.scroll-box-26[
+
+
+```r
+# log_odds_ratio 높은 순 출력
+wide_nak1819 %&gt;%
+  arrange(-log_odds_ratio) %&gt;%
+  head(20)
+```
+
+```
+## # A tibble: 20 x 4
+##    word         etc target log_odds_ratio
+##    &lt;chr&gt;      &lt;int&gt;  &lt;int&gt;          &lt;dbl&gt;
+##  1 다행입니다     0     41           4.09
+##  2 음성판정       0     39           4.05
+##  3 cbs            3    127           3.82
+##  4 마이크         0     29           3.76
+##  5 음성           4    137           3.68
+##  6 무탈하시길     0     23           3.54
+##  7 일부러         0     16           3.19
+##  8 아무일         0     15           3.13
+##  9 밤새           0     14           3.07
+## 10 확진자가       0     13           3.00
+## 11 검사           2     38           2.92
+## 12 기도합니다     0     12           2.92
+## 13 검사결과       0     11           2.84
+## 14 무사하시길     0     11           2.84
+## 15 차명진         0     11           2.84
+## 16 판정           2     33           2.78
+## 17 방송국         0     10           2.76
+## 18 잠이           0     10           2.76
+## 19 ㅜㅜ           2     30           2.69
+## 20 김정훈         0      9           2.66
+```
+]
+
+---
+
+##### 3. 원문 살펴보기
+
+- 로그 오즈비가 가장 높은 `"다행입니다"`를 언급한 트윗 살펴보기
+- 이낙연 의원이 코로나19 검사 음성 판정을 받았다
+
+.scroll-box-26[
+
+```r
+# 트윗 내용 확인
+tweet %&gt;%
+  filter(date &gt;= "2020-08-18" &amp; date &lt;= "2020-08-19" &amp;
+         candidate == "이낙연" &amp; str_detect(text, "다행입니다")) %&gt;%
+  head(10) %&gt;%
+  pull(text)
+```
+
+```
+##  [1] "이낙연 의원님 음성이신가 보다. 너무 잘됐고 감사한 일. 정말 다행입니다."                                                                                                                                                                        
+##  [2] "이낙연 의원님. 음성판정. 정말 다행입니다. 가슴을 쓸어내렸습니다. 더더욱 우리 모두 조심해야겠습니다."                                                                                                                                           
+##  [3] "이낙연 음성♥♥♥ 정말 다행입니다~"                                                                                                                                                                                                            
+##  [4] "다행입니다 조마 조마하면 가슴 졸였을 수 많은 사람들과 음성 나오길 기도 드린 여러분들이 계시기에 고맙습니다 자가격리 잘하십시요 간간히 소식 올려주시구요~^^ 이낙연 의원님 건강하셔서 감사합니다"                                                
+##  [5] "다행입니다. 결과와는 별개로 cbs행태가 고약하네요. 방송 하실 때 꼭 마스크 쓰세요. #이낙연_당대표"                                                                                                                                               
+##  [6] "리) 일단 천만다행입니다... 이낙연 의원 검사 받았다는 소식 듣고 어젯밤 잠 못 주무신 분들도 있으셨을듯..."                                                                                                                                       
+##  [7] "음성 나와서 다행입니다 앞으로 이낙연 의원님 방송국과 인터뷰하실때도 마스크 쓰게 해주시고 사람들과 악수도 당분간 삼가해주세요 방송국 출연할때 출연진들도 잘살펴봐주세요 이낙연의원님 안계시는 민주당과 2년후 대한민국은 암울합니다 \u315c\u315c"
+##  [8] "결과 음성 나오셨다니 다행입니다...이낙연의원님의 몸은 개인의 몸이 아닙니다...모든국민의 몸입니다 건강에 신경써 주세요~~"                                                                                                                       
+##  [9] "이낙연 의원님 정말 마음 졸였는데 음성 나와 다행입니다 천만 다행입니다"                                                                                                                                                                         
+## [10] "이낙연 의원 보좌진을 욕했지만 의원님도 원망에서 자유롭진 않습니다. 지금까지 맘졸인거 생각하면 그렇습니다. 정말 다행입니다."
+```
+]
+
+
+---
+name: 08-3
+class: title1
+
+08-3 감정 단어 살펴보기
+---
+
+##### 분석 절차
+- 1.트윗에 감정 점수를 부여한 다음 감정 범주로 분류합니다.
+- 2.감정 범주별로 자주 언급한 단어를 추출해 막대 그래프를 만듭니다.
+
+
+#### 감정 단어 살펴보기
+
+##### 1. 감정 점수, 감정 범주 부여하기
+
+
+
+```r
+# 감정 사전 불러오기
+dic &lt;- read_csv("files/knu_sentiment_lexicon.csv")
+
+# 감정 점수 부여, 감정 극성 분류
+word_tweet &lt;- word_tweet_raw %&gt;%
+  left_join(dic, by = "word") %&gt;%                             # 감정 점수 부여
+  mutate(polarity = ifelse(is.na(polarity), 0, polarity),     # NA를 0으로 변환
+         sentiment = ifelse(polarity ==  2, "긍정",           # 감정 범주 분류
+                     ifelse(polarity == -2, "부정", "중립")))
+```
+
+
+
+---
+
+##### 2. 자주 언급한 감정 단어 살펴보기
+
+- 후보 이름은 가장 많이 언급되지만 트윗 해석에 도움 안되므로 제거
+
+
+```r
+# 자주 언급한 단어 추출
+top10_word &lt;- word_tweet %&gt;%
+
+  # 불용어 제거
+  filter(!(candidate == "이낙연" &amp; str_detect(word, "이낙연")) &amp;
+         !(candidate == "이재명" &amp; str_detect(word, "이재명"))) %&gt;%
+
+  filter(str_count(word) &gt;= 2) %&gt;%
+  count(candidate, sentiment, word) %&gt;%
+
+  group_by(candidate, sentiment) %&gt;%
+  slice_max(n, n = 10, with_ties = F)
+
+top10_word
+```
+
+
+---
+
+```
+## # A tibble: 60 x 4
+## # Groups:   candidate, sentiment [6]
+##    candidate sentiment word         n
+##    &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;    &lt;int&gt;
+##  1 이낙연    긍정      좋은        32
+##  2 이낙연    긍정      소중한      11
+##  3 이낙연    긍정      좋다        11
+##  4 이낙연    긍정      감사         8
+##  5 이낙연    긍정      많다         8
+##  6 이낙연    긍정      좋아하는     8
+##  7 이낙연    긍정      최고         8
+##  8 이낙연    긍정      훌륭한       8
+##  9 이낙연    긍정      최고의       7
+## 10 이낙연    긍정      좋아         6
+## # ... with 50 more rows
+```
+
+---
+
+##### 3. 막대 그래프 만들기
+
+
+```r
+ggplot(top10_word, aes(x = reorder_within(word, n, candidate),
+                       y = n,
+                       fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(candidate ~ sentiment,  # 후보, 감정 범주별 그래프 생성
+             scales = "free") +
+  scale_x_reordered()
+```
+
+---
+&lt;br&gt;
+![](08-project2_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+---
+
+
+##### 그래프 다듬기
+
+
+```r
+col_sentiment &lt;- c("#619CFF", "#00BA38", "#F8766D")  # 감정 색깔 목록
+order_sentiment &lt;- c("긍정", "중립", "부정")         # 감정 범주 목록
+
+# 그래프 순서 지정
+top10_word$sentiment &lt;- factor(top10_word$sentiment,
+                               levels = order_sentiment)
+```
+---
+
+
+```r
+ggplot(top10_word, aes(x = reorder_within(word, n, candidate),
+                       y = n,
+                       fill = sentiment)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(candidate ~ sentiment,
+             scales = "free") +
+  scale_x_reordered() +
+  scale_fill_manual(values = col_sentiment) +
+
+  labs(title = "차기 대선주자 감정 단어",
+       subtitle = "감정 극성별 빈도 Top 10",
+       x = NULL, y = NULL, fill = NULL) +
+
+  theme_minimal(12) +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        legend.position = "bottom")  # 범례 위치
+```
+
+---
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-30-1.png" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+name: 08
+class: title1
+
+08-4 감정 경향 살펴보기
+---
+
+#### 두 후보를 언급한 트윗이 전반적으로 어떤 감정 경향을 띠는지 알아보기
+
+##### 분석 절차
+- 1.트윗의 감정 점수로 히스토그램과 확률 밀도 함수 그래프를 만들어 분포를 살펴봅니다.
+- 2.확률 밀도 함수 그래프를 날짜별로 만들어 트윗의 감정 점수 분포가 날짜에 따라 어떻게 다른지 
+살펴봅니다.
+- 3.감정 범주별 빈도와 비율을 막대 그래프로 만들어 어떤 감정을 담은 트윗이 많은지 살펴봅니다
+
+---
+
+#### 전반적인 감정 경향 살펴보기
+
+
+```r
+# 트윗 감정 점수 구하기
+sentiment_tweet &lt;- word_tweet %&gt;%
+  group_by(candidate, status_id) %&gt;%
+  summarise(score = sum(polarity)) %&gt;%
+  ungroup()
+
+# 트윗 원문에 감정 점수 결합
+tweet &lt;- tweet %&gt;%
+  left_join(sentiment_tweet, by = c("candidate", "status_id"))
+
+# 감정 점수 히스토그램
+hist(tweet$score)
+```
+
+
+
+
+
+
+
+---
+&lt;br&gt;
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-33-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+##### 확률 밀도 함수 그래프 만들기
+
+- 확률 밀도 함수 그래프(density plot)를 만들어 전반적으로 어떤 감정을 담은 트윗이 많은지 살펴보기
+- `geom_density()`
+  - `adjust`: 는 띠 너비(bandwidth)를 조정해 그래프를 평평하게 만들기
+  - `alpha`: 투명도를 조정해 그래프 중첩된 부분 드러내기
+  
+
+```r
+ggplot(tweet, aes(x = score, fill = candidate)) +
+  geom_density(adjust = 2, alpha = 0.6)
+```
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-34-1.png" width="48%" /&gt;
+
+---
+
+##### 그래프 다듬기
+
+
+
+```r
+ggplot(tweet, aes(x = score, fill = candidate)) +
+  geom_density(adjust = 2, alpha = 0.6) +
+  geom_vline(xintercept = 0,                   # 0점 위 세로선 표시
+             linetype = "dashed",              # 점선 표시
+             size = 0.5,
+             alpha = 0.5) +
+
+  scale_x_continuous(breaks = c(-5:5),         # x축 범위
+                     limits = c(-5, 5)) +      # x축 간격
+  scale_fill_manual(values = col_candidate) +
+
+  labs(title = "차기 대선주자 감정 점수 분포",
+       subtitle = "2020.8.13 ~ 2020.8.21",
+       y = NULL, fill = NULL) +
+
+  theme_minimal(12) +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        legend.position = "bottom",
+        panel.grid = element_blank())          # 격자 삭제
+```
+
+---
+&lt;br&gt;
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-35-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+- 이재명 경기도지사는 이낙연 의원에 비해 감정 점수가 낮거나 0에 가까운 트윗이 많다
+- 이낙연 의원은 이재명 경기도지사에 비해 감정 점수가 높은 트윗이 많다
+
+&lt;br10&gt;
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-36-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
+
+
+#### 일자별 감정 경향 살펴보기
+
+##### 일자별 확률 밀도 함수 그래프 만들기
+
+
+```r
+ggplot(tweet, aes(x = score, fill = candidate)) +
+  geom_density() +
+  facet_wrap(~ date)
+```
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-37-1.png" width="70%" /&gt;
+
+---
+
+##### 그래프 다듬기
+
+
+```r
+ggplot(tweet, aes(x = score, fill = candidate)) +
+  geom_density(adjust = 2,
+               alpha = 0.6) +
+
+  geom_vline(xintercept = 0,
+             linetype = "dashed",
+             size = 0.5,
+             alpha = 0.5) +
+
+  facet_wrap(~ str_remove(date, "2020-"),                  # x축 년도 삭제
+             scales = "free_y",
+             ncol = 3,
+             strip.position = "bottom") +
+
+  scale_x_continuous(breaks = c(-5:5),
+                     limits = c(-5, 5)) +
+  scale_fill_manual(values = col_candidate) +
+```
+
+---
+
+
+```r
+labs(title = "차기 대선주자 일자별 감정 점수 분포",
+       subtitle = "2020.8.13 ~ 2020.8.21",
+       x = NULL, y = NULL, fill = NULL) +
+
+  theme_bw(12) +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        legend.position = "bottom",
+        panel.grid = element_blank(),
+        axis.ticks = element_blank(),                      # 축 눈금 삭제
+        axis.text = element_blank(),                       # 축 삭제
+        strip.background = element_rect(colour = "black",  # 패널명 배경
+                                        fill = "white"))
+```
+
+
+---
+
+
+&lt;img src="08-project2_files/figure-html/p_tweet_density-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+- 트윗의 감정 경향이 날짜별로 다르다
+  - 대부분 이낙연 의원은 긍정적인 트윗이 많고 이재명 경기도지사는 부정적인 트윗이 많다
+  - 8월 16일, 17일: 이낙연 의원을 긍정적으로 언급한 트윗이 많다
+  - 8월 18일
+     - 이낙연 의원은 감정 점수가 낮거나 0점에 가까운 트윗이 많다
+     - 이재명 경기도지사는 감정 점수가 높은 트윗이 많다
+    
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-40-1.png" width="50%" style="display: block; margin: auto;" /&gt;
+---
+    
+.box[
+
+.info[&lt;svg viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;position:relative;display:inline-block;top:.1em;fill:#FF7333;"&gt;  [ comment ]  &lt;path d="M505.12019,19.09375c-1.18945-5.53125-6.65819-11-12.207-12.1875C460.716,0,435.507,0,410.40747,0,307.17523,0,245.26909,55.20312,199.05238,128H94.83772c-16.34763.01562-35.55658,11.875-42.88664,26.48438L2.51562,253.29688A28.4,28.4,0,0,0,0,264a24.00867,24.00867,0,0,0,24.00582,24H127.81618l-22.47457,22.46875c-11.36521,11.36133-12.99607,32.25781,0,45.25L156.24582,406.625c11.15623,11.1875,32.15619,13.15625,45.27726,0l22.47457-22.46875V488a24.00867,24.00867,0,0,0,24.00581,24,28.55934,28.55934,0,0,0,10.707-2.51562l98.72834-49.39063c14.62888-7.29687,26.50776-26.5,26.50776-42.85937V312.79688c72.59753-46.3125,128.03493-108.40626,128.03493-211.09376C512.07526,76.5,512.07526,51.29688,505.12019,19.09375ZM384.04033,168A40,40,0,1,1,424.05,128,40.02322,40.02322,0,0,1,384.04033,168Z"&gt;&lt;/path&gt;&lt;/svg&gt; 감정 점수는 조심해서 해석해야 합니다]
+- 특정 후보를 언급한 트윗의 감정 점수가 낮다고 해서 후보를 비판한 트윗이 많다고 할 수는 없다
+- 단지 부정적인 감정을 표현하는 단어를 사용한 트윗이 많을 수도 있음
+- 8월 18일~19일 
+  - 이낙연 의원이 코로나19에 감염되었을까 봐 걱정하는 트윗이 많았음
+  - '걱정', '불안'처럼 부정적인 감정 표현 단어 사용해서 감정 점수가 낮은 것. 비판 X
+- 감정 점수만으로는 글쓴이가 무엇을 부정적으로 언급했는지 알 수 없기 때문에 해석 조심해야함
+
+
+
+]
+
+
+---
+
+#### 감정 범주 살펴보기
+
+##### 1. 감정 범주별 빈도와 비율 구하기
+
+
+
+```r
+# 감정 분류 변수 생성
+tweet &lt;- tweet %&gt;%
+  mutate(sentiment = ifelse(score &gt;= 1, "긍정",
+                     ifelse(score &lt;= -1, "부정", "중립")))
+
+# 후보, 감정별 빈도 및 비율
+frequency_sentiment &lt;- tweet %&gt;%
+  group_by(candidate) %&gt;%
+  count(sentiment) %&gt;%
+  mutate(ratio = n/sum(n))
+
+frequency_sentiment
+```
+
+---
+
+```
+## # A tibble: 6 x 4
+## # Groups:   candidate [2]
+##   candidate sentiment     n ratio
+##   &lt;chr&gt;     &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt;
+## 1 이낙연    긍정        577 0.178
+## 2 이낙연    부정        612 0.188
+## 3 이낙연    중립       2060 0.634
+## 4 이재명    긍정        723 0.142
+## 5 이재명    부정       1068 0.210
+## 6 이재명    중립       3297 0.648
+```
+
+
+---
+
+##### 2. 감정 범주 빈도 막대 그래프 만들기
+
+
+```r
+ggplot(frequency_sentiment, aes(x = sentiment, y = n, fill = sentiment)) +
+  geom_col() +
+  facet_wrap(~ candidate)
+```
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-42-1.png" width="70%" /&gt;
+
+
+---
+
+##### 그래프 다듬기
+
+
+
+```r
+# 순서 설정
+frequency_sentiment$sentiment &lt;- factor(frequency_sentiment$sentiment,
+                                        levels = order_sentiment)
+```
+
+---
+
+##### 그래프 다듬기
+
+
+```r
+library(scales)
+ggplot(frequency_sentiment, aes(x = sentiment, y = n, fill = sentiment)) +
+  geom_col(show.legend = F) +
+  facet_wrap(~ candidate) +
+  geom_text(aes(label = comma(n)), vjust = -0.5) +
+
+  ylim(0, 3500) +
+  scale_fill_manual(values = col_sentiment) +   # 막대 색깔
+
+  labs(title = "차기 대선주자 트윗 감정 빈도",
+       subtitle = "2020.8.13 ~ 2020.8.21",
+       x = NULL, y = NULL) +
+
+  theme_bw(12) +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        panel.grid = element_blank())
+```
+
+---
+&lt;br&gt;&lt;br&gt;
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-44-1.png" width="80%" style="display: block; margin: auto;" /&gt;
+
+---
+
+##### 3. 감정 범주 비율 누적 막대 그래프 만들기
+
+
+
+```r
+ggplot(frequency_sentiment, aes(x = candidate, y = ratio, fill = sentiment)) +
+  geom_col()
+```
+
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-45-1.png" width="60%" /&gt;
+
+---
+
+##### 그래프 다듬기
+
+
+```r
+# 막대 누적 순서 지정
+frequency_sentiment$sentiment &lt;- factor(frequency_sentiment$sentiment,
+                                        levels = rev(order_sentiment))
+
+ggplot(frequency_sentiment, aes(x = candidate, y = ratio, fill = sentiment)) +
+  geom_col(show.legend = F, width = 0.7) +
+
+  geom_text(aes(label = paste(sentiment, percent(ratio, accuracy = 0.1))),
+            position = position_stack(vjust = 0.5)) +     # 수직 위치
+  coord_flip() +
+  scale_x_discrete(limits = c("이재명", "이낙연")) +
+
+  labs(title = "차기 대선주자 트윗 감정 비율",
+       subtitle = "2020.8.13 ~ 2020.8.21",
+       x = NULL, y = NULL, fill = NULL) +
+```
+
+---
+
+##### 그래프 다듬기
+
+
+```r
+theme_void(12) +
+  theme(text = element_text(family = "nanumgothic"),
+        plot.title = element_text(size = 14, face = "bold"),
+        plot.subtitle = element_text(size = 12),
+        legend.position = "bottom",
+        axis.text.y = element_text(size = 12),            # y축 글자 크기
+        plot.margin = margin(1, 1, 1, 1, unit = "line"))  # 여백 상우하좌, 단위
+```
+
+
+
+&lt;svg viewBox="0 0 352 512" xmlns="http://www.w3.org/2000/svg" style="height:1em;fill:currentColor;position:relative;display:inline-block;top:.1em;"&gt;  [ comment ]  &lt;path d="M176 80c-52.94 0-96 43.06-96 96 0 8.84 7.16 16 16 16s16-7.16 16-16c0-35.3 28.72-64 64-64 8.84 0 16-7.16 16-16s-7.16-16-16-16zM96.06 459.17c0 3.15.93 6.22 2.68 8.84l24.51 36.84c2.97 4.46 7.97 7.14 13.32 7.14h78.85c5.36 0 10.36-2.68 13.32-7.14l24.51-36.84c1.74-2.62 2.67-5.7 2.68-8.84l.05-43.18H96.02l.04 43.18zM176 0C73.72 0 0 82.97 0 176c0 44.37 16.45 84.85 43.56 115.78 16.64 18.99 42.74 58.8 52.42 92.16v.06h48v-.12c-.01-4.77-.72-9.51-2.15-14.07-5.59-17.81-22.82-64.77-62.17-109.67-20.54-23.43-31.52-53.15-31.61-84.14-.2-73.64 59.67-128 127.95-128 70.58 0 128 57.42 128 128 0 30.97-11.24 60.85-31.65 84.14-39.11 44.61-56.42 91.47-62.1 109.46a47.507 47.507 0 0 0-2.22 14.3v.1h48v-.05c9.68-33.37 35.78-73.18 52.42-92.16C335.55 260.85 352 220.37 352 176 352 78.8 273.2 0 176 0z"&gt;&lt;/path&gt;&lt;/svg&gt; `geom_text()`에 입력한 `percent()`: 값에 %를 붙여 비율로 표현하는 `scale` 패키지 함수. &lt;br&gt;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;`accuracy`는 반올림할 자릿수를 정하는 기능.
+
+---
+&lt;br&gt;&lt;br&gt;&lt;br&gt;
+&lt;img src="08-project2_files/figure-html/unnamed-chunk-48-1.png" width="70%" style="display: block; margin: auto;" /&gt;
+---
+
+
+
+&lt;!-- ## 8.5 감정 추이 --&gt;
+
+&lt;!-- 두 후보의 트윗 감정 범주 빈도가 날짜별로 어떻게 다른지, 감정 추이를 살펴보겠습니다. --&gt;
+
+&lt;!-- ### 8.5.1 트윗 감정 추이 선 그래프 --&gt;
+
+&lt;!-- 트윗을 `date`, `candidate`, `sentiment`별로 분류해 빈도를 구한 다음 선 그래프를 만들겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 날짜, 후보, 감정별 빈도 --&gt;
+&lt;!-- sentiment_candidate &lt;- tweet %&gt;% --&gt;
+&lt;!--   count(date, candidate, sentiment) --&gt;
+
+&lt;!-- sentiment_candidate --&gt;
+
+&lt;!-- ## 트윗 감정 추이 선 그래프 --&gt;
+&lt;!-- ggplot(sentiment_candidate, aes(x = date, y = n, col = sentiment)) + --&gt;
+&lt;!--   geom_line() + --&gt;
+&lt;!--   geom_point() + --&gt;
+&lt;!--   facet_wrap(~ candidate, nrow = 2, scales = "free_x") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- 출력한 그래프를 보면 중립 트윗의 빈도가 압도적으로 많아 긍정 트윗과 부정 트윗의 추이가 잘 표현되지 않습니다. `sentiment_candidate`에서 중립 트윗을 제외한 다음 다시 선 그래프를 만들겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 중립 트윗 제외 --&gt;
+&lt;!-- tweet_polar &lt;- sentiment_candidate %&gt;% --&gt;
+&lt;!--   filter(sentiment != "중립") --&gt;
+
+&lt;!-- ggplot(tweet_polar, aes(x = date, y = n, col = sentiment)) + --&gt;
+&lt;!--   geom_line() + --&gt;
+&lt;!--   geom_point() + --&gt;
+&lt;!--   facet_wrap(~ candidate, nrow = 2, scales = "free_x") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- #### 그래프 다듬기 --&gt;
+
+&lt;!-- `ggplot2` 패키지 함수를 이용해 그래프를 보기 좋게 수정하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 색깔 목록 생성 --&gt;
+&lt;!-- col_polar &lt;- c("#619CFF", "#F8766D") --&gt;
+
+&lt;!-- ggplot(tweet_polar, aes(x = date, y = n, col = sentiment)) + --&gt;
+&lt;!--   geom_line(size = 1) + --&gt;
+&lt;!--   geom_point(size = 2) + --&gt;
+&lt;!--   facet_wrap(~ candidate, nrow = 2, scales = "free_x") + --&gt;
+
+&lt;!--   scale_x_date(date_labels = "%m/%d", --&gt;
+&lt;!--                date_breaks  = "1 day") + --&gt;
+&lt;!--   ylim(0, 250) + --&gt;
+&lt;!--   scale_color_manual(values = col_polar) + --&gt;
+
+&lt;!--   labs(title = "차기 대선주자 트윗 감정 추이", --&gt;
+&lt;!--        subtitle = "2020.8.13 ~ 2020.8.21", --&gt;
+&lt;!--        x = NULL, y = NULL, col = NULL) + --&gt;
+
+&lt;!--   theme_minimal(12) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
+&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
+&lt;!--         plot.subtitle = element_text(size = 12), --&gt;
+&lt;!--         panel.grid.minor.x = element_blank(), --&gt;
+&lt;!--         panel.spacing = unit(2, "lines"))  # 그래프 간격 --&gt;
+
+&lt;!-- ``` --&gt;
+
+&lt;!-- 출력한 그래프를 보면 두 후보를 언급한 트윗의 감정 빈도 추이를 알 수 있습니다. 이낙연 의원은 전반적으로 긍정, 부정 트윗의 빈도와 변화량이 비슷한데, 8월 18일에만 유독 부정 트윗의 빈도가 상승했습니다. 이재명 경기도지사는 일관되게 부정 트윗이 많고, 긍정, 부정 트윗의 변화량도 비슷합니다. --&gt;
+
+
+&lt;!-- ### 8.5.2 트윗 감정 추이 영역 차트 --&gt;
+
+&lt;!-- 트윗 감정 추이의 차이를 보다 잘 드러내기 위해 `tweet_polar`를 이용해 영역 차트를 만들겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- ggplot(tweet_polar, aes(x = date, y = n, fill = sentiment)) + --&gt;
+&lt;!--   geom_area(position = "dodge", alpha = 0.7) + --&gt;
+&lt;!--   facet_wrap(~ candidate, nrow = 2, scales = "free_x") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- #### 그래프 다듬기 --&gt;
+
+&lt;!-- `ggplot2` 패키지 함수를 이용해 그래프를 보기 좋게 수정하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- ggplot(tweet_polar, aes(x = date, y = n, fill = sentiment)) + --&gt;
+&lt;!--   geom_area(position = "dodge", alpha = 0.7) + --&gt;
+&lt;!--   facet_wrap(~ candidate, nrow = 2, scales = "free_x") + --&gt;
+
+&lt;!--   scale_x_date(date_labels = "%m/%d", date_breaks  = "1 day") + --&gt;
+&lt;!--   ylim(0, 250) + --&gt;
+&lt;!--   scale_fill_manual(values = col_polar) + --&gt;
+
+&lt;!--   labs(title = "차기 대선주자 트윗 감정 추이", --&gt;
+&lt;!--        subtitle = "2020.8.13 ~ 2020.8.21", --&gt;
+&lt;!--        x = NULL, y = NULL, fill = NULL) + --&gt;
+
+&lt;!--   theme_gray(12) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
+&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
+&lt;!--         plot.subtitle = element_text(size = 12),  --&gt;
+&lt;!--         panel.grid = element_blank(), --&gt;
+&lt;!--         panel.spacing = unit(2, "lines"))  # 그래프 간격 띄우기 --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- 출력한 그래프를 보면 두 후보의 감정 추이를 쉽게 파악할 수 있습니다. 이낙연 의원은 전반적으로 긍정, 부정 트윗의 비중이 비슷합니다. 8월 13, 17, 20, 21일은 긍정 트윗이 조금 더 많았고, 8월 18일은 부정 트윗이 유독 많았습니다. 반면 이재명 경기도지사는 일관되게 부정 트윗의 양이 더 많았습니다. --&gt;
+
+
+&lt;!-- ## 8.6 긍정, 부정 트윗 주요 단어 비교 --&gt;
+
+&lt;!-- 로그 오즈비를 이용해 두 후보를 언급한 긍정 트윗과 부정 트윗에서 상대적으로 어떤 단어를 많이 사용했는지 비교해보겠습니다. --&gt;
+
+&lt;!-- ### 8.6.1 긍정 트윗 주요 단어 비교 --&gt;
+
+&lt;!-- #### 1. 감정 및 단어별 빈도 구하기 --&gt;
+
+&lt;!-- 두 후보의 긍정 트윗에 사용된 단어가 어떻게 다른지 비교하겠습니다. `8.2.1`에서 트윗을 띄어쓰기 기준으로 토큰화한 `word_tweet_raw`를 이용해 두 글자 이상 한글 단어를 추출하겠습니다. 그런 다음 트윗의 감정 점수와 감정 범주가 들어있는 `tweet`을 결합하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 두 글자 이상 한글 단어 추출 --&gt;
+&lt;!-- word_sentiment_tweet &lt;- word_tweet_raw %&gt;% --&gt;
+&lt;!--   filter(str_detect(word, "[가-힣]") &amp; --&gt;
+&lt;!--          str_count(word) &gt;= 2) %&gt;% --&gt;
+
+&lt;!--   # tweet 결합 --&gt;
+&lt;!--   left_join(tweet %&gt;% select(candidate, status_id, score, sentiment), --&gt;
+&lt;!--             by = c("candidate", "status_id")) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- glimpse(word_sentiment_tweet) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- glimpse(word_sentiment_tweet, width = 60) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- `word_sentiment_tweet`을 이용해 감정 범주 및 단어별 빈도를 구하겠습니다. 우선 한 트윗에 같은 단어가 여러 번 사용돼 로그 오즈비가 높아지는 문제를 막기 위해 트윗별로 중복 단어를 제거하겠습니다. 그런 다음 `candidate`, `sentiment`, `word`별 빈도를 구하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 감정 범주 및 단어별 빈도 구하기 --&gt;
+&lt;!-- frequency_sentiment &lt;- word_sentiment_tweet %&gt;%   --&gt;
+
+&lt;!--   group_by(status_id) %&gt;%                        # 트윗별 분리 --&gt;
+&lt;!--   distinct(word, .keep_all = T) %&gt;%              # 중복 단어 제거 --&gt;
+&lt;!--   ungroup() %&gt;% --&gt;
+
+&lt;!--   count(candidate, sentiment, word, sort = T) --&gt;
+
+&lt;!-- frequency_sentiment --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 2. 로그 오즈비 구하기 --&gt;
+
+&lt;!-- `frequency_sentiment`에서 긍정 트윗만 추출한 다음 후보 이름을 제거하겠습니다. 후보 이름을 제거하는 이유는 빈도는 높지만 해석하는데 도움이 되지 않기 때문입니다. 그런 다음 Wide from으로 변환해 로그 오즈비를 구하겠습니다. 분모에 이재명 경기도지사, 분자에 이낙연 의원의 단어 빈도를 놓고 로그 오즈비를 구했으므로, 이낙연 의원을 언급한 트윗에서 많이 사용된 단어일수록 `log_odds_ratio`가 큰 값을 지니게 됩니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # Wide form으로 변환 --&gt;
+&lt;!-- wide_pos &lt;- frequency_sentiment %&gt;% --&gt;
+&lt;!--   filter(sentiment == "긍정" &amp; !str_detect(word, "이낙연|이재명")) %&gt;% --&gt;
+&lt;!--   pivot_wider(names_from = candidate, --&gt;
+&lt;!--               values_from = n, --&gt;
+&lt;!--               values_fill = list(n = 0)) --&gt;
+
+&lt;!-- # 로그 오즈비 구하기 --&gt;
+&lt;!-- log_odds_pos &lt;- wide_pos %&gt;% --&gt;
+&lt;!--   mutate(log_odds_ratio = log(((이낙연 + 1) / (sum(이낙연 + 1))) / --&gt;
+&lt;!--                               ((이재명 + 1) / (sum(이재명 + 1))))) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 3. 불용어 목록 만들기 --&gt;
+
+&lt;!-- `log_odds_pos`에서 로그 오즈비 기준 상하위 15개 단어를 추출해 내용을 확인한 다음 불용어 목록을 만들겠습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- # 불용어 확인 --&gt;
+&lt;!-- log_odds_pos %&gt;% --&gt;
+&lt;!--   group_by(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 15, with_ties = F) %&gt;%  --&gt;
+&lt;!--   select(word) %&gt;%  --&gt;
+&lt;!--   print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- # 불용어 확인 --&gt;
+&lt;!-- log_odds_pos %&gt;% --&gt;
+&lt;!--   group_by(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 15, with_ties = F) %&gt;%  --&gt;
+&lt;!--   select(word) %&gt;%  --&gt;
+&lt;!--   print(n = 5) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- &lt;!-- ```{r eval=F} --&gt; --&gt;
+&lt;!-- &lt;!-- # 불용어 확인 --&gt; --&gt;
+&lt;!-- &lt;!-- log_odds_pos %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 15 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 15) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   select(word) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   print(n = Inf) --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+&lt;!-- &lt;!-- ```{r echo=F} --&gt; --&gt;
+&lt;!-- &lt;!-- # 불용어 확인 --&gt; --&gt;
+&lt;!-- &lt;!-- log_odds_pos %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 15 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 15) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   select(word) %&gt;%  --&gt; --&gt;
+&lt;!-- &lt;!--   print(n = 5) --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+
+
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 불용어 목록 생성 --&gt;
+&lt;!-- stopword_pos &lt;- c("것이고", "그건", "그는") --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 4. 막대 그래프 만들기 --&gt;
+
+&lt;!-- 불용어를 제외하고 로그 오즈비 기준 상하위 10개 단어를 추출해 막대 그래프를 만들겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 로그 오즈비 상하위 10개 단어 추출 --&gt;
+&lt;!-- top10_pos &lt;- log_odds_pos %&gt;% --&gt;
+&lt;!--   filter(!word %in% stopword_pos) %&gt;% --&gt;
+&lt;!--   group_by(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 10, with_ties = F) --&gt;
+
+&lt;!-- # 막대 그래프 생성 --&gt;
+&lt;!-- ggplot(top10_pos, aes(x = reorder(word, log_odds_ratio), --&gt;
+&lt;!--                       y = log_odds_ratio, --&gt;
+&lt;!--                       fill = candidate)) + --&gt;
+&lt;!--   geom_col() + --&gt;
+&lt;!--   coord_flip() --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
+&lt;!-- &lt;!-- # 로그 오즈비 상하위 10개 단어 추출 --&gt; --&gt;
+&lt;!-- &lt;!-- top10_pos &lt;- log_odds_pos %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(!word %in% stopword_pos) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 10 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 10) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   mutate(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) --&gt; --&gt;
+
+&lt;!-- &lt;!-- # 막대 그래프 생성 --&gt; --&gt;
+&lt;!-- &lt;!-- ggplot(top10_pos, aes(x = reorder(word, log_odds_ratio), --&gt; --&gt;
+&lt;!-- &lt;!--                       y = log_odds_ratio, --&gt; --&gt;
+&lt;!-- &lt;!--                       fill = candidate)) + --&gt; --&gt;
+&lt;!-- &lt;!--   geom_col() + --&gt; --&gt;
+&lt;!-- &lt;!--   coord_flip() --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+
+&lt;!-- #### 그래프 다듬기 --&gt;
+
+&lt;!-- `ggplot2` 패키지 함수를 이용해 그래프를 보기 좋게 수정하겠습니다. 출력한 그래프를 보면 두 후보를 언급한 긍정 트윗에서 상대적으로 어떤 단어를 많이 사용했는지 알 수 있습니다. 뒤에서 주요 단어가 사용된 트윗을 추출해 단어가 어떤 의미로 사용됐는지 살펴보겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- ggplot(top10_pos, aes(x = reorder(word, log_odds_ratio), --&gt;
+&lt;!--                       y = log_odds_ratio, --&gt;
+&lt;!--                       fill = candidate)) + --&gt;
+&lt;!--   geom_col() + --&gt;
+&lt;!--   coord_flip() + --&gt;
+&lt;!--   scale_fill_manual(values = col_candidate) + --&gt;
+
+&lt;!--   labs(title = "차기 대선주자 긍정 트윗 주요 단어", --&gt;
+&lt;!--        subtitle = "2020.8.13 ~ 2020.8.21", --&gt;
+&lt;!--        x = NULL, y = NULL, fill = NULL) + --&gt;
+
+&lt;!--   theme_minimal(12) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
+&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
+&lt;!--         plot.subtitle = element_text(size = 12)) --&gt;
+&lt;!-- ``` --&gt;
+
+
+
+&lt;!-- #### 4. 롤리팝 차트 만들기 --&gt;
+
+&lt;!-- 선분과 점을 이용해 막대 사탕 모양으로 표현한 그래프를 **롤리팝 차트(Lollipop chart)**라 합니다. 롤리팝 차트는 값을 세밀하게 표현하기 때문에 여러 값의 차이를 표현할 때 유용합니다. --&gt;
+
+&lt;!-- 단어 로그 오즈비를 이용해 롤리팝 차트를 만들겠습니다. `ggplot2` 패키지의 `geom_segment()`와 `geom_point()`를 이용하면 롤리팝 차트를 만들 수 있습니다. 먼저 `geom_segment()`에 x, y축의 시작점과 끝점을 지정해 선분으로 연결합니다. 그런 다음 `geom_point()`를 이용해 점을 추가하면 롤리팝 차트가 완성됩니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 단어 순서 지정해 factor 타입으로 변환 --&gt;
+&lt;!-- top10_pos &lt;- top10_pos %&gt;% --&gt;
+&lt;!--   ungroup() %&gt;% --&gt;
+&lt;!--   mutate(word = reorder(word, log_odds_ratio)) --&gt;
+
+&lt;!-- # 롤리팝 차트 생성 --&gt;
+&lt;!-- ggplot(top10_pos, aes(x = word, --&gt;
+&lt;!--                       y = log_odds_ratio, --&gt;
+&lt;!--                       col = candidate)) + --&gt;
+&lt;!--   geom_segment(aes(x = word,                  # x축 시작점 --&gt;
+&lt;!--                    xend = word,               # x축 끝점 --&gt;
+&lt;!--                    y = 0,                     # y축 시작점 --&gt;
+&lt;!--                    yend = log_odds_ratio)) +  # y축 끝점 --&gt;
+&lt;!--   geom_point() + --&gt;
+&lt;!--   coord_flip() --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- #### 그래프 다듬기 --&gt;
+
+&lt;!-- `ggplot2` 패키지 함수를 이용해 그래프를 보기 좋게 수정하겠습니다. 다음 코드로 만든 그래프를 보면 로그 오즈비의 차이가 세밀하게 표현되어 단어 간 차이를 쉽게 비교할 수 있음을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- ggplot(top10_pos, aes(x = word, --&gt;
+&lt;!--                       y = log_odds_ratio, --&gt;
+&lt;!--                       col = candidate)) + --&gt;
+
+&lt;!--   geom_segment(aes(x = word, --&gt;
+&lt;!--                    xend = word, --&gt;
+&lt;!--                    y = 0, --&gt;
+&lt;!--                    yend = log_odds_ratio), --&gt;
+&lt;!--                size = 1.1) + --&gt;
+
+&lt;!--   geom_point(size = 3.5) + --&gt;
+&lt;!--   coord_flip() + --&gt;
+&lt;!--   scale_color_manual(values = col_candidate) + --&gt;
+
+&lt;!--   labs(title = "차기 대선주자 긍정 트윗 주요 단어", --&gt;
+&lt;!--        subtitle = "2020.8.13 ~ 2020.8.21", --&gt;
+&lt;!--        x = NULL, y = NULL, col = NULL) + --&gt;
+
+&lt;!--   theme_minimal(12) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
+&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
+&lt;!--         plot.subtitle = element_text(size = 12))  --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 5. 원문 살펴보기 --&gt;
+
+&lt;!-- 로그 오즈비가 높은 단어가 사용된 트윗을 추출해 내용을 살펴보겠습니다. --&gt;
+
+
+&lt;!-- #### 이낙연 의원 긍정 트윗 --&gt;
+
+&lt;!-- **7.2.3**에서 만든 `find_word()`를 이용해 이낙연 의원 긍정 트윗에서 관심 단어가 사용된 트윗을 추출해 내용을 살펴보겠습니다. --&gt;
+
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 이낙연 의원 긍정 트윗 추출 --&gt;
+&lt;!-- pos_nak &lt;- tweet %&gt;% --&gt;
+&lt;!--   filter(sentiment == "긍정" &amp; candidate == "이낙연") %&gt;% --&gt;
+&lt;!--   arrange(-score) --&gt;
+&lt;!-- ``` --&gt;
+
+
+
+&lt;!-- **"음성"** : 로그 오즈비가 가장 높은 `"음성"`이 사용된 트윗을 보면 대부분 이낙연 의원이 코로나19 검사 결과 음성 판정을 받아 다행이라는 내용임을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- library(crayon) --&gt;
+&lt;!-- source(here::here("rmd_etc/func_find_word.R")) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- pos_nak %&gt;% find_word(x = text, keyword = "음성") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- pos_nak %&gt;% find_word(x = text, keyword = "음성", n = 3) --&gt;
+
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "음성" --&gt;
+
+
+&lt;!-- &lt;br&gt; --&gt;
+
+&lt;!-- **"의원님"** : 로그 오즈비가 두 번째로 높은 `"의원님"`이 사용된 트윗을 보면 대부분 이낙연 의원을 응원하는 내용임을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- pos_nak %&gt;% find_word(x = text, keyword = "의원님") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- pos_nak %&gt;% find_word(x = text, keyword = "의원님", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "의원님" --&gt;
+
+
+&lt;!-- #### 이재명 경기도지사 긍정 트윗 --&gt;
+
+&lt;!-- 이재명 경기도지사 긍정 트윗에서 관심 단어가 사용된 트윗을 추출해 내용을 살펴보겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 이재명 경기도지사 긍정 트윗 추출 --&gt;
+&lt;!-- pos_jae &lt;- tweet %&gt;% --&gt;
+&lt;!--   filter(sentiment == "긍정" &amp; candidate == "이재명") %&gt;% --&gt;
+&lt;!--   arrange(-score) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- **"경기도"** : 로그 오즈비가 가장 높은 `"경기도"`가 사용된 트윗을 보면 대부분 이재명 경기도지사가 경기도에서 시행한 정책을 다룬 내용임을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- pos_jae %&gt;% find_word(x = text, keyword = "경기도") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- pos_jae %&gt;% find_word(x = text, keyword = "경기도", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "경기도" --&gt;
+
+&lt;!-- &lt;br&gt; --&gt;
+
+&lt;!-- **"이익을"** : 로그 오즈비가 두 번째로 높은 `"이익을"`이 사용된 트윗을 보면 대부분 이재명 경기도지사와 관련된 정치적 이익을 다룬 내용들입니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- pos_jae %&gt;% find_word(x = text, keyword = "이익을") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- pos_jae %&gt;% find_word(x = text, keyword = "이익을", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "이익을" --&gt;
+
+&lt;!-- 앞에서 출력한 트윗을 보면 긍정 트윗에서 추출했는데도 부정적인 내용이 많이 포함되어 있습니다. 이는 이재명 경기도지사를 언급한 트윗의 감정 점수가 대부분 낮기 때문입니다. 다음 코드의 출력 결과를 보면 `"이익을"`이 사용된 긍정 트윗의 감정 점수가 전반적으로 낮다는 것을 알 수 있습니다. --&gt;
+
+
+&lt;!-- # "이익을" 언급한 트윗 --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- pos_jae %&gt;% --&gt;
+&lt;!--   filter(str_detect(text, "이익을")) %&gt;% --&gt;
+&lt;!--   select(score) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- # "이익을" 언급하지 않은 트윗 --&gt;
+&lt;!-- ```{r} --&gt;
+&lt;!-- pos_jae %&gt;% --&gt;
+&lt;!--   filter(!str_detect(text, "이익을")) %&gt;% --&gt;
+&lt;!--   select(score) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- ### 8.6.2 부정 트윗 주요 단어 비교 --&gt;
+
+&lt;!-- 이번에는 두 후보의 부정 트윗에 사용된 단어를 비교하겠습니다. --&gt;
+
+&lt;!-- #### 1. 로그 오즈비 구하기 --&gt;
+
+&lt;!-- 감정 범주별 단어 빈도를 담은 `frequency_sentiment`에서 부정 트윗의 단어를 추출해 로그 오즈비를 구하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # Wide form으로 변환 --&gt;
+&lt;!-- wide_neg &lt;- frequency_sentiment %&gt;% --&gt;
+&lt;!--   filter(sentiment == "부정" &amp; !str_detect(word, "이낙연|이재명")) %&gt;% --&gt;
+&lt;!--   pivot_wider(names_from = candidate, --&gt;
+&lt;!--               values_from = n, --&gt;
+&lt;!--               values_fill = list(n = 0)) --&gt;
+
+&lt;!-- # 로그 오즈비 구하기 --&gt;
+&lt;!-- log_odds_neg &lt;- wide_neg %&gt;% --&gt;
+&lt;!--   mutate(log_odds_ratio = log(((이낙연 + 1) / (sum(이낙연 + 1))) / --&gt;
+&lt;!--                               ((이재명 + 1) / (sum(이재명 + 1))))) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 2. 불용어 목록 만들기 --&gt;
+
+&lt;!-- 로그 오즈비 기준 상하위 15개 단어를 추출해 내용을 확인한 다음 불용어 목록을 만들겠습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- # 불용어 확인 --&gt;
+&lt;!-- log_odds_neg %&gt;% --&gt;
+&lt;!--   group_by(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 15, with_ties = F) %&gt;%  --&gt;
+&lt;!--   select(word) %&gt;%  --&gt;
+&lt;!--   print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F, output.lines = 9} --&gt;
+&lt;!-- log_odds_neg %&gt;% --&gt;
+&lt;!--   group_by(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 15, with_ties = F) %&gt;%  --&gt;
+&lt;!--   select(word) %&gt;%  --&gt;
+&lt;!--   print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F, output.lines = 20:24} --&gt;
+&lt;!-- log_odds_neg %&gt;% --&gt;
+&lt;!--   group_by(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 15, with_ties = F) %&gt;%  --&gt;
+&lt;!--   select(word) %&gt;%  --&gt;
+&lt;!--   print(n = Inf) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- &lt;!-- ```{r eval=F} --&gt; --&gt;
+&lt;!-- &lt;!-- # 불용어 확인 --&gt; --&gt;
+&lt;!-- &lt;!-- log_odds_neg %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 15 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 15) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   print(n = Inf) --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+&lt;!-- &lt;!-- ```{r echo=F, output.lines = 1:8} --&gt; --&gt;
+&lt;!-- &lt;!-- log_odds_neg %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 15 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 15) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   print(n = Inf) --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+&lt;!-- &lt;!-- ```{r echo=F, output.lines = 29:33} --&gt; --&gt;
+&lt;!-- &lt;!-- log_odds_neg %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 15 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 15) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   print(n = Inf) --&gt; --&gt;
+
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+&lt;!-- &gt; [편집] 가운데 ... 중복 삭제 --&gt;
+
+&lt;!-- 출력 결과를 보면 이재명 경기도지사를 언급한 트윗에서 `"지금껏"`, `"겪어보지"`, `"쓰나미급"`이 많이 사용됐음을 알 수 있습니다. 이는 이재명 경기도지사가 코로나19 관련 기자회견에서 "지금껏 겪어보지 못한 쓰나미급 대충격 시작될 것"이라는 표현을 사용한 적이 있는데, 이 일이 트위터에서 많이 회자되었기 때문입니다. 다음 코드의 출력 결과를 보면 이 표현을 지적한 트윗이 많다는 것을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- tweet %&gt;% --&gt;
+&lt;!--   filter(candidate == "이재명") %&gt;% --&gt;
+&lt;!--   find_word(x = text, keyword = "쓰나미급") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- tweet %&gt;% --&gt;
+&lt;!--   filter(candidate == "이재명") %&gt;% --&gt;
+&lt;!--   find_word(x = text, keyword = "쓰나미급", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "쓰나미급" --&gt;
+
+&lt;!-- 이 단어들은 같은 문장에서 나왔으므로 `"쓰나미급"`만 남겨두고 분석에서 제외하도록 불용어 목록으로 만들겠습니다. 의미를 파악하기 어려운 `"그건"`, `"주고"`도 불용어 목록에 포함하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 불용어 목록 생성 --&gt;
+&lt;!-- stopword_neg &lt;- c("지금껏", "겪어보지", "대충격", "시작될", "그건", "주고") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- #### 3. 막대 그래프 만들기 --&gt;
+
+&lt;!-- 불용어를 제외하고 로그 오즈비 기준 상하위 10개 단어를 추출해 막대 그래프를 만들겠습니다. --&gt;
+
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 로그 오즈비 상하위 10개 단어 추출 --&gt;
+&lt;!-- top10_neg &lt;- log_odds_neg %&gt;% --&gt;
+&lt;!--   filter(!word %in% stopword_neg) %&gt;% --&gt;
+&lt;!--   group_by(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt;
+&lt;!--   slice_max(abs(log_odds_ratio), n = 10, with_ties = F) --&gt;
+
+&lt;!-- # 막대 그래프 생성 --&gt;
+&lt;!-- ggplot(top10_neg, aes(x = reorder(word, log_odds_ratio), --&gt;
+&lt;!--                       y = log_odds_ratio, --&gt;
+&lt;!--                       fill = candidate)) + --&gt;
+&lt;!--   geom_col() + --&gt;
+&lt;!--   coord_flip() + --&gt;
+&lt;!--   scale_fill_manual(values = col_candidate) + --&gt;
+
+&lt;!--   labs(title = "차기 대선주자 부정 트윗 주요 단어", --&gt;
+&lt;!--        subtitle = "2020.8.13 ~ 2020.8.21", --&gt;
+&lt;!--        x = NULL, y = NULL, fill = NULL) + --&gt;
+
+&lt;!--   theme_minimal(12) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
+&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
+&lt;!--         plot.subtitle = element_text(size = 12)) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- &lt;!-- ```{r} --&gt; --&gt;
+&lt;!-- &lt;!-- # 로그 오즈비 상하위 10개 단어 추출 --&gt; --&gt;
+&lt;!-- &lt;!-- top10_neg &lt;- log_odds_neg %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(!word %in% stopword_neg) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   filter(rank(log_odds_ratio, ties.method = "first") &lt;= 10 | --&gt; --&gt;
+&lt;!-- &lt;!--          rank(-log_odds_ratio, ties.method = "first") &lt;= 10) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   mutate(candidate = ifelse(log_odds_ratio &gt; 0, "이낙연", "이재명")) %&gt;% --&gt; --&gt;
+&lt;!-- &lt;!--   arrange(-log_odds_ratio) --&gt; --&gt;
+
+
+&lt;!-- &lt;!-- # 막대 그래프 생성 --&gt; --&gt;
+&lt;!-- &lt;!-- ggplot(top10_neg, aes(x = reorder(word, log_odds_ratio), --&gt; --&gt;
+&lt;!-- &lt;!--                       y = log_odds_ratio, --&gt; --&gt;
+&lt;!-- &lt;!--                       fill = candidate)) + --&gt; --&gt;
+&lt;!-- &lt;!--   geom_col() + --&gt; --&gt;
+&lt;!-- &lt;!--   coord_flip() + --&gt; --&gt;
+&lt;!-- &lt;!--   scale_fill_manual(values = col_candidate) + --&gt; --&gt;
+&lt;!-- &lt;!--   theme_minimal(12) + --&gt; --&gt;
+&lt;!-- &lt;!--   theme(text = element_text(family = "nanumgothic")) + --&gt; --&gt;
+&lt;!-- &lt;!--   labs(title = "차기 대선주자 부정 트윗 주요 단어", --&gt; --&gt;
+&lt;!-- &lt;!--        subtitle = "2020.8.13 ~ 2020.8.21", --&gt; --&gt;
+&lt;!-- &lt;!--        x = NULL, y = NULL, fill = NULL) --&gt; --&gt;
+&lt;!-- &lt;!-- ``` --&gt; --&gt;
+
+
+
+&lt;!-- #### 4. 롤리팝 차트 만들기 --&gt;
+
+&lt;!-- 단어의 로그 오즈비를 보다 세밀하게 표현하기 위해 롤리팝 차트를 만들겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 단어 순서 지정해 factor 타입으로 변환 --&gt;
+&lt;!-- top10_neg &lt;- top10_neg %&gt;% --&gt;
+&lt;!--   ungroup() %&gt;% --&gt;
+&lt;!--   mutate(word = reorder(word, log_odds_ratio)) --&gt;
+
+&lt;!-- # 롤리팝 차트 생성 --&gt;
+&lt;!-- ggplot(top10_neg, aes(x = word, --&gt;
+&lt;!--                       y = log_odds_ratio, --&gt;
+&lt;!--                       col = candidate)) + --&gt;
+
+&lt;!--   geom_segment(aes(x = word, --&gt;
+&lt;!--                    xend = word, --&gt;
+&lt;!--                    y = 0, --&gt;
+&lt;!--                    yend = log_odds_ratio), --&gt;
+&lt;!--                size = 1.1) + --&gt;
+
+&lt;!--   geom_point(size = 3.5) + --&gt;
+&lt;!--   coord_flip() + --&gt;
+&lt;!--   scale_color_manual(values = col_candidate) + --&gt;
+
+&lt;!--   labs(title = "차기 대선주자 부정 트윗 주요 단어", --&gt;
+&lt;!--        subtitle = "2020.8.13 ~ 2020.8.21", --&gt;
+&lt;!--        x = NULL, y = NULL, col = NULL) + --&gt;
+
+&lt;!--   theme_minimal(12) + --&gt;
+&lt;!--   theme(text = element_text(family = "nanumgothic"), --&gt;
+&lt;!--         plot.title = element_text(size = 14, face = "bold"), --&gt;
+&lt;!--         plot.subtitle = element_text(size = 12)) --&gt;
+&lt;!-- ``` --&gt;
+
+
+
+&lt;!-- #### 5. 원문 살펴보기 --&gt;
+
+&lt;!-- 로그 오즈비가 높은 단어가 사용된 트윗의 내용을 살펴보겠습니다. 먼저 각 후보의 부정 트윗을 추출하겠습니다. --&gt;
+
+&lt;!-- ```{r} --&gt;
+&lt;!-- # 이낙연 의원 부정 트윗 추출 --&gt;
+&lt;!-- neg_nak &lt;- tweet %&gt;% --&gt;
+&lt;!--   filter(sentiment == "부정" &amp; candidate == "이낙연") %&gt;% --&gt;
+&lt;!--   arrange(-score) --&gt;
+
+&lt;!-- # 이재명 경기도지사 부정 트윗 추출 --&gt;
+&lt;!-- neg_jae &lt;- tweet %&gt;% --&gt;
+&lt;!--   filter(sentiment == "부정" &amp; candidate == "이재명") %&gt;% --&gt;
+&lt;!--   arrange(-score) --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- #### 이낙연 의원 부정 트윗 --&gt;
+
+
+
+&lt;!-- **"음성"** : 이낙연 의원 부정 트윗에서 로그 오즈비가 가장 높은 `"음성"`을 언급한 트윗을 추출하겠습니다. 출력 결과를 보면 이낙연 의원이 코로나19 확진 판정을 받을까봐 걱정하며 안타까운 심정을 표현한 내용이 많다는 것을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- neg_nak %&gt;% find_word(x = text, keyword = "음성") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- neg_nak %&gt;% find_word(x = text, keyword = "음성", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "음성" --&gt;
+
+&lt;!-- &lt;br&gt; --&gt;
+
+&lt;!-- **"의원님"** : 두 번째로 로그 오즈비가 높은 `"의원님"`을 언급한 트윗을 보면 주로 이낙연 의원의 정치 활동에 방해가 되는 일을 비판하는 내용임을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- neg_nak %&gt;% find_word(x = text, keyword = "의원님") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- neg_nak %&gt;% find_word(x = text, keyword = "의원님", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "의원님" --&gt;
+
+
+&lt;!-- #### 이재명 경기도지사 부정 트윗 --&gt;
+
+&lt;!-- **"경기도"** : 이재명 경기도지사 부정 트윗에서 로그 오즈비가 가장 높은 `"경기도"`를 언급한 트윗을 추출하겠습니다. 출력 결과를 보면 주로 경기도 행정을 비판하는 내용으로 구성된다는 것을 알 수 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- neg_jae %&gt;% find_word(x = text, keyword = "경기도") --&gt;
+&lt;!-- ``` --&gt;
+
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- neg_jae %&gt;% find_word(x = text, keyword = "경기도", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "경기도" --&gt;
+
+&lt;!-- &lt;br&gt; --&gt;
+
+&lt;!-- **"쓰나미급"** : 두 번째로 로그 오즈비가 높은 `"쓰나미급"`이 사용된 트윗을 보면 대부분 이재명 경기도지사가 '지금껏 겪어보지 못한 쓰나미급 대충격 시작될 것'이라고 표현한 것을 비판하는 내용이 주를 이루고 있습니다. --&gt;
+
+&lt;!-- ```{r eval=F} --&gt;
+&lt;!-- neg_jae %&gt;% find_word(x = text, keyword = "쓰나미급") --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- ```{r echo=F} --&gt;
+&lt;!-- neg_jae %&gt;% find_word(x = text, keyword = "쓰나미급", n = 3) --&gt;
+&lt;!-- ``` --&gt;
+
+&lt;!-- &gt; [편집] 결과 생략 표시, 폰트 적용 수정 - "쓰나미급" --&gt;
+
+
+&lt;!-- #### SNS 데이터로 여론 파악하기 --&gt;
+
+&lt;!-- 트위터 데이터를 이용해 사람들이 차기 대선 후보들을 어떻게 생각하는지 알아봤습니다. 두 후보의 트윗 언급량 추이를 알아보고, 언급량이 급상승한 특정 날짜의 이슈를 살펴봤습니다. 감정 분석을 이용해 두 후보에게 어떤 이미지가 있는지, 감정 추이는 어떻게 다른지 비교해봤습니다. --&gt;
+
+&lt;!-- SNS 데이터를 분석하면 여론 동향을 파악할 수 있습니다. 특히 감정 분석을 하면 민감한 주제에 관해 사람들이 어떤 생각을 하는지 다양한 입장을 파악하는데 도움이 됩니다. 하지만 SNS에는 주제와 관련 없는 광고나 여론을 왜곡하려는 의도로 작성한 글도 많기 때문에 분석에 앞서 신중하게 분석 대상을 선별해야 합니다. 그래야만 텍스트의 의미를 분명하게 이해하고 다수의 의견을 골고루 살펴볼 수 있습니다. --&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="libs/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": true,
+"ratio": "16:10",
+"navigation": {
+"scroll": true
+}
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
