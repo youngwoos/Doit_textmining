@@ -9,6 +9,7 @@
 [05-co-occurrenceAnalysis](https://youngwoos.github.io/Doit_textmining/05/05-co-occurrenceAnalysis.html)| 05 의미망 분석
 [06-topicModeling.html](https://youngwoos.github.io/Doit_textmining/06/06-topicModeling.html)| 06 토픽 모델링
 [07-project1.html](https://youngwoos.github.io/Doit_textmining/07-project1.html)| 07 프로젝트: 타다 금지법 기사 댓글 분석
+[08-project2.html](https://youngwoos.github.io/Doit_textmining/08-project2.html)| 08 프로젝트: 차기 대선 주자 SNS 여론 분석
 ---
 
 - 슬라이드는 크롬에 최적화되어있습니다. 
