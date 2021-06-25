@@ -40,7 +40,6 @@ raw_moon <- readLines("speech_moon.txt", encoding = "UTF-8")
 
 # 기본적인 전처리
 library(stringr)
-library(textclean)
 
 moon <- raw_moon %>%
   str_replace_all("[^가-힣]", " ") %>%  # 한글만 남기기
