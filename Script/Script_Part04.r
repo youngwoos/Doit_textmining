@@ -57,7 +57,7 @@ df <- df %>%
                 token = "words",
                 drop = F)
 
-df %>% print(n = Inf)
+df
 
 
 # -------------------------------------------------------------------------
@@ -65,7 +65,7 @@ df <- df %>%
   left_join(dic, by = "word") %>% 
   mutate(polarity = ifelse(is.na(polarity), 0, polarity))
 
-df %>% print(n = Inf)
+df
 
 
 # -------------------------------------------------------------------------
@@ -173,8 +173,7 @@ score_comment %>%
 
 # -------------------------------------------------------------------------
 score_comment %>%
-  count(score) %>%
-  print(n = Inf)
+  count(score)
 
 
 # -------------------------------------------------------------------------
@@ -293,7 +292,7 @@ top10 <- comment_wide %>%
   group_by(sentiment = ifelse(log_odds_ratio > 0, "pos", "neg")) %>%
   slice_max(abs(log_odds_ratio), n = 10, with_ties = F)
 
-top10 %>% print(n = Inf)
+top10 
 
 
 # -------------------------------------------------------------------------
@@ -461,15 +460,12 @@ ggplot(new_top10, aes(x = reorder(word, log_odds_ratio),
 # 원본 감정 사전 활용
 top10 %>% 
   select(-pos, -neg) %>% 
-  arrange(-log_odds_ratio) %>% 
-  print(n = Inf)
-
+  arrange(-log_odds_ratio)
 
 # 수정한 감정 사전 활용
 new_top10 %>%
   select(-pos, -neg) %>%
-  arrange(-log_odds_ratio) %>%
-  print(n = Inf)
+  arrange(-log_odds_ratio)
 
 
 # -------------------------------------------------------------------------

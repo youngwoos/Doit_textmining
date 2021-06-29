@@ -142,8 +142,7 @@ wide14 <- wide14 %>%
 # log_odds_ratio 높은 순 출력
 wide14 %>%
   arrange(-log_odds_ratio) %>%
-  head(20) %>%
-  print(n = Inf)
+  head(20)
 
 
 # -------------------------------------------------------------------------
@@ -178,8 +177,7 @@ wide_nak1819 <- wide_nak1819 %>%
 # log_odds_ratio 높은 순 출력
 wide_nak1819 %>%
   arrange(-log_odds_ratio) %>%
-  head(20) %>%
-  print(n = Inf)
+  head(20)
 
 
 # -------------------------------------------------------------------------
@@ -194,7 +192,7 @@ tweet %>%
 # 08-3 --------------------------------------------------------------------
 
 # 감정 사전 불러오기
-dic <- read_csv("files/knu_sentiment_lexicon.csv")
+dic <- read_csv("knu_sentiment_lexicon.csv")
 
 # 감정 점수 부여, 감정 극성 분류
 word_tweet <- word_tweet_raw %>%

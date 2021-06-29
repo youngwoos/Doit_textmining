@@ -77,8 +77,7 @@ top10
 
 # -------------------------------------------------------------------------
 top10 %>%
-  filter(president == "park") %>%
-  print(n = Inf)
+  filter(president == "park")
 
 
 # -------------------------------------------------------------------------
@@ -234,8 +233,7 @@ top10 <- frequency_wide %>%
   filter(rank(odds_ratio) <= 10 | rank(-odds_ratio) <= 10)
 
 top10 %>%
-  arrange(-odds_ratio) %>%
-  print(n = Inf)
+  arrange(-odds_ratio)
 
 
 # -------------------------------------------------------------------------
@@ -341,8 +339,7 @@ top10 <- frequency_wide %>%
 
 top10 %>% 
   arrange(-log_odds_ratio) %>% 
-  select(word, log_odds_ratio, president) %>% 
-  print(n = Inf)
+  select(word, log_odds_ratio, president)
 
 
 # -------------------------------------------------------------------------
