@@ -378,46 +378,46 @@ speeches <- speeches %>%
                 token = extractNoun)
 
 # 단어 빈도 구하기
-frequecy <- speeches %>%
+frequency <- speeches %>%
   count(president, word) %>%
   filter(str_count(word) > 1)
 
-frequecy
+frequency
 
 
 # -------------------------------------------------------------------------
-frequecy <- frequecy %>%
+frequency <- frequency %>%
   bind_tf_idf(term = word,           # 단어
               document = president,  # 텍스트 구분 변수
               n = n) %>%             # 단어 빈도
   arrange(-tf_idf)
 
-frequecy
+frequency
 
 
 # -------------------------------------------------------------------------
-frequecy %>% filter(president == "문재인")
+frequency %>% filter(president == "문재인")
 
-frequecy %>% filter(president == "박근혜")
+frequency %>% filter(president == "박근혜")
 
-frequecy %>% filter(president == "이명박")
+frequency %>% filter(president == "이명박")
 
-frequecy %>% filter(president == "노무현")
+frequency %>% filter(president == "노무현")
 
 
 # -------------------------------------------------------------------------
-frequecy %>%
+frequency %>%
   filter(president == "문재인") %>%
   arrange(tf_idf)
 
-frequecy %>%
+frequency %>%
   filter(president == "박근혜") %>%
   arrange(tf_idf)
 
 
 # -------------------------------------------------------------------------
 # 주요 단어 추출
-top10 <- frequecy %>%
+top10 <- frequency %>%
   group_by(president) %>%
   slice_max(tf_idf, n = 10, with_ties = F)
 

@@ -95,14 +95,14 @@ top10 <- frequency_wide %>%
 ## 3. TF-IDF로 단어 비교하기
 
 # TF-IDF 구하기
-frequecy <- frequecy %>%
+frequency <- frequency %>%
   bind_tf_idf(term = word,
               document = president,
               n = n) %>%
   arrange(-tf_idf)
 
 # 상대적으로 중요한 단어 추출
-top10 <- frequecy %>%
+top10 <- frequency %>%
   arrange(tf_idf) %>%
   group_by(president) %>%
   slice_max(tf_idf, n = 10, with_ties = F)
