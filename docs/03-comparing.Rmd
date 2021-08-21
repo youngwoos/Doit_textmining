@@ -39,7 +39,7 @@ knitr::opts_chunk$set(cache = T, warning = F, message = F,
 xaringanExtra::use_tile_view()
 
 library(knitr)
-library(icon)
+library(icons)
 library(here)
 ```
 
@@ -713,7 +713,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
   geom_col() +
   coord_flip() +
   facet_wrap(~ president, scales = "free_y") +
-  scale_x_reordered() +
+  scale_x_reordered() + #<<
   labs(x = NULL) +                                    # x축 삭제
   theme(text = element_text(family = "nanumgothic"))  # 폰트
 ```
@@ -803,14 +803,28 @@ df_long
 ---
 
 
-#### Long form을 Wide form으로 변형하기
+##### Long form을 Wide form으로 변형하기
 - **wide form**: 가로로 넓은 형태의 데이터
   - 범주별로 단어 빈도 비교하기 편함
   - 변수간 연산하기 편함
 
 
+.pull-left[
+```{r}
+df_long
+```
+]
 
---
+.pull-right[
+```{r, ref.label="df_wide_zero"}
+
+```
+]
+
+
+
+
+---
 
 
 - `tidyr::pivot_wider()`: long form을 wide form으로 변환
@@ -828,13 +842,15 @@ df_wide <- df_long %>%
 df_wide
 ```
 
-```{r echo=F}
+```{r, echo=FALSE}
 # install.packages("tidyr")
 library(tidyr)
 
 df_wide <- df_long %>%
   pivot_wider(names_from = president,
               values_from = n)
+
+df_wide
 ```
 
 ---
@@ -843,7 +859,7 @@ df_wide <- df_long %>%
 - 한 단어가 한 행으로 구성됨
 - 범주별 단어 빈도 비교하기 쉬움
 
-```{r}
+```{r df_wide}
 df_wide
 ```
 
@@ -894,7 +910,7 @@ df_long
 
 .pull-right[
 
-```{r}
+```{r df_wide_zero}
 df_wide
 ```
 ]
@@ -1050,15 +1066,6 @@ top10 %>%
 
 ---
 
-```{r echo=FALSE}
-top10 %>%
-  arrange(-odds_ratio)
-```
-
-
-
----
-
 - 상위 10개: `"moon"`에서 더 자주 사용되어 `odds_ratio`가 높은 단어
 
 ```{r echo=F, highlight.output=c(4:13)}
@@ -1164,7 +1171,7 @@ ggplot(top10, aes(x = reorder_within(word, n, president),
 
 ##### 1. 원문을 문장 기준으로 토큰화하기
 
-```{r R.options=list(tibble.width = 40, tibble.print_max = 8, tibble.print_min=8)}
+```{r R.options=list(tibble.width = 80, tibble.print_max = 8, tibble.print_min=8)}
 speeches_sentence <- bind_speeches %>%
   as_tibble() %>%
   unnest_tokens(input = value,
@@ -1176,7 +1183,7 @@ speeches_sentence
 
 ---
 
-```{r, R.options = list(tibble.width = 40)}
+```{r, R.options = list(tibble.width = 80)}
 head(speeches_sentence)
 tail(speeches_sentence)
 ```
@@ -1187,7 +1194,7 @@ tail(speeches_sentence)
 #### 2. 주요 단어가 사용된 문장 추출하기 - `str_detect()`
 
 
-```{r R.options=list(tibble.width = 50)}
+```{r R.options=list(tibble.width = 80)}
 speeches_sentence %>%
   filter(president == "moon" & str_detect(sentence, "복지국가"))
 ```
@@ -1197,7 +1204,7 @@ speeches_sentence %>%
 #### 2. 주요 단어가 사용된 문장 추출하기 - `str_detect()`
 
 
-```{r echo=FALSE, R.options=list(tibble.width = 50, tibble.print_max = 10)}
+```{r R.options=list(tibble.width = 80, tibble.print_max = 10)}
 speeches_sentence %>%
   filter(president == "park" & str_detect(sentence, "행복"))
 ```
@@ -1308,13 +1315,6 @@ frequency_wide
 ---
 
 - **부호**와 **크기**를 보면 단어가 어느 연설문에서 더 중요한지 알 수 있음
-  - 0보다 큰 양수일수록 `"moon`"에서 비중이 큼
-  - 0보다 작은 음수일수록 `"park"`에서 비중이 큼
-  - 0에 가까우면 두 연설문에서 비중 비슷함
-
----
-
-- 부호와 크기를 보면 단어가 어느 연설문에서 더 중요한지 알 수 있음
   - **0보다 큰 양수일수록 `"moon`"에서 비중이 큼**
   - 0보다 작은 음수일수록 `"park"`에서 비중이 큼
   - 0에 가까우면 두 연설문에서 비중 비슷함
@@ -1613,7 +1613,7 @@ include_graphics("Image/etc/03_4_table3.png", dpi = 300)
 ##### 1. 단어 빈도 구하기
 
 - `speeches_presidents.csv` : 역대 대통령의 대선 출마 선언문
-- `readr::read_csv()` 데이터를 다루기 편한 tibble 구조로 만들어 줌, read.csv()보다 빠름
+- `readr::read_csv()` 데이터를 다루기 편한 tibble 구조로 만들어 줌, `read.csv()`보다 빠름
 
 ```{r eval=F}
 # 데이터 불러오기
@@ -1713,7 +1713,7 @@ frequecy <- frequecy %>%
 frequecy
 ```
 
-`r fontawesome("lightbulb")` `tf`: 대상 텍스트의 전체 단어 수에서 해당 단어의 수가 차지하는 '비중'. 텍스트에 사용된 전체 단어 수가 &nbsp;&nbsp;&nbsp;&nbsp;많을수록 작아짐
+`r fontawesome("lightbulb")` `tf`: 대상 텍스트의 전체 단어 수에서 해당 단어의 수가 차지하는 '비중'. <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;텍스트에 사용된 전체 단어 수가 많을수록 작아짐
 
 ---
 
@@ -1952,7 +1952,7 @@ speeches <- raw_speeches %>%
 speeches
 ```
 
-```{r echo=F, R.options=list(tibble.width = 50)}
+```{r echo=F, R.options=list(tibble.width = 80)}
 library(readr)
 raw_speeches <- read_csv("../Data/speeches_presidents.csv")
 
@@ -2121,7 +2121,7 @@ speeches <- raw_speeches %>%
 speeches
 ```
 
-```{r echo=FALSE, R.options=list(tibble.width = 50)}
+```{r echo=FALSE, R.options=list(tibble.width = 80)}
 # 데이터 불러오기
 library(readr)
 raw_speeches <- read_csv("../Data/inaugural_address.csv")
