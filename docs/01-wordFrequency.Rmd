@@ -30,7 +30,7 @@ knitr::opts_chunk$set(cache = T, warning = F, message = F,
 xaringanExtra::use_tile_view()
 
 library(knitr)
-library(icon)
+library(icons)
 library(here)
 ```
 
@@ -203,8 +203,6 @@ library(stringr)
 str_replace_all(string = txt, pattern = "[^가-힣]", replacement = " ")
 ```
 
---
-
 - `string` : 처리할 텍스트
 - `pattern` : 규칙
 - `replacement` : 바꿀 문자
@@ -369,6 +367,8 @@ text %>%
 
 ---
 
+<br10>
+
 .scroll-box-24[
 ```{r}
 # 문자 기준 토큰화
@@ -378,6 +378,8 @@ text %>%
                 token = "characters")  # 문자 기준 #<<
 ```
 ]
+
+<br>
 
 `r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` `unnest_tokens()`에는 tibble 또는 데이터 프레임 구조 입력
 
@@ -618,7 +620,7 @@ showtext_auto()
 showtext_opts(dpi = 300) # opts_chunk$set(dpi=300)
 ```
 
-`r fontawesome("lightbulb")` [fonts.google.com](fonts.google.com)
+`r fontawesome("lightbulb")` [fonts.google.com](https://fonts.google.com)
 
 ---
 
@@ -686,7 +688,8 @@ ggplot(top20, aes(x = reorder(word, n), y = n)) +
   labs(title = "문재인 대통령 출마 연설문 단어 빈도",
        x = NULL, y = NULL) +
 
-  theme(title = element_text(size = 12),text = element_text(family = "gamjaflower"))  # 폰트 적용
+  theme(title = element_text(size = 12),
+        text = element_text(family = "gamjaflower"))  # 폰트 적용
 ```
 
 ---
