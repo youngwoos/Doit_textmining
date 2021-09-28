@@ -1,6 +1,6 @@
 # 01-1 -------------------------------------------------------------------
 
-raw_moon <- readLines(here::here("files/speech_moon.txt"), encoding = "UTF-8")
+raw_moon <- readLines("speech_moon.txt", encoding = "UTF-8")
 head(raw_moon)
 
 txt <- "치킨은!! 맛있다. xyz 정말 맛있다!@#"

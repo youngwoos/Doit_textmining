@@ -4,7 +4,7 @@ author: "김영우"
 output:
   xaringan::moon_reader:
     seal: false
-    css: ["default", "../css/custom.css"]
+    css: ["default", "css/custom.css"]
     lib_dir: libs
     chakra: ../libs/remark-latest.min.js
     nature:

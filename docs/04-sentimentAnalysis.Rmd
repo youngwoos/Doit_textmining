@@ -40,7 +40,7 @@ knitr::opts_chunk$set(cache = T, warning = F, message = F,
 xaringanExtra::use_tile_view()
 
 library(knitr)
-library(icon)
+library(icons)
 library(here)
 ```
 
@@ -156,7 +156,7 @@ class: title1
   - 글쓴이가 어떤 감정을 담아 글을 썼는가?
   - 사람들이 어떤 주제를 긍정적/부정적으로 느끼는가?
 
-```{r, out.width="80%", eval=F}
+```{r, out.width="80%", echo=F}
 include_graphics("Image/etc/04_1_dic.png")
 ```
 
@@ -346,9 +346,13 @@ class: title1
 
 ---
 
-##### 영화 '기생충' 아카데미상 수상 관련 기사 댓글
+#### 영화 '기생충' 아카데미상 수상 관련 기사 댓글
 
-#### 기본적인 전처리
+- `"news_comment_parasite.csv"`
+  - 2020년 2월 10일 영화 '기생충' 아카데미상 수상 소식 다룬 기사에 달린 댓글
+
+
+##### 기본적인 전처리
 
 - 고유 번호 변수 만들기: 댓글 내용 같아도 구별할 수 있도록
 - html 특수 문자 제거하기: 웹에서 만들어진 텍스트는 html 특수 문자 포함되어 내용 알아보기 불편
@@ -377,7 +381,7 @@ glimpse(news_comment)
 ```
 
 
-```{r echo=F, R.options=list(tibble.width = 50)}
+```{r echo=F, R.options=list(tibble.width = 80)}
 # 데이터 불러오기
 raw_news_comment <- read_csv("../Data/news_comment_parasite.csv")
 
@@ -412,7 +416,7 @@ word_comment %>%
 
 ---
 
-```{r ref.label="token-comment", R.options=list(tibble.width=50), echo=F}
+```{r ref.label="token-comment", R.options=list(tibble.width=80), echo=F}
 ```
 ---
 
@@ -511,14 +515,14 @@ score_comment %>%
 
 ---
 
-```{r score_comment, echo=F, R.options=list(tibble.width = 50)}
+```{r score_comment, echo=F, R.options=list(tibble.width = 80)}
 ```
 
 ---
 
 ##### 2. 감정 점수 높은 댓글 살펴보기
 
-```{r R.options=list(tibble.width = 50)}
+```{r R.options=list(tibble.width = 80)}
 # 긍정 댓글
 score_comment %>%
   select(score, reply) %>%
@@ -529,7 +533,7 @@ score_comment %>%
 
 ##### 2. 감정 점수 높은 댓글 살펴보기
 
-```{r R.options=list(tibble.width = 50)}
+```{r R.options=list(tibble.width = 80)}
 # 부정 댓글
 score_comment %>%
   select(score, reply) %>%
@@ -821,7 +825,7 @@ class: title1
 
 - `"소름"`, `"미친"`: 긍정적인 감정을 극적으로 표현한 단어
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 # "소름"이 사용된 댓글
 score_comment %>%
   filter(str_detect(reply, "소름")) %>%
@@ -834,7 +838,7 @@ score_comment %>%
 
 - `"소름"`, `"미친"`: 긍정적인 감정을 극적으로 표현한 단어
 
-```{r, R.options=list(tibble.width = 50, tibble.print_max=10)}
+```{r, R.options=list(tibble.width = 80, tibble.print_max=10)}
 # "미친"이 사용된 댓글
 score_comment %>%
   filter(str_detect(reply, "미친")) %>%
@@ -883,7 +887,7 @@ new_word_comment <- word_comment %>%
 
 <br-back-10>
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 new_score_comment <- new_word_comment %>%
   group_by(id, reply) %>%
   summarise(score = sum(polarity)) %>%
@@ -1048,7 +1052,7 @@ ggplot(new_top10, aes(x = reorder(word, log_odds_ratio),
 
 ##### 긍정 댓글 원문
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 new_score_comment %>%
   filter(sentiment == "pos" & str_detect(reply, "축하")) %>%
   select(reply)
@@ -1061,7 +1065,7 @@ new_score_comment %>%
 ##### 긍정 댓글 원문
 
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 new_score_comment %>%
   filter(sentiment == "pos" & str_detect(reply, "소름")) %>%
   select(reply)
@@ -1073,7 +1077,7 @@ new_score_comment %>%
 
 ##### 부정 댓글 원문
 
-```{r, R.options=list(tibble.width = 50, tibble.print_max = 15)}
+```{r, R.options=list(tibble.width = 80, tibble.print_max = 15)}
 new_score_comment %>%
   filter(sentiment == "neg" & str_detect(reply, "좌빨")) %>%
   select(reply)
@@ -1085,7 +1089,7 @@ new_score_comment %>%
 
 ##### 부정 댓글 원문
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 new_score_comment %>%
   filter(sentiment == "neg" & str_detect(reply, "못한")) %>%
   select(reply)
@@ -1292,7 +1296,7 @@ glimpse(raw_news_comment)
 
 Q1. `"news_comment_BTS.csv"`를 불러온 다음 행 번호를 나타낸 변수를 추가하고 분석에 적합하게 <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;전처리하세요.
 
-```{r bts_news_comment, R.options=list(tibble.width = 50), eval=F}
+```{r bts_news_comment, R.options=list(tibble.width = 80), eval=F}
 # 전처리
 library(stringr)
 library(textclean)
@@ -1306,7 +1310,7 @@ news_comment %>%
 
 ---
 
-```{r ref.label="bts_news_comment", echo=F, R.options=list(tibble.width = 50)}
+```{r ref.label="bts_news_comment", echo=F, R.options=list(tibble.width = 80)}
 
 ```
 
@@ -1378,7 +1382,7 @@ word_comment %>%
 
 Q2. 댓글을 띄어쓰기 기준으로 토큰화하고 감정 사전을 이용해 댓글의 감정 점수를 구하세요.
 
-```{r, q2_score_comment,R.options=list(tibble.width = 50), eval=FALSE}
+```{r, q2_score_comment,R.options=list(tibble.width = 80), eval=FALSE}
 # 댓글별로 단어의 감정 점수 합산
 score_comment <- word_comment %>%
   group_by(id, reply) %>%
@@ -1393,7 +1397,7 @@ score_comment %>%
 
 ---
 
-```{r, ref.label="q2_score_comment", R.options=list(tibble.width = 50), echo=FALSE}
+```{r, ref.label="q2_score_comment", R.options=list(tibble.width = 80), echo=FALSE}
 ```
 
 
@@ -1401,7 +1405,7 @@ score_comment %>%
 
 Q3. 감정 범주별 댓글 빈도를 나타낸 막대 그래프를 만드세요.
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 # 감정 범주 변수 생성
 score_comment <- score_comment %>%
   mutate(sentiment = ifelse(score >=  1, "pos",
@@ -1571,7 +1575,7 @@ ggplot(top10, aes(x = reorder(word, log_odds_ratio),
 
 Q7. 'Q3'에서 만든 데이터를 이용해 '긍정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 감정 점수가 높은 순으로 출력하세요.
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 score_comment %>%
   filter(str_detect(reply, "자랑스럽다")) %>%
   arrange(-score) %>%
@@ -1583,7 +1587,7 @@ score_comment %>%
 
 Q8. 'Q3'에서 만든 데이터를 이용해 '부정 댓글에 가장 자주 사용된 단어'를 언급한 댓글을 <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;감정 점수가 낮은 순으로 출력하세요.
 
-```{r, R.options=list(tibble.width = 50)}
+```{r, R.options=list(tibble.width = 80)}
 score_comment %>%
   filter(str_detect(reply, "국내")) %>%
   arrange(score) %>%

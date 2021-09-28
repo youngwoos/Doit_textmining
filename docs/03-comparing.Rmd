@@ -1052,6 +1052,41 @@ frequency_wide <- frequency_wide %>%
 
 ##### 오즈비가 가장 높거나 가장 낮은 단어 추출하기
 
+---
+
+#### 순위 구하기 - `rank()`
+
+##### 샘플 데이터로 작동 원리 알아보기
+
+```{r}
+df <- tibble(x = c(2, 5, 10))  
+df
+```
+
+<br-back-10>
+
+.pull-left[
+
+```{r}
+# 값이 작을수록 앞순위
+df %>% mutate(y = rank(x))
+```
+]
+
+.pull-right[
+
+```{r}
+# 값이 클수록 앞순위
+df %>% mutate(y = rank(-x))    
+```
+]
+
+---
+
+#### 상대적으로 중요한 단어 추출하기
+
+##### 오즈비가 가장 높거나 가장 낮은 단어 추출하기
+
 ```{r}
 top10 <- frequency_wide %>%
   filter(rank(odds_ratio) <= 10 | rank(-odds_ratio) <= 10)

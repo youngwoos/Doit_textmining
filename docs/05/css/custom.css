@@ -1,0 +1,484 @@
+@import url('https://fonts.googleapis.com/earlyaccess/nanumgothic.css');
+@import url('https://fonts.googleapis.com/css?family=Inconsolata');
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+@import url("https://cdn.jsdelivr.net/gh/wan2land/d2coding/d2coding-full.css");
+
+/*색 배합 참고
+https://paletton.com/#uid=33z0u0kpAy7f-L2kUDavEutwGna
+*/
+
+html, body, li{
+  font-family:'NanumGothic';
+}
+
+/*
+html, body, li, p {
+  font-family:'NanumGothic';
+}
+*/
+
+/*글자 줄 간격*/
+/*
+p {
+  line-height: 10px;
+}
+*/
+
+h1, h2, h3, h4, h5, h6 {
+  font-family:'NanumGothic';
+  color : #2C6EAB;
+}
+
+h2 {
+  font-size: 35px;
+}
+
+h3 {
+  font-size: 30px;
+}
+
+h4 {
+    display: block;
+    margin-block-start: 1.5em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    font-size: 25px;
+}
+
+h5 {
+    margin-block-end: -0.5em;
+    font-size: 22px;
+}
+
+
+p {
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    line-height: 140%;
+}
+
+/*불릿 시작 위치 간격*/
+ul {
+  padding-inline-start: 30px
+}
+
+
+/*주석*/
+.hljs-comment {
+  /*font-family:'Lucida Console';*/
+  font-family:'Inconsolata';
+}
+
+
+/*링크*/
+a, a > code {
+  color: #4A86BC;
+  text-decoration: none;
+}
+
+
+/*---박스---*/
+
+/* USYD blockquote */
+box, .box {
+  display: block;
+  margin-top: 1em;
+  margin-bottom: 0.2em;
+  margin-left: 0px;
+  margin-right: 5px;
+  border-left: solid 10px #FF8C58;
+  border-top: solid 2px #FF8C58;
+  border-bottom: solid 2px #FF8C58;
+  border-right: solid 2px #FF8C58;
+  box-shadow: 0 0 6px rgba(0,0,0,0.5);
+  /* background-color: #e64626; */
+  /*color: #e64626;*/
+  padding: 0.5em;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+}
+
+/*---------*/
+
+
+
+/*코드 중 함수 - library에만 먹힘*/
+.hljs-github .hljs-keyword, .hljs-github .hljs-selector-tag, .hljs-github .hljs-subst {
+    /*color: #204A87;*/
+    font-weight: bold;
+}
+
+
+/*코드내 문자 음영*/
+.hljs-github .hljs-string, .hljs-github .hljs-doctag {
+    color: #4E9A06;
+}
+
+/*코드 폰트*/
+.remark-code { 
+  font-family: 'D2Coding'; 
+  font-size: 100%;
+}
+
+/*코드 폰트 - 코드 청크 내에만 적용*/
+.hljs-github .hljs{
+  font-family: 'Source Code Pro', 'Inconsolata', Monaco, monospace; 
+}
+
+
+/* 문장 내 코드*/
+.remark-inline-code {
+    font-family: 'Source Code Pro', 'Inconsolata', Monaco, monospace;
+    font-size: 100%;
+    background-color: #F2F2F2;
+    padding: 3px 3px;  /*음영 상하 좌우*/ 
+}
+
+/*여백 상하우좌*/
+.remark-slide-content {
+    /*padding: 0em 2em 0.5em 2em;*/
+    padding: 0.5em 2em 0.5em 2em;
+    line-height: 110%;
+    font-size: 22px;
+}
+
+/*코드 줄간격*/
+.hljs-github .hljs {
+    display: block;
+    overflow-x: auto;
+    padding: .5em;
+    color: #333;
+    background: #F2F2F2;
+    line-height: 125%;
+    /*margin-top: 1.5em;*/
+}
+
+
+.font-jua {
+  font-family:'Jua';
+}
+
+
+/*주석*/
+.hljs-github .hljs-comment, .hljs-github .hljs-quote {
+    color: #8F5902;
+    font-style: italic;
+}
+
+/*코드 내 숫자*/
+.hljs-github .hljs-number, .hljs-github .hljs-literal, .hljs-github .hljs-variable, .hljs-github .hljs-template-variable, .hljs-github .hljs-tag .hljs-attr {
+    color: #0000CF;
+}
+
+
+/*폰트 컬러*/
+
+
+.orange {
+  color: #FF7232
+  
+}
+
+.yellow {
+  color: #FFCE32;
+}
+
+.blue {
+  color: #2C6EAB;
+}
+
+
+
+
+/*폰트 크기*/
+.large { font-size: 130% }
+.large2 { font-size: 180% }
+.small { font-size: 70%  }
+.tiny  { font-size: 40%  }
+
+/* The Magic Float Center Code */
+.pull-center {
+  float: right;
+
+  position: relative;
+  right: 50%; /* or right 50% */
+  text-align: left;
+  width: 60%
+}
+.pull-center > .set {
+  position: relative;
+  left: 50%;
+}
+
+.pull-center > .ori {
+  position: relative;
+  left: 50%;
+  width: 134%
+}
+
+.pull-center > .half {
+  position: relative;
+  left: 50%;
+  width: 118%
+}
+
+
+/******************
+ * Slide scrolling
+ * (non-functional)
+ * not sure if it is a good idea anyway
+slides > slide {
+  overflow: scroll;
+ padding: 5px 40px;
+}
+.scrollable-slide .remark-slide {
+  height: 400px;
+  overflow: scroll !important;
+}
+ ******************/
+
+.scroll-box-8 {
+  height:8em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-10 {
+  height:10em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-12 {
+  height:12em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-14 {
+  height:14em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-16 {
+  height:16em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-18 {
+  height:18em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-20 {
+  height:20em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-22 {
+  height:22em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-24 {
+  height:24em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+.scroll-box-26 {
+  height:26em;
+  overflow-y: scroll;
+  margin: -20px 0;
+}
+
+.scroll-output {
+  height: 90%;
+  overflow-y: scroll;
+}
+
+
+
+.brand-red { color: #e64626; }
+.brand-orange { color: orange; }
+.brand-gray {color: #b4afaf;}
+.brand-yellow { color: #FFB800; }
+
+
+.line-orange {background-color: orange;}
+.line-gray {background-color: #b4afaf;}
+.line-yellow { background-color: #FFB800; }
+
+
+
+/*배경색*/
+.background-yellow {
+  background-color: #FFB800;
+}
+
+.background-gray {
+  background-color: #b4afaf;
+}
+
+
+/*title 페이지*/
+
+.no-page-num .remark-slide-number {
+  display: none;
+}
+
+.title0 {
+  background-color: #FF7232;
+  color: white;
+  font-family:'Jua';
+  font-size: 60px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/*remove title slide num */
+.title0 .remark-slide-number {
+  display: none;
+}
+
+
+.title0-2 {
+  color: #FF7232;
+  font-family:'Jua';
+  font-size: 60px;
+  vertical-align: middle;
+  text-align: center;
+  line-height: 50%;
+}
+
+/*remove title slide num */
+.title0-2 .remark-slide-number {
+  display: none;
+}
+
+
+.title1 {
+  background-color: #FFCE32;
+  color: white;
+  font-family:'Jua';
+  font-size: 55px;
+  vertical-align: middle;
+  text-align: center;
+}
+
+/*remove title slide num */
+.title1 .remark-slide-number {
+  display: none;
+}
+
+
+
+
+/*알아두면 좋아요 폰트*/
+.info {
+  font-size: 30px;
+  color : #FF7333;
+  font-family:'Jua';
+}
+
+
+
+/*리스트 상하 간격*/
+
+li {
+  margin-block-end: 12px;
+  margin-block-start: 12px;
+
+  /*line-height: 30px;*/
+}
+
+
+
+.left {
+  float: left
+} 
+
+
+/*표 간격*/
+th, td {
+    padding: 6px;
+}
+
+
+/*마우스 드래그 색깔*/
+*::selection {
+    background-color: #9EF1D6;
+    /*color: #f4f5f6;;*/
+}
+
+
+/*코드가 청크 밖으로 넘어가지 않음*/
+
+pre {
+  white-space: pre-wrap;
+}
+
+
+/*상하 간격 조정*/
+
+/*간격 조금만 띄우기*/
+br10 {
+   display: block;
+   margin-block-start: 1.5em;
+}
+
+/*간격 줄이기*/
+br-back-5 {
+   display: block;
+   margin: -5px 0;
+}
+
+br-back-10 {
+   display: block;
+   margin: -10px 0;
+}
+
+br-back-20 {
+   display: block;
+   margin: -20px 0;
+}
+br-back-30 {
+   display: block;
+   margin: -30px 0;
+}
+br-back-40 {
+   display: block;
+   margin: -40px 0;
+}
+br-back-50 {
+   display: block;
+   margin: -50px 0;
+}
+
+
+
+.pull-left-70 {
+  float: left;
+  width: 70%;
+}
+
+.pull-right-30 {
+  float: right;
+  width: 29%;
+}
+
+.pull-left-60 {
+  float: left;
+  width: 60%;
+}
+
+.pull-left-50 {
+  float: left;
+  width: 55%;
+}
+
+.pull-right-40 {
+  float: right;
+  width: 39%;
+}

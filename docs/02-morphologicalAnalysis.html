@@ -312,7 +312,6 @@ raw_moon &lt;- readLines("speech_moon.txt", encoding = "UTF-8")
 
 ```r
 library(stringr)
-library(textclean)
 
 moon &lt;- raw_moon %&gt;%
   str_replace_all("[^가-힣]", " ") %&gt;%  # 한글만 남기기
@@ -753,6 +752,8 @@ class: title1
 
 ---
 
+&lt;br-back-10&gt;
+
 ### 정리하기
 
 ##### 1. 명사 추출하기
@@ -766,12 +767,15 @@ word_noun &lt;- moon %&gt;%
                 token = extractNoun)
 ```
 
+&lt;br-back-10&gt;
 
 ##### 2. 특정 단어가 사용된 문장 살펴보기
 
 ```r
 # 문장 기준 토큰화
 sentences_moon &lt;- raw_moon %&gt;%
+  str_squish() %&gt;%
+  as_tibble() %&gt;%
   unnest_tokens(input = value,
                 output = sentence,
                 token = "sentences")

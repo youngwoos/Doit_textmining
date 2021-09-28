@@ -282,7 +282,6 @@ raw_moon <- readLines("speech_moon.txt", encoding = "UTF-8")
 ##### 기본적인 전처리
 ```{r eval=F}
 library(stringr)
-library(textclean)
 
 moon <- raw_moon %>%
   str_replace_all("[^가-힣]", " ") %>%  # 한글만 남기기
@@ -597,6 +596,8 @@ class: title1
 
 ---
 
+<br-back-10>
+
 ### 정리하기
 
 ##### 1. 명사 추출하기
@@ -609,11 +610,14 @@ word_noun <- moon %>%
                 token = extractNoun)
 ```
 
+<br-back-10>
 
 ##### 2. 특정 단어가 사용된 문장 살펴보기
 ```{r eval=F}
 # 문장 기준 토큰화
 sentences_moon <- raw_moon %>%
+  str_squish() %>%
+  as_tibble() %>%
   unnest_tokens(input = value,
                 output = sentence,
                 token = "sentences")
