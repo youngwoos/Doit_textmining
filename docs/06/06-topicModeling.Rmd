@@ -40,7 +40,7 @@ knitr::opts_chunk$set(cache = T, warning = F, message = F,
 xaringanExtra::use_tile_view()
 
 library(knitr)
-library(icon)
+library(icons)
 library(here)
 ```
 
@@ -108,9 +108,9 @@ include_graphics("https://raw.githubusercontent.com/youngwoos/Doit_textmining/ma
 <br>
 <br>
 
-`r fontawesome("github")` [github.com/youngwoos/Doit_textmining](https://github.com/youngwoos/Doit_textmining)
+`r icons::fontawesome("github")` [github.com/youngwoos/Doit_textmining](https://github.com/youngwoos/Doit_textmining)
 
-`r fontawesome("facebook-square")` [facebook.com/groups/datacommunity](https://facebook.com/groups/datacommunity)
+`r icons::fontawesome("facebook-square")` [facebook.com/groups/datacommunity](https://facebook.com/groups/datacommunity)
 
 - [네이버책](https://book.naver.com/bookdb/book_detail.nhn?bid=17891971)
   - [yes24](http://bit.ly/3oUuJOB)
@@ -284,7 +284,7 @@ knitr::include_graphics("../Image/06/Blei_ICML_2012_edit.png")
 
 <br>
 
-`r fontawesome("lightbulb")` LDA 모델이 만들어지는 과정을 자세히 알고 싶다면 - Topic Modeling, LDA: [bit.ly/easytext_61](https://bit.ly/easytext_61)
+`r icons::fontawesome("lightbulb")` LDA 모델이 만들어지는 과정을 자세히 알고 싶다면 - Topic Modeling, LDA: [bit.ly/easytext_61](https://bit.ly/easytext_61)
 
 
 ---
@@ -332,7 +332,7 @@ news_comment <- raw_news_comment %>%
   distinct(reply, .keep_all = T) %>%
 
   # 짧은 문서 제거 - 3 단어 이상 추출
-  filter(str_count(reply, boundary("word") >= 3))
+  filter(str_count(reply, boundary("word")) >= 3)
 ```
 
 ```{r echo = F}
@@ -358,7 +358,7 @@ news_comment <- raw_news_comment %>%
   filter(str_count(reply, boundary("word")) >= 3)
 ```
 
-`r fontawesome("lightbulb")` `row_number()`: 문서를 토픽별로 분류하는 작업을 할 때 문서 구분 기준이 필요하므로 댓글 고유 번호 부여
+`r icons::fontawesome("lightbulb")` `row_number()`: 문서를 토픽별로 분류하는 작업을 할 때 문서 구분 기준이 필요하므로 댓글 고유 번호 부여
 
 ---
 
@@ -469,14 +469,14 @@ count_word <- count_word %>%
                        "방탄" = "방탄소년단"))
 ```
 
-`r fontawesome("lightbulb")` `dplyr::recode()`: 특정 값을 다른 값으로 수정
+`r icons::fontawesome("lightbulb")` `dplyr::recode()`: 특정 값을 다른 값으로 수정
 
 ---
 
 
 .box[
 <br-back-20>
-.info[`r icon_style(fontawesome("rocket"), fill = "#FF7333")` 불용어 목록을 파일로 만들어 활용하기]
+.info[`r icons::icon_style(icons::fontawesome("rocket"), fill = "#FF7333")` 불용어 목록을 파일로 만들어 활용하기]
 
 <br10>
 
@@ -564,7 +564,7 @@ dtm_comment <- count_word_doc %>%
 
 dtm_comment
 ```
-`r fontawesome("lightbulb")`  `tm` 패키지 설치 필요
+`r icons::fontawesome("lightbulb")`  `tm` 패키지 설치 필요
 
 
 
@@ -600,7 +600,7 @@ lda_model <- LDA(dtm_comment,
                  control = list(seed = 1234))
 ```
 
-`r fontawesome("lightbulb")`  토픽 수에는 정해진 정답이 없기 때문에 `k`값을 바꿔가며 여러 모델을 만든 다음 결과를 비교해 결정
+`r icons::fontawesome("lightbulb")`  토픽 수에는 정해진 정답이 없기 때문에 `k`값을 바꿔가며 여러 모델을 만든 다음 결과를 비교해 결정
 
 ---
 
@@ -619,7 +619,7 @@ glimpse(lda_model)
   - 문서가 각 토픽에 등장할 확률
   - 3,203개 문서로 모델 생성
 
-`r fontawesome("lightbulb")` 깁스 샘플링에 관해 자세히 알고 싶다면: Topic Modeling, LDA([bit.ly/easytext_61](https://bit.ly/easytext_61))
+`r icons::fontawesome("lightbulb")` 깁스 샘플링에 관해 자세히 알고 싶다면: Topic Modeling, LDA([bit.ly/easytext_61](https://bit.ly/easytext_61))
 
 
 
@@ -749,7 +749,7 @@ top_term_topic <- term_topic %>%
 
 ```
 
-`r fontawesome("lightbulb")` 토픽별 단어 확률에 동점이 있으면 추출한 단어가 10개 보다 많을 수 있다. <br> &nbsp;&nbsp;&nbsp;&nbsp;동점 제외하려면 `slice_max(with_ties = F)`
+`r icons::fontawesome("lightbulb")` 토픽별 단어 확률에 동점이 있으면 추출한 단어가 10개 보다 많을 수 있다. <br> &nbsp;&nbsp;&nbsp;&nbsp;동점 제외하려면 `slice_max(with_ties = F)`
 
 ---
 
@@ -793,8 +793,8 @@ ggplot(top_term_topic,
   theme(text = element_text(family = "nanumgothic"))
 ```
 
-`r fontawesome("lightbulb")` `scale_y_continuous(n.breaks  =  4)`: 축 눈금을 4개 내외로 정하기<br-back-10>
-`r fontawesome("lightbulb")` `labels  =  number_format(accuracy = .01)`: 눈금 소수점 첫째 자리에서 반올림. `scales`  로드 필요.
+`r icons::fontawesome("lightbulb")` `scale_y_continuous(n.breaks  =  4)`: 축 눈금을 4개 내외로 정하기<br-back-10>
+`r icons::fontawesome("lightbulb")` `labels  =  number_format(accuracy = .01)`: 눈금 소수점 첫째 자리에서 반올림. `scales`  로드 필요.
 
 ---
 
@@ -903,7 +903,7 @@ doc_class$document <- as.integer(doc_class$document)
 news_comment_topic <- raw_news_comment %>%
   left_join(doc_class, by = c("id" = "document"))
 ```
-`r fontawesome("lightbulb")` `as.integer(doc_class$document)` 데이터셋 결합하기 위해 기준 변수 타입을 integer로 통일
+`r icons::fontawesome("lightbulb")` `as.integer(doc_class$document)` 데이터셋 결합하기 위해 기준 변수 타입을 integer로 통일
 
 ---
 
@@ -1067,7 +1067,7 @@ comment_topic %>%
   pull(reply)
 ```
 
-`r fontawesome("lightbulb")` `comment_topic`은 `tibble` 자료형이므로 Console 창 크기에 맞추어 일부만 출력됨.<br>&nbsp;&nbsp;&nbsp; `pull()`을 이용하면 변수를 vector 타입으로 추출해 전체 내용 출력
+`r icons::fontawesome("lightbulb")` `comment_topic`은 `tibble` 자료형이므로 Console 창 크기에 맞추어 일부만 출력됨.<br>&nbsp;&nbsp;&nbsp; `pull()`을 이용하면 변수를 vector 타입으로 추출해 전체 내용 출력
 
 ```{r echo=F}
 # 토픽 1 내용 살펴보기
@@ -1251,7 +1251,7 @@ models <- FindTopicsNumber(dtm = dtm_comment,
                            control = list(seed = 1234))
 ```
 
-`r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` 19개의 LDA 모델을 만들기 때문에 컴퓨터 성능에 따라 오래 걸릴 수 있음
+`r icons::icon_style(icons::fontawesome("exclamation-triangle"), fill = "#FF7333")` 19개의 LDA 모델을 만들기 때문에 컴퓨터 성능에 따라 오래 걸릴 수 있음
 
 ---
 
@@ -1317,9 +1317,9 @@ tidy(lda_model, matrix = "beta")
 ```
 ]
 
-`r fontawesome("lightbulb")` `Griffiths2004`외에 `FindTopicsNumber()`로 구할 수 있는 복잡도 지표: <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select number of topics for LDA model([bit.ly/easytext_64](bit.ly/easytext_64))
+`r icons::fontawesome("lightbulb")` `Griffiths2004`외에 `FindTopicsNumber()`로 구할 수 있는 복잡도 지표: <br> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Select number of topics for LDA model([bit.ly/easytext_64](bit.ly/easytext_64))
 <br-back-10>
-`r fontawesome("lightbulb")` `Griffiths2004` 자세히 알아보기: Thomas L. Griffiths and Mark Steyvers. 2004. Finding scientific <br> &nbsp;&nbsp;&nbsp;&nbsp;topics. PNAS April 6, 
+`r icons::fontawesome("lightbulb")` `Griffiths2004` 자세히 알아보기: Thomas L. Griffiths and Mark Steyvers. 2004. Finding scientific <br> &nbsp;&nbsp;&nbsp;&nbsp;topics. PNAS April 6, 
 2004 101(suppl 1) 5228-5235([bit.ly/easytext_65](bit.ly/easytext_65))
 
 ---
@@ -1450,7 +1450,9 @@ Q11. 문서가 가장 많은 토픽의 연설문을 gamma가 높은 순으로 �
 ---
 
 Q1. `speeches_roh.csv`를 불러온 다음 연설문이 들어있는 `content`를 문장 기준으로 토큰화하세요.
-
+```{r}
+speeches_raw <- read_csv(here::here("data/speeches_roh.csv"))
+```
 
 ```{r eval=F}
 # 연설문 불러오기
@@ -1467,11 +1469,7 @@ speeches <- speeches_raw %>%
                 drop = F)
 ```
 
-```{r echo=FALSE}
-speeches_raw <- read_csv("../../Data/speeches_roh.csv")
-```
-
-`r fontawesome("lightbulb")` `KoNLP` 패키지의 함수는 토큰화할 텍스트가 너무 길면 오류 발생함. <br>&nbsp;&nbsp;&nbsp;&nbsp;텍스트를 문장 기준으로 토큰화하고 나서 다시 명사 기준으로 토큰화하면 이런 문제를 피할 수 있음.
+`r icons::fontawesome("lightbulb")` `KoNLP` 패키지의 함수는 토큰화할 텍스트가 너무 길면 오류 발생함. <br>&nbsp;&nbsp;&nbsp;&nbsp;텍스트를 문장 기준으로 토큰화하고 나서 다시 명사 기준으로 토큰화하면 이런 문제를 피할 수 있음.
 
 ---
 Q2. 문장을 분석에 적합하게 전처리한 다음 명사를 추출하세요.
@@ -1495,7 +1493,7 @@ nouns_speeches <- speeches %>%
   filter(str_count(word) > 1)
 ```
 
-`r icon_style(fontawesome("exclamation-triangle"), fill = "#FF7333")` 컴퓨터 성능에 따라 명사 추출하는 데 시간이 오래 걸릴 수 있음
+`r icons::icon_style(icons::fontawesome("exclamation-triangle"), fill = "#FF7333")` 컴퓨터 성능에 따라 명사 추출하는 데 시간이 오래 걸릴 수 있음
 
 ```{r echo=F}
 library(tidytext)
@@ -1503,7 +1501,7 @@ library(KoNLP)
 library(stringr)
 # saveRDS(nouns_speeches, here::here("Quiz/files_etc/nouns_speeches_roh.rds"), compress = F)
 
-# nouns_speeches <- readRDS(here::here("Quiz/files_etc/nouns_speeches_roh.rds"))
+nouns_speeches <- readRDS(here::here("Quiz/files_etc/nouns_speeches_roh.rds"))
 ```
 
 ---
@@ -1559,6 +1557,12 @@ dtm_comment <- count_word_doc %>%
 
 Q6. 토픽 수를 2~20개로 바꿔가며 LDA 모델을 만든 다음 최적 토픽 수를 구하세요.
 
+
+```{r echo=FALSE,warning=F}
+# saveRDS(models, here::here("Quiz/files_etc/lda_model_speeches.rds"))
+models <- readRDS(here::here("Quiz/files_etc/lda_model_speeches.rds"))
+```
+
 ```{r eval=F}
 # 토픽 수 바꿔가며 LDA 모델 만들기
 library(ldatuning)
@@ -1571,9 +1575,10 @@ models <- FindTopicsNumber(dtm = dtm_comment,
 FindTopicsNumber_plot(models)
 ```
 
-```{r echo=FALSE}
-models <- readRDS(here::here("Quiz/files_etc/lda_model_speeches.rds"))
+```{r echo=F, fig.height=3, fig.width=6, out.width = '60%'}
+FindTopicsNumber_plot(models)
 ```
+
 
 ---
 
